@@ -58,7 +58,7 @@ namespace Accounts.API.Services
                     IsPrimaryShipping = addressDTO.IsPrimaryShipping
                 }).ToList(),
                 PhoneNumber = addAccountDTO.PhoneNumber,
-                AccountStatus = "Normal",
+                AccountStatus = "Active",                       // use 'Hold' for accountstatus to prevent placing of orders
                 CreditLimit = _baseCreditLimit
             };
             await _accounts.InsertOneAsync(account);

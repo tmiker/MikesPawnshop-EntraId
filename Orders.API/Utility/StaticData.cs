@@ -12,5 +12,9 @@
         public const string InternalAccounts_HttpClient_BaseUrl = "https://localhost:7033";
         public const string InternalAccounts_HttpClient_AccountsPath = "/api/accounts";         
         // [HttpGet] [Authorize] public async Task<ActionResult<AccountDTO>> GetByOwnerId()
+
+        // ACCOUNT STATUS OPTIONS
+        public const string AccountStatus_Active = "Active";
+        public const string AccountStatus_Hold = "Hold";
     }
 }

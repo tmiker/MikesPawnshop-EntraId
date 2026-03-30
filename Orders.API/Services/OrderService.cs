@@ -11,46 +11,43 @@ namespace Orders.API.Services
     public class OrderService : IOrderService
     {
         private readonly IMongoCollection<Order> _orders;
+        private readonly IInternalAccountsHttpService _internalAccountsHttpService;
         private readonly ILogger<OrderService> _logger;
 
-        public OrderService(IMongoSettings mongoSettings, ILogger<OrderService> logger)
+        public OrderService(IMongoSettings mongoSettings, InternalAccountsHttpService internalAccountsHttpService, ILogger<OrderService> logger)
         {
             var client = new MongoClient(mongoSettings.MongoLocalConnection);
             var database = client.GetDatabase(mongoSettings.Database);
             _orders = database.GetCollection<Order>(mongoSettings.OrderCollection);
+            _internalAccountsHttpService = internalAccountsHttpService;
             _logger = logger;
         }
 
-        public async Task<(bool IsSuccess, ReviewOrderResultDTO? ReviewDTO, string? ErrorMessage)> ReviewOrderAsync(string ownerId, CancellationToken cancellationToken)
+        public async Task<ReviewOrderResultDTO> ReviewOrderAsync(AddOrderDTO addOrderDTO, string ownerId, CancellationToken cancellationToken)
         {
-            // THIS ENDPOINT MOVED TO INTERNAL ORDERS SERVICE
-
-            string errors = string.Empty;
             ReviewOrderResultDTO resultDTO = new ReviewOrderResultDTO();
 
-            // ORIGINAL
-            // 1. Get account detail dto from internal accounts services - note the http service will add api key for internal account api call and encrypt data
-            // var accountResult = await _internalAccountsHttpService.GetAccountDetailsFromInternalApiAsync(ownerId);
-            //if (accountResult.IsSuccess)
-            //{
-            //    resultDTO.AccountOwnerId = accountResult.AccountDetail?.AccountOwnerId;
-            //    resultDTO.AccountDetail = accountResult.AccountDetail;
-            //}
-            // else errors += $"{accountResult.ErrorMessage} \n";
+            /// 1. Get account dto using internal accounts http services - note the http service will add api key for internal account api call and encrypt data
+            var accountResult = await _internalAccountsHttpService.GetUserAccountDataAsync();
+            if (accountResult.IsSuccess)
+            {
+                resultDTO.AccountId = accountResult.AccountDTO?.AccountId;
+                resultDTO.AccountStatus = accountResult.AccountDTO?.AccountStatus;
+            }
+            else
+            {
+                string errorMessage = accountResult.ErrorMessage ??  "Unknown error retrieving account details.";
+                resultDTO.ErrorMessages.Add(errorMessage);
+            }
 
-            // 2. Get cart from internal cart services - note the http service will add api key for internal cart api call and encrypt data
+            /// 2. Review the account and order for completeness and consistnecy
+            if (resultDTO.AccountStatus?.ToLower() == "hold") resultDTO.ErrorMessages.Add("The account is on hold.");
+            if (addOrderDTO.Items is null || addOrderDTO.Items.Count == 0) resultDTO.ErrorMessages.Add("The order contains no items.");
+            if (addOrderDTO.ShippingAddress is null) resultDTO.ErrorMessages.Add("The order is missing a shipping address.");
+            if (addOrderDTO.BillingAddress is null) resultDTO.ErrorMessages.Add("The order is missing a billing address.");
 
-            //var cartResult = await _internalCartsHttpService.GetShoppingCartAsync(ownerId);
-            //if (cartResult.IsSuccess)
-            //{
-            //    resultDTO.ShoppingCart = cartResult.ShoppingCart;
-            //}
-            //else errors += $"{cartResult.ErrorMessage}";
-
-            //if (string.IsNullOrWhiteSpace(errors)) return (true, resultDTO, null);
-            //else return (false, resultDTO, errors);
-
-            return (true, new ReviewOrderResultDTO() { IsSuccess = true, ErrorMessage = null }, null);
+            /// 3. Return cumumlative result
+            return resultDTO;
         }
 
         public async Task<(bool IsSuccess, string? OrderId, string? ErrorMessage)> AddOrderAsync(string ownerId, AddOrderDTO addOrderDTO, CancellationToken cancellationToken)

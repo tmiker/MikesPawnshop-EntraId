@@ -3,6 +3,7 @@
 @inject IOrdersHttpService _ordersService
 @inject IAccountsHttpService _accountsService
 @inject IOrderMapper _orderMapper
+@inject IToastrService _toastr
 @inject NavigationManager _nav
 @using System.Text.Json
 @attribute [Authorize(Policy = "IsAdminOrManager")]
@@ -256,7 +257,7 @@
         </div>
     </div>
     <hr />
-    @if (_reviewOrderResult != null)
+    @if (!string.IsNullOrWhiteSpace(_accountStatus) && (_reviewOrderErrors is null || _reviewOrderErrors.Count == 0))
     {
         @* <EditForm Model="@_reviewOrderResult" OnValidSubmit="SubmitOrderAsync" FormName="submitOrderForm"> *@
 
@@ -289,6 +290,11 @@ else
     private bool _accountEstablished = false;
     private ReviewOrderResultDTO? _reviewOrderResult { get; set; }
     private AccountDTO? _accountInfo { get; set; }
+
+    private string? _accountStatus;
+    private string? _accountId;
+    private List<string>? _reviewOrderErrors;
+
     private ShoppingCartDTO? _shoppingCart { get; set; }
     private AddressDTO? _shippingAddress { get; set; }
     private AddressDTO? _billingAddress { get; set; }
@@ -298,39 +304,33 @@ else
     private bool _showSelectShipping { get; set; } = false;
     private bool _showSelectBilling { get; set; } = false;
 
-    // // Dev Helpers
-    // private string? _jsonAccount { get; set; }
-    // private string? _jsonCart { get; set; }
-    // private string? _jsonShipping { get; set; }
-    // private string? _jsonBilling { get; set; }
-
     private async Task ReviewCustomerOrder()
     {
-        var result = await _ordersService.ReviewOrderAsync();
-        if (result.IsSuccess && result.ReviewOrderResult?.Account is null)
+        _accountStatus = null;
+        _accountId = null;
+        _reviewOrderErrors = null;
+
+        IEnumerable<AddOrderItemDTO> orderItems = _orderMapper.MapCartItemDTOsToAddOrderItemDTOs(_shoppingCart?.Items!);
+        AddOrderDTO addOrderDTO = new AddOrderDTO()
         {
+            Items = orderItems.ToList(),
+            ShippingAddress = _shippingAddress,
+            BillingAddress = _billingAddress
+        };
 
-        }
-        if (result.IsSuccess && result.ReviewOrderResult != null)
+        var result = await _ordersService.ReviewOrderAsync(addOrderDTO);
+        if (result.IsSuccess)
         {
-            _reviewOrderResult = result.ReviewOrderResult;
-            _accountInfo = result.ReviewOrderResult.Account;
-            _shoppingCart = result.ReviewOrderResult.ShoppingCart;
-            // _jsonAccount = JsonSerializer.Serialize(_accountDetail);
-            // _jsonCart = JsonSerializer.Serialize(_shoppingCart);
-
-            _shippingAddress = _accountInfo?.Addresses.FirstOrDefault(a => a.IsPrimaryShipping == true);
-            _billingAddress = _accountInfo?.Addresses.FirstOrDefault(a => a.IsPrimaryBilling == true);
-            // _jsonShipping = JsonSerializer.Serialize(_shippingAddress);
-            // _jsonBilling = JsonSerializer.Serialize(_billingAddress);
-
+            _accountStatus = result.ReviewOrderResult?.AccountStatus;
+            _accountId = result.ReviewOrderResult?.AccountId;
+            await _toastr.ShowToastrSuccess($"Review order successful.  You can now submit your order.");
         }
-        if (!string.IsNullOrWhiteSpace(result.ErrorMessage))
+        else
         {
-            _errorMessage = result.ErrorMessage;
-            // await _toastr.ShowToastrError(result.ErrorMessage!);
+            _reviewOrderErrors = result.ReviewOrderResult?.ErrorMessages;
+            _errorMessage = $"Review order failed.  Please fix the following errors and try again: {string.Join(", ", _reviewOrderErrors ?? new List<string>())}";
+            await _toastr.ShowToastrError($"Review order failed.  Please fix the following errors and try again: {string.Join(", ", _reviewOrderErrors ?? new List<string>())}");
         }
-
     }
 
     private void ToggleSelectShipping() => _showSelectShipping = !_showSelectShipping;

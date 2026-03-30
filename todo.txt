@@ -5,6 +5,9 @@ Admin and Consumer Clients
 			OrderService in Orders.API should have dependency InternalAccountsHttpService injected and used to call Accounts.API to check account status before placing order
 		ensure if review fails that the order is not placed
 		check the cart is emptied after an order is placed successfully
+	Need to have constants for account status HOLD or some such and check for that value in OrderService ReviewOrderAsync method
+
+	*** Add Authorize attribute to Accounts.API controllers for public async Task<ActionResult<AccountDTO>> InternalGetByOwnerId() method (temp took off for testing)
 
 
 Hide/Show elements based on auth

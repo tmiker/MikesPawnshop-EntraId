@@ -2,7 +2,6 @@
 using Consumer.Blazor.Client.DTOs.Orders;
 using Consumer.Blazor.Client.Paging;
 using Consumer.Blazor.Client.Utility;
-using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -20,12 +19,13 @@ namespace Consumer.Blazor.HttpServices
             _logger = logger;
         }
 
-        public async Task<(bool IsSuccess, ReviewOrderResultDTO? ReviewOrderResult, string? ErrorMessage)> ReviewOrderAsync(string? token = null)
+        public async Task<(bool IsSuccess, ReviewOrderResultDTO? ReviewOrderResult, string? ErrorMessage)> ReviewOrderAsync(AddOrderDTO addOrderDTO, string? token = null)
         {
             string uri = $"{StaticData.OrdersHttpClient_OrdersPath}/reviewOrder";
             var client = _httpClientFactory.CreateClient(StaticData.OrdersHttpClient_ClientName);
 
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
+            request.Content = new StringContent(JsonSerializer.Serialize(addOrderDTO), Encoding.UTF8, "application/json");
             HttpResponseMessage response = await client.SendAsync(request);
 
             if (response.IsSuccessStatusCode)

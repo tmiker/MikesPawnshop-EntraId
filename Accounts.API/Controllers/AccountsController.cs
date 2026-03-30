@@ -55,6 +55,25 @@ namespace Accounts.API.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
+        [HttpGet("internalStatusCheck")]
+        // [API KEY AUTH ]
+        public async Task<ActionResult<AccountDTO>> InternalGetByOwnerId()
+        {
+            string? ownerId = User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
+            if (ownerId == null) throw new InvalidUserCredentitalsException($"User identity information unavailable. Unauthorized access to restricted resource.");
+
+            var result = await _accountService.GetAccountByOwnerIdAsync(ownerId);
+
+            if (result.Account is not null)
+            {
+                string jsonAccount = JsonSerializer.Serialize(result.Account);
+                _logger.LogInformation("Account Retrieved: {@result.Account}", result.Account);
+            }
+
+            if (result.IsSuccess) return Ok(result.Account);
+            return BadRequest(result.ErrorMessage);
+        }
+
         [HttpGet("{accountId}")]
         [Authorize]
         public async Task<ActionResult<AccountDTO>> GetByAccountId(string accountId)

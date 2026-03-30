@@ -20,7 +20,7 @@ namespace Orders.API.Services
             // Calls Accounts.API to get the user account data - no arguments needed as the user is identified by the access token 
             // Accounts.API endpoint:  // [HttpGet] [Authorize] public async Task<ActionResult<AccountDTO>> GetByOwnerId()
 
-            string uri = $"{StaticData.InternalAccounts_HttpClient_AccountsPath}";
+            string uri = $"{StaticData.InternalAccounts_HttpClient_AccountsPath}/internalStatusCheck";
             var client = _httpClientFactory.CreateClient(StaticData.InternalAccounts_HttpClient_Name);
 
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);

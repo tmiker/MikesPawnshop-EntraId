@@ -28,33 +28,31 @@ namespace Orders.API.Controllers
 
         [HttpGet("reviewOrder")]
         [Authorize]
-        public async Task<ActionResult<ReviewOrderResultDTO?>> ReviewOrder()
+        public async Task<ActionResult<ReviewOrderResultDTO?>> ReviewOrder([FromBody] AddOrderDTO addOrderDTO)
         {
             Console.WriteLine("OrdersController.ReviewOrder() called.");
 
-            // calls InternalOrdersService > IInternalAccountsService & IInternalCartsService > IInternalAccountsHttpDataProvider & IInternalCartsHttpDataProvider
-            // await LogIdentityInformation();
             string? ownerId = User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
             if (ownerId == null) throw new InvalidUserCredentitalsException($"User identity information unavailable. Unauthorized access to restricted resource.");
 
-            CancellationTokenSource tokenSource = new CancellationTokenSource();
+            using (CancellationTokenSource tokenSource = new CancellationTokenSource())
+            {
+                var result = await _orderService.ReviewOrderAsync(addOrderDTO, ownerId, tokenSource.Token);
 
-            // REFACTOR TO USE _internalOrdersService.ReviewOrderAsync()
-            var result = await _orderService.ReviewOrderAsync(ownerId, tokenSource.Token);
-            // var result = await _externalOrderService.ReviewOrderAsync(ownerId, tokenSource.Token);
-            if (result.IsSuccess)
-            {
-                return Ok(result.ReviewDTO);
-            }
-            else
-            {
-                return BadRequest(result.ErrorMessage);
+                if (result.IsSuccess)
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    return BadRequest(result);
+                }
             }
         }
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> PostOrder(AddOrderDTO addOrderDTO)
+        public async Task<IActionResult> PostOrder([FromBody] AddOrderDTO addOrderDTO)
         {
             // await LogIdentityInformation();
             string? ownerId = User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;

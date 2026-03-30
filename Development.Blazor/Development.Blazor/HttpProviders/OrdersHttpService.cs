@@ -43,12 +43,13 @@ namespace Development.Blazor.HttpProviders
             }
         }
 
-        public async Task<(bool IsSuccess, ReviewOrderResultDTO? ReviewOrderResult, string? ErrorMessage)> ReviewOrderAsync(string? token = null)
+        public async Task<(bool IsSuccess, ReviewOrderResultDTO? ReviewOrderResult, string? ErrorMessage)> ReviewOrderAsync(AddOrderDTO addOrderDTO, string? token = null)
         {
             string uri = $"{StaticData.OrdersHttpClient_OrdersPath}/reviewOrder";
             var client = _httpClientFactory.CreateClient(StaticData.OrdersHttpClient_ClientName);
 
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
+            request.Content = new StringContent(JsonSerializer.Serialize(addOrderDTO), Encoding.UTF8, "application/json");
             HttpResponseMessage response = await client.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
