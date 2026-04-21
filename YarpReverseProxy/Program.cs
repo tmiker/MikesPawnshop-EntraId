@@ -22,6 +22,7 @@ var builder = WebApplication.CreateBuilder(args);
 //                Window = TimeSpan.FromMinutes(1)
 //            }));
 //});
+
 // 2. Named Rate Limiting Policy to be added to specific endpoints or globally (see yarp_notes.txt):
 builder.Services.AddRateLimiter(options =>
 {
