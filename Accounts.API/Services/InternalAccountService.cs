@@ -45,10 +45,12 @@ namespace Accounts.API.Services
 
             // GET KEYS FOR DECRYPTION OF ENCRYPTED OWNERID 
             string publicAndPrivateKeys = _rsaKeyContainerManager.GetPublicAndPrivateKeyForContainerWithName(requestDTO.KeyContainerName);
-            _logger.LogInformation("*** {this}: Public and Private Keys retrieved using container name: {keys} ***", this.GetType().Name, publicAndPrivateKeys);   // *** DEV ONLY REMOVE *** //
-                                                                                                                                                                   // DECRYPT ENCRYPTED OWNERID 
+            // _logger.LogInformation("*** {this}: Public and Private Keys retrieved using RSA key container. Keys: {keys} ***", this.GetType().Name, publicAndPrivateKeys);   // *** DEV ONLY REMOVE *** //
+            _logger.LogInformation("*** {this}: Public and Private Keys retrieved using RSA key container named: {keycontainername} ***", this.GetType().Name, requestDTO.KeyContainerName);
+
+            // DECRYPT ENCRYPTED OWNERID 
             string decryptedOwnerId = _rsaEncryptor.DecryptUsingRsaXmlString(requestDTO.EncryptedOwnerId, publicAndPrivateKeys);
-            _logger.LogInformation("*** {this}: Decrypted OwnerId using RSA decryption keys. Decrypted OwnerId: {did} ***", this.GetType().Name, decryptedOwnerId); // *** DEV ONLY REMOVE *** //
+            // _logger.LogInformation("*** {this}: Decrypted OwnerId using RSA decryption keys. Decrypted OwnerId: {did} ***", this.GetType().Name, decryptedOwnerId); // *** DEV ONLY REMOVE *** //
 
             _rsaKeyContainerManager.DeleteKeyFromContainer(requestDTO.KeyContainerName);
 
@@ -56,10 +58,13 @@ namespace Accounts.API.Services
             {
                 accountStatusResponse.IsSuccess = false;
                 accountStatusResponse.Errors.Add("Unable to validate credentials.");
+                _logger.LogInformation("*** {this}: Unable to obtain valid user credentials from decrypted OwnerId using RSA decryption keys. ***", this.GetType().Name); 
                 return accountStatusResponse;
             }
             else
             {
+                _logger.LogInformation("*** {this}: Decrypted OwnerId successfully obtained using RSA decryption keys. ***", this.GetType().Name); 
+
                 Account? account = await _accounts.Find(a => a.OwnerId == decryptedOwnerId).FirstOrDefaultAsync();
 
                 accountStatusResponse.Status = account != null ? account.AccountStatus : null;
