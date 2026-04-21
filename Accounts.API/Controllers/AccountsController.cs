@@ -23,6 +23,36 @@ namespace Accounts.API.Controllers
             _mapper = mapper;
         }
 
+        [HttpPost("testCreateAccount")]
+        [AllowAnonymous]
+        public async Task<IActionResult> TestCreateAccount()
+        {
+            AddressDTO addressDTO = new AddressDTO()
+            {
+                IsPrimaryBilling = true,
+                IsPrimaryShipping = true,
+                Street1 = "123 Main St",
+                Street2 = "Apt 4B",
+                City = "Anytown",
+                State = "TX",
+                PostalCode = "12345"
+            };
+            AddAccountDTO addAccountDTO = new AddAccountDTO()
+            {
+                FirstName = "Test",
+                LastName = "User",
+                Email = "testuser@somemail.com",
+                PhoneNumber = "123-456-7890",
+                Addresses = new List<AddressDTO>() { addressDTO }
+            };
+            string? ownerId = "testOwnerId";
+            if (ownerId == null) throw new InvalidUserCredentitalsException($"User identity information unavailable. Unauthorized access to restricted resource.");
+
+            var result = await _accountService.CreateAccountAsync(ownerId, addAccountDTO);
+            if (result.IsSuccess) return NoContent();
+            return BadRequest(result.ErrorMessage);
+        }
+
         [HttpGet("accountEstablished")]
         [Authorize]
         public async Task<ActionResult<bool>> AccountIsEstablished()
