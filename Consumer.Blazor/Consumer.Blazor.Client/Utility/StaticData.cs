@@ -2,10 +2,47 @@
 {
     public class StaticData
     {
-        // NOTE: This client accesses API Resources through the YARP Reverse Proxy.
+        /// NOTE: This client accesses API Resources through the YARP Reverse Proxy.
+        /// 
+        /// DOWNSTREAM API SERVICES
+        public const string ProductsReadApiService_Name = "ProductsReadApiService";
+        // public const string ProductsReadApiService_LocalBaseURL = "http s://localhost:7101";         // local without YARP
+        public const string ProductsReadApiService_LocalBaseURL = "https://localhost:7245";             // local YARP
+        // public const string ProductsReadApiService_AzureBaseURL = "pending";
+        public const string ProductsReadApiService_ProductsPath = "/api/products";
+        public const string ProductsReadApiService_DevTestsPath = "/api/products/devTests";
+        public const string ProductsReadApiService_GetApiUserInfoSubpath = "/getApiUserInfo";
 
+        public const string CartsApiService_ClientName = "CartsApiService";
+        // public const string CartsApiService_LocalBaseURL = "https://localhost:7184";       // without YARP
+        public const string CartsApiService_LocalBaseURL = "https://localhost:7245";          // YARP
+        // public const string CartsApiService_AzureBaseURL = "pending";
+        public const string CartsApiService_CartsPath = "/api/carts";
+        public const string CartsApiService_DevTestsPath = "/api/carts/devTests";
+        public const string CartsApiService_GetApiUserInfoSubpath = "/getApiUserInfo";
+
+        public const string AccountsApiService_ClientName = "AccountsApiService";
+        // public const string AccountsApiService_LocalBaseURL = "https://localhost:7033";        // without YARP
+        public const string AccountsApiService_LocalBaseURL = "https://localhost:7245";           // YARP
+        // public const string AccountsApiService_AzureBaseURL = "pending";
+        public const string AccountsApiService_AccountsPath = "/api/accounts";
+        public const string AccountsApiService_DevTestsPath = "/api/accounts/devTests";
+        public const string AccountsApiService_GetApiUserInfoSubpath = "/getApiUserInfo";
+
+        public const string OrdersApiService_ClientName = "OrdersApiService";
+        // public const string OrdersApiService_LocalBaseURL = "https://localhost:7019";        // without YARP
+        public const string OrdersApiService_LocalBaseURL = "https://localhost:7245";           // YARP
+        // public const string OrdersApiService_AzureBaseURL = "pending";
+        public const string OrdersApiService_OrdersPath = "/api/orders";
+        public const string OrdersApiService_DevTestsPath = "/api/orders/devTests";
+        public const string OrdersApiService_GetApiUserInfoSubpath = "/getApiUserInfo";
+
+
+
+
+        /// HTTP SERVICES
         public const string ProductsReadHttpClient_ClientName = "ProductsReadHttpClient";
-        // public const string ProductsReadHttpClient_BaseURL = "https://localhost:7101";
+        // public const string ProductsReadHttpClient_BaseURL = "https://localhost:7101";       
         public const string ProductsReadHttpClient_BaseURL = "https://localhost:7245";          // YARP
         public const string ProductsReadHttpClient_ProductsPath = "/api/products";
         public const string ProductsReadHttpClient_DevTestsPath = "/api/products/devTests";
