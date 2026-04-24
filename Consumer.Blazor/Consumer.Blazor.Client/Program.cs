@@ -1,6 +1,7 @@
 using Consumer.Blazor.Client;
 using Consumer.Blazor.Client.Abstractions;
 using Consumer.Blazor.Client.Services;
+using Consumer.Blazor.Client.Utility;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
@@ -10,7 +11,7 @@ builder.Services.AddKeyedScoped<HttpClient>("LocalConsumerWasmClient",
     (sp, key) =>
        new HttpClient
        {
-           BaseAddress = new Uri(builder.Configuration["LocalConsumerWasmClientBaseAddress"] ??
+           BaseAddress = new Uri(StaticData.WasmClient_LocalApiBaseAddress ??                    // new Uri(builder.Configuration["LocalConsumerWasmClientBaseAddress"] ??
                 throw new Exception("LocalConsumerWasmClient BaseAddress is missing."))
        });
 

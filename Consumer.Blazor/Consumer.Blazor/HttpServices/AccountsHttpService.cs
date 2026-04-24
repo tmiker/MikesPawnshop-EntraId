@@ -19,11 +19,10 @@ namespace Consumer.Blazor.HttpServices
             _logger = logger;
         }
 
-        public async Task<(bool IsSuccess, string? ErrorMessage)> AccountIsEstablished(string? token = null)
+        public async Task<(bool IsSuccess, string? ErrorMessage)> AccountIsEstablished()
         {
             string uri = $"{StaticData.AccountsHttpClient_AccountsPath}/accountEstablished";
             var client = _httpClientFactory.CreateClient(StaticData.AccountsHttpClient_ClientName);
-            if (!string.IsNullOrWhiteSpace(token)) client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
             HttpResponseMessage response = await client.SendAsync(request);
@@ -38,11 +37,10 @@ namespace Consumer.Blazor.HttpServices
             }
         }
 
-        public async Task<(bool IsSuccess, AccountDTO? Account, string? ErrorMessage)> GetAccountAsync(string? token = null)
+        public async Task<(bool IsSuccess, AccountDTO? Account, string? ErrorMessage)> GetAccountAsync()
         {
             string uri = $"{StaticData.AccountsHttpClient_AccountsPath}";
             var client = _httpClientFactory.CreateClient(StaticData.AccountsHttpClient_ClientName);
-            if (!string.IsNullOrWhiteSpace(token)) client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
             HttpResponseMessage response = await client.SendAsync(request);
@@ -64,11 +62,10 @@ namespace Consumer.Blazor.HttpServices
             }
         }
 
-        public async Task<(bool IsSuccess, string? ErrorMessage)> CreateAccountAsync(AddAccountDTO addAccountDTO, string? token = null)
+        public async Task<(bool IsSuccess, string? ErrorMessage)> CreateAccountAsync(AddAccountDTO addAccountDTO)
         {
             string uri = $"{StaticData.AccountsHttpClient_AccountsPath}";
             var client = _httpClientFactory.CreateClient(StaticData.AccountsHttpClient_ClientName);
-            // if (!string.IsNullOrWhiteSpace(token)) client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, uri);
             request.Content = new StringContent(JsonSerializer.Serialize(addAccountDTO), Encoding.UTF8, "application/json");
@@ -85,11 +82,10 @@ namespace Consumer.Blazor.HttpServices
             }
         }
 
-        public async Task<(bool IsSuccess, string? ErrorMessage)> AddAddressAsync(AddAddressDTO addAddressDTO, string? token = null)
+        public async Task<(bool IsSuccess, string? ErrorMessage)> AddAddressAsync(AddAddressDTO addAddressDTO)
         {
             string uri = $"{StaticData.AccountsHttpClient_AccountsPath}/addAddress";
             var client = _httpClientFactory.CreateClient(StaticData.AccountsHttpClient_ClientName);
-            if (!string.IsNullOrWhiteSpace(token)) client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, uri);
             request.Content = new StringContent(JsonSerializer.Serialize(addAddressDTO), Encoding.UTF8, "application/json");

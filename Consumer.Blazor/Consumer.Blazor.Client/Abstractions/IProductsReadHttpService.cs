@@ -6,7 +6,7 @@ namespace Consumer.Blazor.Client.Abstractions
 {
     public interface IProductsReadHttpService
     {
-        IAsyncEnumerable<ProductDTO> StreamProductsAsync();
+        // IAsyncEnumerable<ProductDTO> StreamProductsAsync();
         Task<(bool IsSuccess, IEnumerable<ProductDTO>? Products, string? ErrorMessage)> GetProductsAsync();
         Task<(bool IsSuccess, IEnumerable<ProductSummaryDTO>? ProductSummaries, string? ErrorMessage)> GetProductSummariesAsync();
         Task<(bool IsSuccess, IEnumerable<ProductDTO>? Products, PaginationMetadata? PagingData, DateTime? FetchTime, string? ErrorMessage)> GetPagedAndFilteredProductsAsync(string? filter, string? category, string? sortColumn, int pageNumber = 1, int pageSize = 10);

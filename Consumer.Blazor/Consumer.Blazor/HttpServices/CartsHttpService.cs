@@ -17,11 +17,10 @@ namespace Consumer.Blazor.HttpServices
             _logger = logger;
         }
 
-        public async Task<(bool IsSuccess, int CartItemQuantity, string? ErrorMessage)> AddNewCartItemAsync(AddShoppingCartItemDTO addShoppingCartItemDTO, string? token = null)
+        public async Task<(bool IsSuccess, int CartItemQuantity, string? ErrorMessage)> AddNewCartItemAsync(AddShoppingCartItemDTO addShoppingCartItemDTO)
         {
             string uri = $"{StaticData.CartsHttpClient_CartsPath}/items";
             var client = _httpClientFactory.CreateClient(StaticData.CartsHttpClient_ClientName);
-            // if (!string.IsNullOrWhiteSpace(token)) client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, uri);
             request.Content = new StringContent(JsonSerializer.Serialize(addShoppingCartItemDTO), Encoding.UTF8, "application/json");
@@ -41,11 +40,10 @@ namespace Consumer.Blazor.HttpServices
 
         // [HttpPut("items")]
         // public async Task<IActionResult> UpdateProductQuantity(string productId, int amount)
-        public async Task<(bool IsSuccess, string? ErrorMessage)> UpdateProductQuantityAsync(string aggregateId, int amount, string? token = null)
+        public async Task<(bool IsSuccess, string? ErrorMessage)> UpdateProductQuantityAsync(string aggregateId, int amount)
         {
             string uri = $"{StaticData.CartsHttpClient_CartsPath}/items?aggregateId={aggregateId}&amount={amount}";
             var client = _httpClientFactory.CreateClient(StaticData.CartsHttpClient_ClientName);
-            // if (!string.IsNullOrWhiteSpace(token)) client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, uri);
             HttpResponseMessage response = await client.SendAsync(request);
@@ -63,11 +61,10 @@ namespace Consumer.Blazor.HttpServices
 
         // [HttpDelete("items")]
         // public async Task<IActionResult> RemoveCartItem(string productId)
-        public async Task<(bool IsSuccess, string? ErrorMessage)> RemoveCartItemAsync(string aggregateId, string? token = null)
+        public async Task<(bool IsSuccess, string? ErrorMessage)> RemoveCartItemAsync(string aggregateId)
         {
             string uri = $"{StaticData.CartsHttpClient_CartsPath}/items?aggregateId={aggregateId}";
             var client = _httpClientFactory.CreateClient(StaticData.CartsHttpClient_ClientName);
-            // if (!string.IsNullOrWhiteSpace(token)) client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, uri);
             HttpResponseMessage response = await client.SendAsync(request);
@@ -85,11 +82,10 @@ namespace Consumer.Blazor.HttpServices
 
         // [HttpGet]
         // public async Task<ActionResult<ShoppingCartDTO?>> GetShoppingCart()
-        public async Task<(bool IsSuccess, ShoppingCartDTO? ShoppingCart, string? ErrorMessage)> GetShoppingCartAsync(string? token = null)
+        public async Task<(bool IsSuccess, ShoppingCartDTO? ShoppingCart, string? ErrorMessage)> GetShoppingCartAsync()
         {
             string uri = $"{StaticData.CartsHttpClient_CartsPath}";
             var client = _httpClientFactory.CreateClient(StaticData.CartsHttpClient_ClientName);
-            // if (!string.IsNullOrWhiteSpace(token)) client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
             HttpResponseMessage response = await client.SendAsync(request);
@@ -108,11 +104,10 @@ namespace Consumer.Blazor.HttpServices
 
         // [HttpDelete]
         //public async Task<IActionResult> RemoveShoppingCart()
-        public async Task<(bool IsSuccess, string? ErrorMessage)> RemoveShoppingCartAsync(string? token = null)
+        public async Task<(bool IsSuccess, string? ErrorMessage)> RemoveShoppingCartAsync()
         {
             string uri = $"{StaticData.CartsHttpClient_CartsPath}";
             var client = _httpClientFactory.CreateClient(StaticData.CartsHttpClient_ClientName);
-            // if (!string.IsNullOrWhiteSpace(token)) client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, uri);
             HttpResponseMessage response = await client.SendAsync(request);

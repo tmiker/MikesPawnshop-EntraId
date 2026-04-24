@@ -20,7 +20,7 @@ namespace Consumer.Blazor.HttpServices
             _logger = logger;
         }
 
-        public async Task<(bool IsSuccess, ReviewOrderResultDTO? ReviewOrderResult, string? ErrorMessage)> ReviewOrderAsync(string? token = null)
+        public async Task<(bool IsSuccess, ReviewOrderResultDTO? ReviewOrderResult, string? ErrorMessage)> ReviewOrderAsync()
         {
             string uri = $"{StaticData.OrdersHttpClient_OrdersPath}/reviewOrder";
             var client = _httpClientFactory.CreateClient(StaticData.OrdersHttpClient_ClientName);
@@ -40,11 +40,10 @@ namespace Consumer.Blazor.HttpServices
             }
         }
 
-        public async Task<(bool IsSuccess, string? OrderId, string? ErrorMessage)> SubmitOrderAsync(AddOrderDTO addOrderDTO, string? token = null)
+        public async Task<(bool IsSuccess, string? OrderId, string? ErrorMessage)> SubmitOrderAsync(AddOrderDTO addOrderDTO)
         {
             string uri = $"{StaticData.OrdersHttpClient_OrdersPath}";
             var client = _httpClientFactory.CreateClient(StaticData.OrdersHttpClient_ClientName);
-            if (!string.IsNullOrWhiteSpace(token)) client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, uri);
             request.Content = new StringContent(JsonSerializer.Serialize(addOrderDTO), Encoding.UTF8, "application/json");

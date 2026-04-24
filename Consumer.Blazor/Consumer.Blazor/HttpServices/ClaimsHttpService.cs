@@ -16,7 +16,7 @@ namespace Consumer.Blazor.HttpServices
             _logger = logger;
         }
 
-        public async Task<(bool IsSuccess, ApiUserInfoDTO? ApiUserInfo, string? ErrorMessage)> GetAccountsApiUserInfoAsync(string? token = null)
+        public async Task<(bool IsSuccess, ApiUserInfoDTO? ApiUserInfo, string? ErrorMessage)> GetAccountsApiUserInfoAsync()
         {
             string uri = $"{StaticData.AccountsHttpClient_DevTestsPath}{StaticData.AccountsHttpClient_GetApiUserInfoSubpath}";
             var client = _httpClientFactory.CreateClient(StaticData.AccountsHttpClient_ClientName);
@@ -36,7 +36,7 @@ namespace Consumer.Blazor.HttpServices
             }
         }
 
-        public async Task<(bool IsSuccess, ApiUserInfoDTO? ApiUserInfo, string? ErrorMessage)> GetCartsApiUserInfoAsync(string? token = null)
+        public async Task<(bool IsSuccess, ApiUserInfoDTO? ApiUserInfo, string? ErrorMessage)> GetCartsApiUserInfoAsync()
         {
             string uri = $"{StaticData.CartsHttpClient_DevTestsPath}{StaticData.CartsHttpClient_GetApiUserInfoSubpath}";
             var client = _httpClientFactory.CreateClient(StaticData.CartsHttpClient_ClientName);
@@ -57,7 +57,7 @@ namespace Consumer.Blazor.HttpServices
             }
         }
 
-        public async Task<(bool IsSuccess, ApiUserInfoDTO? ApiUserInfo, string? ErrorMessage)> GetOrdersApiUserInfoAsync(string? token = null)
+        public async Task<(bool IsSuccess, ApiUserInfoDTO? ApiUserInfo, string? ErrorMessage)> GetOrdersApiUserInfoAsync()
         {
             string uri = $"{StaticData.OrdersHttpClient_DevTestsPath}{StaticData.OrdersHttpClient_GetApiUserInfoSubpath}";
             Debug.WriteLine($"GET API USER INFO URI: {uri}");
@@ -79,7 +79,7 @@ namespace Consumer.Blazor.HttpServices
             }
         }
 
-        public async Task<(bool IsSuccess, ApiUserInfoDTO? ApiUserInfo, string? ErrorMessage)> GetProductsReadApiUserInfoAsync(string? token = null)
+        public async Task<(bool IsSuccess, ApiUserInfoDTO? ApiUserInfo, string? ErrorMessage)> GetProductsReadApiUserInfoAsync()
         {
             string uri = $"{StaticData.ProductsReadHttpClient_DevTestsPath}{StaticData.ProductsReadHttpClient_GetApiUserInfoSubpath}";
             var client = _httpClientFactory.CreateClient(StaticData.ProductsReadHttpClient_ClientName);
