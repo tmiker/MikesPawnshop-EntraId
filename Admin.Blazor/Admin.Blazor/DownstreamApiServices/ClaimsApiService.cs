@@ -1,28 +1,33 @@
 ﻿using Admin.Blazor.Client.Abstractions;
 using Admin.Blazor.Client.DTOs.Claims;
 using Admin.Blazor.Client.Utility;
+using Microsoft.Identity.Abstractions;
 using System.Diagnostics;
 
-namespace Admin.Blazor.HttpServices
+namespace Admin.Blazor.DownstreamApiServices
 {
-    public class ClaimsHttpService : IClaimsHttpService
+    public class ClaimsApiService : IClaimsHttpService
     {
-        private readonly IHttpClientFactory _httpClientFactory;
-        private readonly ILogger<ClaimsHttpService> _logger;
+        private readonly IDownstreamApi _downstreamApi;
+        private readonly ILogger<ClaimsApiService> _logger;
 
-        public ClaimsHttpService(IHttpClientFactory httpClientFactory, ILogger<ClaimsHttpService> logger)
+        public ClaimsApiService(IDownstreamApi downstreamApi, ILogger<ClaimsApiService> logger)
         {
-            _httpClientFactory = httpClientFactory;
+            _downstreamApi = downstreamApi;
             _logger = logger;
         }
 
         public async Task<(bool IsSuccess, ApiUserInfoDTO? ApiUserInfo, string? ErrorMessage)> GetAccountsApiUserInfoAsync()
         {
-            string uri = $"{StaticData.AccountsHttpClient_DevTestsPath}{StaticData.AccountsHttpClient_GetApiUserInfoSubpath}";
-            var client = _httpClientFactory.CreateClient(StaticData.AccountsHttpClient_ClientName);
+            string uri = $"{StaticData.AccountsApiService_DevTestsPath}{StaticData.AccountsApiService_GetApiUserInfoSubpath}";
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
-            HttpResponseMessage response = await client.SendAsync(request);
+            var response = await _downstreamApi.CallApiForAppAsync(
+                serviceName: StaticData.AccountsApiService_ServiceName,
+                downstreamApiOptionsOverride: options =>
+                {
+                    options.HttpMethod = "GET";
+                    options.RelativePath = uri;
+                });
 
             if (response.IsSuccessStatusCode)
             {
@@ -38,11 +43,16 @@ namespace Admin.Blazor.HttpServices
 
         public async Task<(bool IsSuccess, ApiUserInfoDTO? ApiUserInfo, string? ErrorMessage)> GetCartsApiUserInfoAsync()
         {
-            string uri = $"{StaticData.CartsHttpClient_DevTestsPath}{StaticData.CartsHttpClient_GetApiUserInfoSubpath}";
-            var client = _httpClientFactory.CreateClient(StaticData.CartsHttpClient_ClientName);
+            string uri = $"{StaticData.CartsApiService_DevTestsPath}{StaticData.CartsApiService_GetApiUserInfoSubpath}";
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
-            HttpResponseMessage response = await client.SendAsync(request);
+
+            var response = await _downstreamApi.CallApiForAppAsync(
+                serviceName: StaticData.CartsApiService_ServiceName,
+                downstreamApiOptionsOverride: options =>
+                {
+                    options.HttpMethod = "GET";
+                    options.RelativePath = uri;
+                });
 
             if (response.IsSuccessStatusCode)
             {
@@ -58,13 +68,15 @@ namespace Admin.Blazor.HttpServices
 
         public async Task<(bool IsSuccess, ApiUserInfoDTO? ApiUserInfo, string? ErrorMessage)> GetOrdersApiUserInfoAsync()
         {
-            string uri = $"{StaticData.OrdersHttpClient_DevTestsPath}{StaticData.OrdersHttpClient_GetApiUserInfoSubpath}";
-            Debug.WriteLine($"GET API USER INFO URI: {uri}");
-            var client = _httpClientFactory.CreateClient(StaticData.OrdersHttpClient_ClientName);
+            string uri = $"{StaticData.OrdersApiService_DevTestsPath}{StaticData.OrdersApiService_GetApiUserInfoSubpath}";
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
-            Debug.WriteLine($"GET API USER INFO REQUEST URI: {request.RequestUri}");
-            HttpResponseMessage response = await client.SendAsync(request);
+            var response = await _downstreamApi.CallApiForAppAsync(
+                serviceName: StaticData.OrdersApiService_ServiceName,
+                downstreamApiOptionsOverride: options =>
+                {
+                    options.HttpMethod = "GET";
+                    options.RelativePath = uri;
+                });
 
             if (response.IsSuccessStatusCode)
             {
@@ -80,11 +92,15 @@ namespace Admin.Blazor.HttpServices
 
         public async Task<(bool IsSuccess, ApiUserInfoDTO? ApiUserInfo, string? ErrorMessage)> GetProductsReadApiUserInfoAsync()
         {
-            string uri = $"{StaticData.ProductsReadHttpClient_DevTestsPath}{StaticData.ProductsReadHttpClient_GetApiUserInfoSubpath}";
-            var client = _httpClientFactory.CreateClient(StaticData.ProductsReadHttpClient_ClientName);
+            string uri = $"{StaticData.ProductsReadApiService_DevTestsPath}{StaticData.ProductsReadApiService_GetApiUserInfoSubpath}";
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
-            HttpResponseMessage response = await client.SendAsync(request);
+            var response = await _downstreamApi.CallApiForAppAsync(
+                serviceName: StaticData.ProductsReadApiService_ServiceName,
+                downstreamApiOptionsOverride: options =>
+                {
+                    options.HttpMethod = "GET";
+                    options.RelativePath = uri;
+                });
 
             if (response.IsSuccessStatusCode)
             {
@@ -100,11 +116,15 @@ namespace Admin.Blazor.HttpServices
 
         public async Task<(bool IsSuccess, ApiUserInfoDTO? ApiUserInfo, string? ErrorMessage)> GetProductsWriteApiUserInfoAsync()
         {
-            string uri = $"{StaticData.ProductsWriteHttpClient_DevTestsPath}{StaticData.ProductsWriteHttpClient_GetApiUserInfoSubpath}";
-            var client = _httpClientFactory.CreateClient(StaticData.ProductsWriteHttpClient_ClientName);
+            string uri = $"{StaticData.ProductsWriteApiService_DevTestsPath}{StaticData.ProductsWriteApiService_GetApiUserInfoSubpath}";
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
-            HttpResponseMessage response = await client.SendAsync(request);
+            var response = await _downstreamApi.CallApiForAppAsync(
+                serviceName: StaticData.ProductsWriteApiService_ServiceName,
+                downstreamApiOptionsOverride: options =>
+                {
+                    options.HttpMethod = "GET";
+                    options.RelativePath = uri;
+                });
 
             if (response.IsSuccessStatusCode)
             {

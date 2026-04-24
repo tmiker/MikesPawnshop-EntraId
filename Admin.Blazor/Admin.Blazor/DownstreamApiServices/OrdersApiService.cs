@@ -4,58 +4,65 @@ using Admin.Blazor.Client.DTOs.Health;
 using Admin.Blazor.Client.DTOs.Orders;
 using Admin.Blazor.Client.Paging;
 using Admin.Blazor.Client.Utility;
+using Microsoft.Identity.Abstractions;
 using System.Text;
 using System.Text.Json;
 
-namespace Admin.Blazor.HttpServices
+namespace Admin.Blazor.DownstreamApiServices
 {
-    public class OrdersHttpService : IOrdersHttpService
+    public class OrdersApiService : IOrdersHttpService
     {
-        private readonly IHttpClientFactory _httpClientFactory;
-        private readonly ILogger<OrdersHttpService> _logger;
+        private readonly IDownstreamApi _downstreamApi;
+        private readonly ILogger<OrdersApiService> _logger;
         private static JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true, WriteIndented = true };
 
-        public OrdersHttpService(IHttpClientFactory httpClientFactory, ILogger<OrdersHttpService> logger)
+        public OrdersApiService(IDownstreamApi downstreamApi, ILogger<OrdersApiService> logger)
         {
-            _httpClientFactory = httpClientFactory;
+            _downstreamApi = downstreamApi;
             _logger = logger;
         }
 
         public async Task<(bool IsSuccess, HealthCheckResultDTO? HealthCheckResultDTO, string? ErrorMessage)> CheckHealthAsync()
         {
-            //string uri = $"{StaticData.AccountsHttpClient_AccountsPath}/health";
-            //var client = _httpClientFactory.CreateClient(StaticData.AccountsHttpClient_ClientName);
-            string uri = $"{StaticData.OrdersHttpClient_OrdersPath}/healthClient";
-            var client = _httpClientFactory.CreateClient(StaticData.OrdersHttpClient_ClientName);
-
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
-            HttpResponseMessage response = await client.SendAsync(request);
+            string uri = $"{StaticData.OrdersApiService_OrdersPath}/healthClient";
 
             try
             {
+                var response = await _downstreamApi.CallApiForUserAsync(
+                    serviceName: StaticData.OrdersApiService_ServiceName,
+                    downstreamApiOptionsOverride: options =>
+                    {
+                        options.HttpMethod = "GET";
+                        options.RelativePath = uri;
+                    });
+
                 response.EnsureSuccessStatusCode();
                 var resultDTO = await response.Content.ReadFromJsonAsync<HealthCheckResultDTO>(_jsonSerializerOptions);
                 if (resultDTO is not null)
                 {
-                    _logger.LogInformation($"OrdersHttpService CheckHealthAsync() at path '{request.RequestUri}' Result: \n{JsonSerializer.Serialize(resultDTO)}");
+                    _logger.LogInformation("OrdersApiService CheckHealthAsync() at path '{uri}' Result: \n{resultDTO}", uri, JsonSerializer.Serialize(resultDTO));
                     return (true, resultDTO, null);
                 }
                 else return (false, null, "Health check result DTO is null.");
             }
             catch (Exception ex)
             {
-                _logger.LogError($"OrdersHttpService CheckHealthAsync() at path '{request.RequestUri}' Exception: {ex.Message}");
+                _logger.LogError("OrdersApiService CheckHealthAsync() at path '{uri}' Exception: {ex.Message}", uri, ex.Message);
                 return (false, null, ex.Message);
             }
         }
 
         public async Task<AccountStatusResponseDTO> GetAccountStatusAsync()
         {
-            string uri = $"{StaticData.OrdersHttpClient_OrdersPath}/accountStatus";
-            var client = _httpClientFactory.CreateClient(StaticData.OrdersHttpClient_ClientName);
+            string uri = $"{StaticData.OrdersApiService_OrdersPath}/accountStatus";
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
-            HttpResponseMessage response = await client.SendAsync(request);
+            var response = await _downstreamApi.CallApiForUserAsync(
+                    serviceName: StaticData.OrdersApiService_ServiceName,
+                    downstreamApiOptionsOverride: options =>
+                    {
+                        options.HttpMethod = "GET";
+                        options.RelativePath = uri;
+                    });
 
             if (response.IsSuccessStatusCode)
             {
@@ -71,11 +78,15 @@ namespace Admin.Blazor.HttpServices
 
         public async Task<(bool IsSuccess, ReviewOrderResultDTO? ReviewOrderResult, string? ErrorMessage)> ReviewOrderAsync()
         {
-            string uri = $"{StaticData.OrdersHttpClient_OrdersPath}/reviewOrder";
-            var client = _httpClientFactory.CreateClient(StaticData.OrdersHttpClient_ClientName);
+            string uri = $"{StaticData.OrdersApiService_OrdersPath}/reviewOrder";
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
-            HttpResponseMessage response = await client.SendAsync(request);
+            var response = await _downstreamApi.CallApiForUserAsync(
+                    serviceName: StaticData.OrdersApiService_ServiceName,
+                    downstreamApiOptionsOverride: options =>
+                    {
+                        options.HttpMethod = "GET";
+                        options.RelativePath = uri;
+                    });
 
             if (response.IsSuccessStatusCode)
             {
@@ -91,12 +102,18 @@ namespace Admin.Blazor.HttpServices
 
         public async Task<(bool IsSuccess, string? OrderId, string? ErrorMessage)> SubmitOrderAsync(AddOrderDTO addOrderDTO)
         {
-            string uri = $"{StaticData.OrdersHttpClient_OrdersPath}";
-            var client = _httpClientFactory.CreateClient(StaticData.OrdersHttpClient_ClientName);
+            string uri = $"{StaticData.OrdersApiService_OrdersPath}";
+            var stringContent = new StringContent(JsonSerializer.Serialize(addOrderDTO), Encoding.UTF8, "application/json");
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, uri);
-            request.Content = new StringContent(JsonSerializer.Serialize(addOrderDTO), Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await client.SendAsync(request);
+            var response = await _downstreamApi.CallApiForUserAsync(
+                    serviceName: StaticData.OrdersApiService_ServiceName,
+                    downstreamApiOptionsOverride: options =>
+                    {
+                        options.HttpMethod = "POST";
+                        options.RelativePath = uri;
+                    },
+                    user: null,
+                    content: stringContent);
 
             if (response.IsSuccessStatusCode)
             {
@@ -113,12 +130,15 @@ namespace Admin.Blazor.HttpServices
         public async Task<(bool IsSuccess, IEnumerable<OrderDTO>? OrderDTOs, PaginationMetadata? PagingData, string? ErrorMessage)> GetAllUserOrdersAsync(
             string? filter = null, string? sortColumn = null, string? sortOrder = null, int pageNumber = 1, int pageSize = 10)
         {
-            string uri = $"{StaticData.OrdersHttpClient_OrdersPath}?filter={filter}&sortColumn={sortColumn}&sortOrder={sortOrder}&pageNumber={pageNumber}&pageSize={pageSize}";
+            string uri = $"{StaticData.OrdersApiService_OrdersPath}?filter={filter}&sortColumn={sortColumn}&sortOrder={sortOrder}&pageNumber={pageNumber}&pageSize={pageSize}";
 
-            var client = _httpClientFactory.CreateClient(StaticData.OrdersHttpClient_ClientName);
-
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
-            HttpResponseMessage response = await client.SendAsync(request);
+            var response = await _downstreamApi.CallApiForUserAsync(
+                    serviceName: StaticData.OrdersApiService_ServiceName,
+                    downstreamApiOptionsOverride: options =>
+                    {
+                        options.HttpMethod = "GET";
+                        options.RelativePath = uri;
+                    });
 
             if (response.IsSuccessStatusCode)
             {
@@ -134,11 +154,15 @@ namespace Admin.Blazor.HttpServices
 
         public async Task<(bool IsSuccess, OrderDTO? OrderDTO, string? ErrorMessage)> GetOrderByOrderIdAsync(string orderId)
         {
-            string uri = $"{StaticData.OrdersHttpClient_OrdersPath}/{orderId}";
-            var client = _httpClientFactory.CreateClient(StaticData.OrdersHttpClient_ClientName);
+            string uri = $"{StaticData.OrdersApiService_OrdersPath}/{orderId}";
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
-            HttpResponseMessage response = await client.SendAsync(request);
+            var response = await _downstreamApi.CallApiForUserAsync(
+                    serviceName: StaticData.OrdersApiService_ServiceName,
+                    downstreamApiOptionsOverride: options =>
+                    {
+                        options.HttpMethod = "GET";
+                        options.RelativePath = uri;
+                    });
 
             if (response.IsSuccessStatusCode)
             {

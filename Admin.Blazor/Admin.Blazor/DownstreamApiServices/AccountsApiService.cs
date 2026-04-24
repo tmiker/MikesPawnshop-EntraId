@@ -2,56 +2,65 @@
 using Admin.Blazor.Client.DTOs.Accounts;
 using Admin.Blazor.Client.DTOs.Health;
 using Admin.Blazor.Client.Utility;
+using Microsoft.Identity.Abstractions;
 using System.Text;
 using System.Text.Json;
 
-namespace Admin.Blazor.HttpServices
+namespace Admin.Blazor.DownstreamApiServices
 {
-    public class AccountsHttpService : IAccountsHttpService
+    public class AccountsApiService : IAccountsHttpService
     {
-        private readonly IHttpClientFactory _httpClientFactory;
-        private readonly ILogger<AccountsHttpService> _logger;
+        private readonly IDownstreamApi _downstreamApi;
+        private readonly ILogger<AccountsApiService> _logger;
         private static JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true, WriteIndented = true };
 
-        public AccountsHttpService(IHttpClientFactory httpClientFactory, ILogger<AccountsHttpService> logger)
+        public AccountsApiService(IDownstreamApi downstreamApi, ILogger<AccountsApiService> logger)
         {
-            _httpClientFactory = httpClientFactory;
+            _downstreamApi = downstreamApi;
             _logger = logger;
         }
 
         public async Task<(bool IsSuccess, HealthCheckResultDTO? HealthCheckResultDTO, string? ErrorMessage)> CheckHealthAsync()
         {
-            string uri = $"{StaticData.AccountsHttpClient_AccountsPath}/healthClient";
-            var client = _httpClientFactory.CreateClient(StaticData.AccountsHttpClient_ClientName);
-
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
-            HttpResponseMessage response = await client.SendAsync(request);
+            string uri = $"{StaticData.AccountsApiService_AccountsPath}/healthClient";
 
             try
             {
+                var response = await _downstreamApi.CallApiForUserAsync(
+                serviceName: StaticData.AccountsApiService_ServiceName,
+                downstreamApiOptionsOverride: options =>
+                {
+                    options.HttpMethod = "GET";
+                    options.RelativePath = uri;
+                });
+            
                 response.EnsureSuccessStatusCode();
                 var resultDTO = await response.Content.ReadFromJsonAsync<HealthCheckResultDTO>(_jsonSerializerOptions);
                 if (resultDTO is not null)
                 {
-                    _logger.LogInformation($"AccountsHttpService CheckHealthAsync() at path '{request.RequestUri}' Result: \n{JsonSerializer.Serialize(resultDTO)}");
+                    _logger.LogInformation("AccountsApiService CheckHealthAsync() at path '{uri}' Result: \n{resultDTO}", uri, JsonSerializer.Serialize(resultDTO));
                     return (true, resultDTO, null);
                 }
                 else return (false, null, "Health check result DTO is null.");
             }
             catch (Exception ex)
             {
-                _logger.LogError($"AccountsHttpService CheckHealthAsync() at path '{request.RequestUri}' Exception: {ex.Message}");
+                _logger.LogError("AccountsApiService CheckHealthAsync() at path '{uri}' Exception: {ex.Message}", uri, ex.Message);
                 return (false, null, ex.Message);
             }
         }
 
         public async Task<(bool IsSuccess, string? ErrorMessage)> AccountIsEstablishedAsync()
         {
-            string uri = $"{StaticData.AccountsHttpClient_AccountsPath}/accountEstablished";
-            var client = _httpClientFactory.CreateClient(StaticData.AccountsHttpClient_ClientName);
+            string uri = $"{StaticData.AccountsApiService_AccountsPath}/accountEstablished";
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
-            HttpResponseMessage response = await client.SendAsync(request);
+            var response = await _downstreamApi.CallApiForUserAsync(
+                serviceName: StaticData.AccountsApiService_ServiceName,
+                downstreamApiOptionsOverride: options =>
+                {
+                    options.HttpMethod = "GET";
+                    options.RelativePath = uri;
+                });
 
             if (response.IsSuccessStatusCode)
             {
@@ -65,19 +74,26 @@ namespace Admin.Blazor.HttpServices
 
         public async Task<(bool IsSuccess, AccountDTO? Account, string? ErrorMessage)> GetAccountAsync()
         {
-            string uri = $"{StaticData.AccountsHttpClient_AccountsPath}";
-            var client = _httpClientFactory.CreateClient(StaticData.AccountsHttpClient_ClientName);
+            string uri = $"{StaticData.AccountsApiService_AccountsPath}";
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
-            HttpResponseMessage response = await client.SendAsync(request);
+            var response = await _downstreamApi.CallApiForUserAsync(
+                serviceName: StaticData.AccountsApiService_ServiceName,
+                downstreamApiOptionsOverride: options =>
+                {
+                    options.HttpMethod = "GET";
+                    options.RelativePath = uri;
+                });
 
             if (response.IsSuccessStatusCode)
             {
                 AccountDTO? accountDTO = await response.Content.ReadFromJsonAsync<AccountDTO>();
                 if (accountDTO is not null)
                 {
-                    string jsonAccount = JsonSerializer.Serialize(accountDTO);
-                    Console.WriteLine($"\n************\nAccountsHttpService GetAccountAsync() result: \n{jsonAccount}\n************\n");
+                    _logger.LogInformation("Account retrieved successfully for user first name {accountDTO.FirstName}", accountDTO.FirstName);
+                }
+                else
+                {
+                    _logger.LogWarning("Unable to retrieve the Account data for the current user.");
                 }
                 return (true, accountDTO, null);
             }
@@ -90,12 +106,18 @@ namespace Admin.Blazor.HttpServices
 
         public async Task<(bool IsSuccess, string? ErrorMessage)> CreateAccountAsync(AddAccountDTO addAccountDTO)
         {
-            string uri = $"{StaticData.AccountsHttpClient_AccountsPath}";
-            var client = _httpClientFactory.CreateClient(StaticData.AccountsHttpClient_ClientName);
+            string uri = $"{StaticData.AccountsApiService_AccountsPath}";
+            var stringContent = new StringContent(JsonSerializer.Serialize(addAccountDTO), Encoding.UTF8, "application/json");
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, uri);
-            request.Content = new StringContent(JsonSerializer.Serialize(addAccountDTO), Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await client.SendAsync(request);
+            var response = await _downstreamApi.CallApiForUserAsync(
+                serviceName: StaticData.AccountsApiService_ServiceName,
+                downstreamApiOptionsOverride: options =>
+                {
+                    options.HttpMethod = "POST";
+                    options.RelativePath = uri;
+                },
+                user: null,
+                content: stringContent);
 
             if (response.IsSuccessStatusCode)
             {
@@ -110,12 +132,18 @@ namespace Admin.Blazor.HttpServices
 
         public async Task<(bool IsSuccess, string? ErrorMessage)> AddAddressAsync(AddAddressDTO addAddressDTO)
         {
-            string uri = $"{StaticData.AccountsHttpClient_AccountsPath}/addAddress";
-            var client = _httpClientFactory.CreateClient(StaticData.AccountsHttpClient_ClientName);
+            string uri = $"{StaticData.AccountsApiService_AccountsPath}/addAddress";
+            var stringContent = new StringContent(JsonSerializer.Serialize(addAddressDTO), Encoding.UTF8, "application/json");
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, uri);
-            request.Content = new StringContent(JsonSerializer.Serialize(addAddressDTO), Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await client.SendAsync(request);
+            var response = await _downstreamApi.CallApiForUserAsync(
+                serviceName: StaticData.AccountsApiService_ServiceName,
+                downstreamApiOptionsOverride: options =>
+                {
+                    options.HttpMethod = "PUT";
+                    options.RelativePath = uri;
+                },
+                user: null,
+                content: stringContent);
 
             if (response.IsSuccessStatusCode)
             {
@@ -138,4 +166,3 @@ namespace Admin.Blazor.HttpServices
             return errorMessage;
         }
     }
-}

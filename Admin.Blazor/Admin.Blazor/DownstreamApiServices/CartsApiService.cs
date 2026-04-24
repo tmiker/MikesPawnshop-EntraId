@@ -2,58 +2,68 @@
 using Admin.Blazor.Client.DTOs.Carts;
 using Admin.Blazor.Client.DTOs.Health;
 using Admin.Blazor.Client.Utility;
-using System.Net.Http.Headers;
+using Microsoft.Identity.Abstractions;
 using System.Text;
 using System.Text.Json;
 
-namespace Admin.Blazor.HttpServices
+namespace Admin.Blazor.DownstreamApiServices
 {
-    public class CartsHttpService : ICartsHttpService
+    public class CartsApiService : ICartsHttpService
     {
-        private readonly IHttpClientFactory _httpClientFactory;
-        private readonly ILogger<CartsHttpService> _logger;
+        private readonly IDownstreamApi _downstreamApi;
+        private readonly ILogger<CartsApiService> _logger;
         private static JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true, WriteIndented = true };
 
-        public CartsHttpService(IHttpClientFactory httpClientFactory, ILogger<CartsHttpService> logger)
+        public CartsApiService(IDownstreamApi downstreamApi, ILogger<CartsApiService> logger)
         {
-            _httpClientFactory = httpClientFactory;
+            _downstreamApi = downstreamApi;
             _logger = logger;
         }
 
         public async Task<(bool IsSuccess, HealthCheckResultDTO? HealthCheckResultDTO, string? ErrorMessage)> CheckHealthAsync()
         {
-            string uri = $"{StaticData.CartsHttpClient_CartsPath}/healthClient";
-            var client = _httpClientFactory.CreateClient(StaticData.CartsHttpClient_ClientName);
-
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
-            HttpResponseMessage response = await client.SendAsync(request);
+            string uri = $"{StaticData.CartsApiService_CartsPath}/healthClient";
 
             try
             {
+                var response = await _downstreamApi.CallApiForUserAsync(
+                serviceName: StaticData.CartsApiService_ServiceName,
+                downstreamApiOptionsOverride: options =>
+                {
+                    options.HttpMethod = "GET";
+                    options.RelativePath = uri;
+                });
+
                 response.EnsureSuccessStatusCode();
                 var resultDTO = await response.Content.ReadFromJsonAsync<HealthCheckResultDTO>(_jsonSerializerOptions);
                 if (resultDTO is not null)
                 {
-                    _logger.LogInformation($"CartsHttpService CheckHealthAsync() at path '{request.RequestUri}' Result: \n{JsonSerializer.Serialize(resultDTO)}");
+                    _logger.LogInformation("CartsApiService CheckHealthAsync() at path '{uri}' Result: \n{resultDTO}", uri, JsonSerializer.Serialize(resultDTO));
                     return (true, resultDTO, null);
                 }
                 else return (false, null, "Health check result DTO is null.");
             }
             catch (Exception ex)
             {
-                _logger.LogError($"CartsHttpService CheckHealthAsync() at path '{request.RequestUri}' Exception: {ex.Message}");
+                _logger.LogError("CartsApiService CheckHealthAsync() at path '{uri}' Exception: {ex.Message}", uri, ex.Message);
                 return (false, null, ex.Message);
             }
         }
 
         public async Task<(bool IsSuccess, int CartItemQuantity, string? ErrorMessage)> AddNewCartItemAsync(AddShoppingCartItemDTO addShoppingCartItemDTO)
         {
-            string uri = $"{StaticData.CartsHttpClient_CartsPath}/items";
-            var client = _httpClientFactory.CreateClient(StaticData.CartsHttpClient_ClientName);
+            string uri = $"{StaticData.CartsApiService_CartsPath}/items";
+            var stringContent = new StringContent(JsonSerializer.Serialize(addShoppingCartItemDTO), Encoding.UTF8, "application/json");
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, uri);
-            request.Content = new StringContent(JsonSerializer.Serialize(addShoppingCartItemDTO), Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await client.SendAsync(request);
+            var response = await _downstreamApi.CallApiForUserAsync(
+                serviceName: StaticData.CartsApiService_ServiceName,
+                downstreamApiOptionsOverride: options =>
+                {
+                    options.HttpMethod = "POST";
+                    options.RelativePath = uri;
+                },
+                user: null,
+                content: stringContent);
 
             if (response.IsSuccessStatusCode)
             {
@@ -67,15 +77,17 @@ namespace Admin.Blazor.HttpServices
             }
         }
 
-        // [HttpPut("items")]
-        // public async Task<IActionResult> UpdateProductQuantity(string productId, int amount)
         public async Task<(bool IsSuccess, string? ErrorMessage)> UpdateProductQuantityAsync(string aggregateId, int amount)
         {
-            string uri = $"{StaticData.CartsHttpClient_CartsPath}/items?aggregateId={aggregateId}&amount={amount}";
-            var client = _httpClientFactory.CreateClient(StaticData.CartsHttpClient_ClientName);
+            string uri = $"{StaticData.CartsApiService_CartsPath}/items?aggregateId={aggregateId}&amount={amount}";
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, uri);
-            HttpResponseMessage response = await client.SendAsync(request);
+            var response = await _downstreamApi.CallApiForUserAsync(
+                serviceName: StaticData.CartsApiService_ServiceName,
+                downstreamApiOptionsOverride: options =>
+                {
+                    options.HttpMethod = "PUT";
+                    options.RelativePath = uri;
+                });
 
             if (response.IsSuccessStatusCode)
             {
@@ -88,15 +100,17 @@ namespace Admin.Blazor.HttpServices
             }
         }
 
-        // [HttpDelete("items")]
-        // public async Task<IActionResult> RemoveCartItem(string productId)
         public async Task<(bool IsSuccess, string? ErrorMessage)> RemoveCartItemAsync(string aggregateId)
         {
-            string uri = $"{StaticData.CartsHttpClient_CartsPath}/items?aggregateId={aggregateId}";
-            var client = _httpClientFactory.CreateClient(StaticData.CartsHttpClient_ClientName);
+            string uri = $"{StaticData.CartsApiService_CartsPath}/items?aggregateId={aggregateId}";
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, uri);
-            HttpResponseMessage response = await client.SendAsync(request);
+            var response = await _downstreamApi.CallApiForUserAsync(
+                serviceName: StaticData.CartsApiService_ServiceName,
+                downstreamApiOptionsOverride: options =>
+                {
+                    options.HttpMethod = "DELETE";
+                    options.RelativePath = uri;
+                });
 
             if (response.IsSuccessStatusCode)
             {
@@ -113,11 +127,15 @@ namespace Admin.Blazor.HttpServices
         // public async Task<ActionResult<ShoppingCartDTO?>> GetShoppingCart()
         public async Task<(bool IsSuccess, ShoppingCartDTO? ShoppingCart, string? ErrorMessage)> GetShoppingCartAsync()
         {
-            string uri = $"{StaticData.CartsHttpClient_CartsPath}";
-            var client = _httpClientFactory.CreateClient(StaticData.CartsHttpClient_ClientName);
+            string uri = $"{StaticData.CartsApiService_CartsPath}";
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
-            HttpResponseMessage response = await client.SendAsync(request);
+            var response = await _downstreamApi.CallApiForUserAsync(
+                serviceName: StaticData.CartsApiService_ServiceName,
+                downstreamApiOptionsOverride: options =>
+                {
+                    options.HttpMethod = "GET";
+                    options.RelativePath = uri;
+                });
 
             if (response.IsSuccessStatusCode)
             {
@@ -131,15 +149,17 @@ namespace Admin.Blazor.HttpServices
             }
         }
 
-        // [HttpDelete]
-        //public async Task<IActionResult> RemoveShoppingCart()
         public async Task<(bool IsSuccess, string? ErrorMessage)> RemoveShoppingCartAsync()
         {
-            string uri = $"{StaticData.CartsHttpClient_CartsPath}";
-            var client = _httpClientFactory.CreateClient(StaticData.CartsHttpClient_ClientName);
+            string uri = $"{StaticData.CartsApiService_CartsPath}";
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, uri);
-            HttpResponseMessage response = await client.SendAsync(request);
+            var response = await _downstreamApi.CallApiForUserAsync(
+                serviceName: StaticData.CartsApiService_ServiceName,
+                downstreamApiOptionsOverride: options =>
+                {
+                    options.HttpMethod = "DELETE";
+                    options.RelativePath = uri;
+                });
 
             if (response.IsSuccessStatusCode) return (true, null);
             else

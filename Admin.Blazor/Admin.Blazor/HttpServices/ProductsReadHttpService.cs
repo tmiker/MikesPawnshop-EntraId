@@ -5,7 +5,6 @@ using Admin.Blazor.Client.DTOs.Products.Test;
 using Admin.Blazor.Client.ErrorHandling;
 using Admin.Blazor.Client.Paging;
 using Admin.Blazor.Client.Utility;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 
