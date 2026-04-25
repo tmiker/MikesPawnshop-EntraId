@@ -11,7 +11,7 @@
         public const string ProductsReadApiService_ServiceName = "ProductsReadApiService";
         // public const string ProductsReadApiService_LocalBaseURL = "http s://localhost:7101";         // local without YARP
         public const string ProductsReadApiService_LocalBaseURL = "https://localhost:7245";             // local YARP
-        // public const string ProductsReadApiService_AzureBaseURL = "pending";
+        // public const string ProductsReadApiService_AzureBaseURL = "pending";                         // Azure deployed YARP
         public const string ProductsReadApiService_ProductsPath = "/api/products";
         public const string ProductsReadApiService_DevTestsPath = "/api/products/devTests";
         public const string ProductsReadApiService_GetApiUserInfoSubpath = "/getApiUserInfo";

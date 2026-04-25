@@ -33,7 +33,7 @@ namespace Admin.Blazor.DownstreamApiServices
                     options.HttpMethod = "GET";
                     options.RelativePath = uri;
                 });
-            
+
                 response.EnsureSuccessStatusCode();
                 var resultDTO = await response.Content.ReadFromJsonAsync<HealthCheckResultDTO>(_jsonSerializerOptions);
                 if (resultDTO is not null)
@@ -166,3 +166,4 @@ namespace Admin.Blazor.DownstreamApiServices
             return errorMessage;
         }
     }
+}

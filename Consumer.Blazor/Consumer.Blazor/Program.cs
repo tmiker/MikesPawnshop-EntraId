@@ -79,7 +79,6 @@ builder.Services.AddScoped<AuthenticationStateProvider, PersistingAuthentication
 /// DUENDE OIDC AUTH CONFIG START
 
 /// MS ENTRA ID AUTH CONFIG START
-
 // Configure authentication to use Microsoft Entra ID
 JsonWebTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
@@ -154,7 +153,6 @@ builder.Services.Configure<MsalDistributedTokenCacheAdapterOptions>(
         options.Encrypt = true;                                     // Encrypt tokens at rest default: false
         //options.SlidingExpiration = TimeSpan.FromHours(1);        // Sliding Expiration default: 1 hour
     });
-
 /// MS ENTRA ID AUTH CONFIG END
 
 builder.Services.AddAuthorization(options =>

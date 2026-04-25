@@ -16,7 +16,7 @@ namespace Accounts.API.Services
         public AccountService(IMongoSettings mongoSettings, IAccountDataMapper mapper, ILogger<AccountService> logger)
         {
             var client = new MongoClient(mongoSettings.MongoLocalConnection);
-            // var client = new MongoClient(mongoSettings.MongoAzureConnection);
+            // var client = new MongoClient(mongoSettings.MongoAzureConnection);  // SHOULD MOVE FROM APP SETTINGS TO SECRETS
             var database = client.GetDatabase(mongoSettings.Database);
             _accounts = database.GetCollection<Account>(mongoSettings.AccountCollection);
             _mapper = mapper;

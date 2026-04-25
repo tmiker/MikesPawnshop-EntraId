@@ -4,6 +4,7 @@ using Admin.Blazor.Client.Mappers;
 using Admin.Blazor.Client.Services;
 using Admin.Blazor.Client.Utility;
 using Admin.Blazor.Components;
+using Admin.Blazor.DownstreamApiServices;
 using Admin.Blazor.HttpServices;
 using Duende.AccessTokenManagement.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication;
@@ -11,6 +12,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Web;
+using Microsoft.Identity.Web.TokenCacheProviders.Distributed;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Net.Http.Headers;
@@ -27,49 +30,133 @@ builder.Services.AddRazorComponents()
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingAuthenticationStateProvider>();
 
-//// Duende Access Token Management
-builder.Services.AddDistributedMemoryCache();   // to store tokens
-builder.Services.AddOpenIdConnectAccessTokenManagement();   // decorate http client with handler
+///// DUENDE AUTH CONFIG START
+////// Duende Access Token Management
+//builder.Services.AddDistributedMemoryCache();   // to store tokens
+//builder.Services.AddOpenIdConnectAccessTokenManagement();   // decorate http client with handler
 
-//// Configure Auth
+////// Configure Auth
 
+//JsonWebTokenHandler.DefaultInboundClaimTypeMap.Clear();
+//builder.Services.AddAuthentication(options =>
+//{
+//    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+//    options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;    
+//}).AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, oidcOptions => 
+//{
+//    oidcOptions.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+//    oidcOptions.Authority = "https://localhost:5001";
+//    oidcOptions.ResponseType = OpenIdConnectResponseType.Code;
+//    oidcOptions.UsePkce = true;
+//    oidcOptions.ClientId = "adminBlazorServer";
+//    oidcOptions.ClientSecret = builder.Configuration["AuthenticationSettings:IdentityProviderClientSecret"];
+//    oidcOptions.Scope.Add(OpenIdConnectScope.OpenIdProfile);
+//    // oidcOptions.Scope.Add(OpenIdConnectScope.OfflineAccess);
+//    oidcOptions.Scope.Add("roles");
+//    oidcOptions.Scope.Add("cartsapi.fullaccess");
+//    oidcOptions.Scope.Add("productsreadapi.fullaccess");
+//    oidcOptions.Scope.Add("productswriteapi.fullaccess");
+//    oidcOptions.Scope.Add("accountsapi.fullaccess");
+//    oidcOptions.Scope.Add("ordersapi.fullaccess");
+//    oidcOptions.CallbackPath = new PathString("/signin-oidc");
+//    oidcOptions.SignedOutCallbackPath = new PathString("/signout-callback-oidc");
+//    oidcOptions.GetClaimsFromUserInfoEndpoint = true;
+//    oidcOptions.MapInboundClaims = false;
+//    // Mapped claim args are claim type in incoming token, claim type in users claims list
+//    oidcOptions.ClaimActions.MapJsonKey("role", "role");    // can have more than one claim of the type
+//    // oidcOptions.ClaimActions.MapUniqueJsonKey("employeeId", "employeeId");  // if single instance of claim type
+//    oidcOptions.TokenValidationParameters.NameClaimType = JwtRegisteredClaimNames.Name;
+//    oidcOptions.TokenValidationParameters.RoleClaimType = "role";
+//    oidcOptions.SaveTokens = true;
+//    // oidcOptions.EventsType = typeof(CustomTokenStorageOidcEvents);
+
+//}).AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+//{
+//    options.AccessDeniedPath = "/AccessDenied";
+//});
+///// DUENDE AUTH CONFIG END
+///
+/// MS ENTRA ID AUTH CONFIG START
+// Configure authentication to use Microsoft Entra ID
 JsonWebTokenHandler.DefaultInboundClaimTypeMap.Clear();
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;    
-}).AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, oidcOptions => 
-{
-    oidcOptions.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    oidcOptions.Authority = "https://localhost:5001";
-    oidcOptions.ResponseType = OpenIdConnectResponseType.Code;
-    oidcOptions.UsePkce = true;
-    oidcOptions.ClientId = "adminBlazorServer";
-    oidcOptions.ClientSecret = builder.Configuration["AuthenticationSettings:IdentityProviderClientSecret"];
-    oidcOptions.Scope.Add(OpenIdConnectScope.OpenIdProfile);
-    // oidcOptions.Scope.Add(OpenIdConnectScope.OfflineAccess);
-    oidcOptions.Scope.Add("roles");
-    oidcOptions.Scope.Add("cartsapi.fullaccess");
-    oidcOptions.Scope.Add("productsreadapi.fullaccess");
-    oidcOptions.Scope.Add("productswriteapi.fullaccess");
-    oidcOptions.Scope.Add("accountsapi.fullaccess");
-    oidcOptions.Scope.Add("ordersapi.fullaccess");
-    oidcOptions.CallbackPath = new PathString("/signin-oidc");
-    oidcOptions.SignedOutCallbackPath = new PathString("/signout-callback-oidc");
-    oidcOptions.GetClaimsFromUserInfoEndpoint = true;
-    oidcOptions.MapInboundClaims = false;
-    // Mapped claim args are claim type in incoming token, claim type in users claims list
-    oidcOptions.ClaimActions.MapJsonKey("role", "role");    // can have more than one claim of the type
-    // oidcOptions.ClaimActions.MapUniqueJsonKey("employeeId", "employeeId");  // if single instance of claim type
-    oidcOptions.TokenValidationParameters.NameClaimType = JwtRegisteredClaimNames.Name;
-    oidcOptions.TokenValidationParameters.RoleClaimType = "role";
-    oidcOptions.SaveTokens = true;
-    // oidcOptions.EventsType = typeof(CustomTokenStorageOidcEvents);
 
-}).AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
-{
-    options.AccessDeniedPath = "/AccessDenied";
-});
+builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApp(msIdentityOptions =>
+    {
+        msIdentityOptions.Authority = "https://login.microsoftonline.com/2fd80906-88f0-4874-8d94-1d87e82053f7/v2.0";
+
+        msIdentityOptions.CallbackPath = "/signin-oidc";                        // for local development
+        //// msIdentityOptions.CallbackPath = "https://ubiquitous-hudta7feejabdyew.centralus-01.azurewebsites.net/.auth/login/aad/callback";    // wasn't used
+        // msIdentityOptions.CallbackPath = "/.auth/login/aad/callback";        // for azure hosted
+
+
+        msIdentityOptions.SignedOutCallbackPath = "/signout-callback-oidc";             // for local development
+        //// msIdentityOptions.SignedOutCallbackPath = "https://ubiquitous-hudta7feejabdyew.centralus-01.azurewebsites.net/.auth/logout/aad/callback";      // wasn't used
+        // msIdentityOptions.SignedOutCallbackPath = "/.auth/logout/aad/callback";      // for azure hosted
+
+        // msIdentityOptions.ClientId = builder.Configuration["MicrosoftIdentity:ClientId"];                   // Application (client) ID for this blazor app";
+        msIdentityOptions.ClientId = builder.Configuration["AZURE_CREDENTIALS_CLIENT_ID"];                // for azure deploy
+
+        // msIdentityOptions.ClientSecret = builder.Configuration["MicrosoftIdentity:ClientSecret"];
+        msIdentityOptions.ClientSecret = builder.Configuration["AZURE_CREDENTIALS_CLIENT_SECRET"];        // for azure deploy
+
+        // msIdentityOptions.Domain = builder.Configuration["MicrosoftIdentity:Domain"];                       //  { DIRECTORY (tenant) NAME}.onmicrosoft.com";
+        msIdentityOptions.Domain = builder.Configuration["AZURE_CREDENTIALS_DOMAIN"];                    // for azure deploy
+
+        msIdentityOptions.Instance = "https://login.microsoftonline.com/";
+        msIdentityOptions.ResponseType = "code";
+
+        // msIdentityOptions.TenantId = builder.Configuration["MicrosoftIdentity:TenantId"];
+        msIdentityOptions.TenantId = builder.Configuration["AZURE_CREDENTIALS_TENANT_ID"];                // for azure deploy
+
+        msIdentityOptions.GetClaimsFromUserInfoEndpoint = true;
+        msIdentityOptions.MapInboundClaims = false;
+        msIdentityOptions.TokenValidationParameters.NameClaimType = JwtRegisteredClaimNames.Name;
+        msIdentityOptions.TokenValidationParameters.RoleClaimType = "roles";
+        msIdentityOptions.SaveTokens = true;
+        msIdentityOptions.AccessDeniedPath = new PathString("/AccessDenied");
+
+    })
+    .EnableTokenAcquisitionToCallDownstreamApi()
+    .AddDownstreamApi(StaticData.AccountsApiService_ServiceName, configOptions =>              // api name
+    {
+        configOptions.BaseUrl = StaticData.AccountsApiService_LocalBaseURL;                    // api base url
+        // configOptions.BaseUrl = StaticData.AccountsApiService_AzureBaseURL;
+        configOptions.Scopes = [builder.Configuration["ACCOUNTS_API_SCOPE"]!];                 // Note: scope shows in api access token, not client identity token
+    })
+    .AddDownstreamApi(StaticData.CartsApiService_ServiceName, configOptions =>
+    {
+        configOptions.BaseUrl = StaticData.CartsApiService_LocalBaseURL;
+        configOptions.Scopes = [builder.Configuration["CARTS_API_SCOPE"]!];
+    })
+    .AddDownstreamApi(StaticData.OrdersApiService_ServiceName, configOptions =>
+    {
+        configOptions.BaseUrl = StaticData.OrdersApiService_LocalBaseURL;
+        configOptions.Scopes = [builder.Configuration["ORDERS_API_SCOPE"]!];
+    })
+    .AddDownstreamApi(StaticData.ProductsReadApiService_ServiceName, configOptions =>
+    {
+        configOptions.BaseUrl = StaticData.ProductsReadApiService_LocalBaseURL;
+        configOptions.Scopes = [builder.Configuration["PRODUCTS_READ_API_SCOPE"]!];
+    })
+    .AddDownstreamApi(StaticData.ProductsWriteApiService_ServiceName, configOptions =>
+    {
+        configOptions.BaseUrl = StaticData.ProductsWriteApiService_LocalBaseURL;
+        configOptions.Scopes = [builder.Configuration["PRODUCTS_WRITE_API_SCOPE"]!];
+    })
+    .AddDistributedTokenCaches();
+
+builder.Services.AddDistributedMemoryCache();
+
+builder.Services.Configure<MsalDistributedTokenCacheAdapterOptions>(
+    options =>
+    {
+        //options.DisableL1Cache = false;                           // Disable L1 Cache default: false
+        //options.L1CacheOptions.SizeLimit = 500 * 1024 * 1024;     // L1 Cache Size Limit default: 500 MB
+        options.Encrypt = true;                                     // Encrypt tokens at rest default: false
+        //options.SlidingExpiration = TimeSpan.FromHours(1);        // Sliding Expiration default: 1 hour
+    });
+/// MS ENTRA ID AUTH CONFIG END
 
 builder.Services.AddAuthorization(options =>
 {
@@ -80,44 +167,51 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("DomesticDogs", policy => policy.RequireClaim("Genus", "Canis").RequireClaim("Species", "Familiaris"));
 });
 
-// HTTP Clients
-builder.Services.AddHttpClient(name: StaticData.ProductsReadHttpClient_ClientName, configureClient: config =>
-{
-    config.BaseAddress = new Uri(StaticData.ProductsReadHttpClient_BaseURL);
-    config.DefaultRequestHeaders.Clear();
-    config.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-}).AddUserAccessTokenHandler();
-builder.Services.AddSingleton<IProductsReadHttpService, ProductsReadHttpService>();
-builder.Services.AddHttpClient(name: StaticData.ProductsWriteHttpClient_ClientName, configureClient: config =>
-{
-    config.BaseAddress = new Uri(StaticData.ProductsWriteHttpClient_BaseURL);
-    config.DefaultRequestHeaders.Clear();
-    config.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-}).AddUserAccessTokenHandler();
-builder.Services.AddSingleton<IProductsWriteHttpService, ProductsWriteHttpService>();
-builder.Services.AddHttpClient(name: StaticData.CartsHttpClient_ClientName, configureClient: config =>
-{
-    config.BaseAddress = new Uri(StaticData.CartsHttpClient_BaseURL);
-    config.DefaultRequestHeaders.Clear();
-    config.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-}).AddUserAccessTokenHandler();
-builder.Services.AddSingleton<ICartsHttpService, CartsHttpService>();
-builder.Services.AddHttpClient(name: StaticData.AccountsHttpClient_ClientName, configureClient: config =>
-{
-    config.BaseAddress = new Uri(StaticData.AccountsHttpClient_BaseURL);
-    config.DefaultRequestHeaders.Clear();
-    config.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-}).AddUserAccessTokenHandler();
-builder.Services.AddSingleton<IAccountsHttpService, AccountsHttpService>();
-builder.Services.AddHttpClient(name: StaticData.OrdersHttpClient_ClientName, configureClient: config =>
-{
-    config.BaseAddress = new Uri(StaticData.OrdersHttpClient_BaseURL);
-    config.DefaultRequestHeaders.Clear();
-    config.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-}).AddUserAccessTokenHandler();
-builder.Services.AddSingleton<IOrdersHttpService, OrdersHttpService>();
+// Downstream API Services
+builder.Services.AddSingleton<IProductsReadHttpService, ProductsReadApiService>();
+builder.Services.AddSingleton<IProductsWriteHttpService, ProductsWriteApiService>();
+builder.Services.AddSingleton<ICartsHttpService, CartsApiService>();
+builder.Services.AddSingleton<IAccountsHttpService, AccountsApiService>();
+builder.Services.AddSingleton<IOrdersHttpService, OrdersApiService>();
+builder.Services.AddSingleton<IClaimsHttpService, ClaimsApiService>();
 
-builder.Services.AddSingleton<IClaimsHttpService, ClaimsHttpService>();
+// HTTP Clients
+//builder.Services.AddHttpClient(name: StaticData.ProductsReadHttpClient_ClientName, configureClient: config =>
+//{
+//    config.BaseAddress = new Uri(StaticData.ProductsReadHttpClient_BaseURL);
+//    config.DefaultRequestHeaders.Clear();
+//    config.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+//}).AddUserAccessTokenHandler();
+//builder.Services.AddSingleton<IProductsReadHttpService, ProductsReadHttpService>();
+//builder.Services.AddHttpClient(name: StaticData.ProductsWriteHttpClient_ClientName, configureClient: config =>
+//{
+//    config.BaseAddress = new Uri(StaticData.ProductsWriteHttpClient_BaseURL);
+//    config.DefaultRequestHeaders.Clear();
+//    config.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+//}).AddUserAccessTokenHandler();
+//builder.Services.AddSingleton<IProductsWriteHttpService, ProductsWriteHttpService>();
+//builder.Services.AddHttpClient(name: StaticData.CartsHttpClient_ClientName, configureClient: config =>
+//{
+//    config.BaseAddress = new Uri(StaticData.CartsHttpClient_BaseURL);
+//    config.DefaultRequestHeaders.Clear();
+//    config.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+//}).AddUserAccessTokenHandler();
+//builder.Services.AddSingleton<ICartsHttpService, CartsHttpService>();
+//builder.Services.AddHttpClient(name: StaticData.AccountsHttpClient_ClientName, configureClient: config =>
+//{
+//    config.BaseAddress = new Uri(StaticData.AccountsHttpClient_BaseURL);
+//    config.DefaultRequestHeaders.Clear();
+//    config.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+//}).AddUserAccessTokenHandler();
+//builder.Services.AddSingleton<IAccountsHttpService, AccountsHttpService>();
+//builder.Services.AddHttpClient(name: StaticData.OrdersHttpClient_ClientName, configureClient: config =>
+//{
+//    config.BaseAddress = new Uri(StaticData.OrdersHttpClient_BaseURL);
+//    config.DefaultRequestHeaders.Clear();
+//    config.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+//}).AddUserAccessTokenHandler();
+//builder.Services.AddSingleton<IOrdersHttpService, OrdersHttpService>();
+//builder.Services.AddSingleton<IClaimsHttpService, ClaimsHttpService>();
 
 // Services
 builder.Services.AddScoped<IOrderMapper, OrderMapper>();

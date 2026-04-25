@@ -75,23 +75,42 @@ try
     builder.Services.AddProblemDetails();
 
     // Configure Auth
-    JsonWebTokenHandler.DefaultInboundClaimTypeMap.Clear(); // Note: As configured, Roles are not populated by HttpContext.User.Claims without this
-    builder.Services.AddAuthentication(defaultScheme: JwtBearerDefaults.AuthenticationScheme)
-        .AddJwtBearer(options =>
-        {
-            options.Authority = "https://localhost:5001";
-            options.Audience = "productsreadapi";
-            options.TokenValidationParameters = new TokenValidationParameters()
-            {
-                NameClaimType = "given_name",       // should have the same mapping as in client app
-                RoleClaimType = "role",             // should have the same mapping as in our client mvc app
-                ValidTypes = new[] { "at+jwt" }     // says the only valid token type is 'at + jwt' 
-                                                    //ValidateIssuer = true,
-                                                    //ValidateAudience = true,
-                                                    //ValidateLifetime = true
-            };
+    //// DUENDE AUTH CONFIG
+    //JsonWebTokenHandler.DefaultInboundClaimTypeMap.Clear(); // Note: As configured, Roles are not populated by HttpContext.User.Claims without this
+    //builder.Services.AddAuthentication(defaultScheme: JwtBearerDefaults.AuthenticationScheme)
+    //    .AddJwtBearer(options =>
+    //    {
+    //        options.Authority = "https://localhost:5001";
+    //        options.Audience = "productsreadapi";
+    //        options.TokenValidationParameters = new TokenValidationParameters()
+    //        {
+    //            NameClaimType = "given_name",       // should have the same mapping as in client app
+    //            RoleClaimType = "role",             // should have the same mapping as in our client mvc app
+    //            ValidTypes = new[] { "at+jwt" }     // says the only valid token type is 'at + jwt' 
+    //                                                //ValidateIssuer = true,
+    //                                                //ValidateAudience = true,
+    //                                                //ValidateLifetime = true
+    //        };
 
-        });
+    //    });
+    // MS ENTRA ID AUTH CONFIG
+    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        // Authority should match the issurer (`iss`) of the JWT returned by the identity provider.
+        options.Authority = builder.Configuration["AZURE_CREDENTIALS_AUTHORITY"];
+        // Audience is this API's Application ID URI
+        options.Audience = builder.Configuration["AZURE_CREDENTIALS_AUDIENCE"];
+        options.MapInboundClaims = false;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            // make sure claims are mapped consistently
+            NameClaimType = JwtRegisteredClaimNames.Name,
+            RoleClaimType = "roles",                                                // roles plural to match Entra Id implementation of roles
+            ValidIssuer = builder.Configuration["AZURE_CREDENTIALS_VALID_ISSUER"]
+            // Validate ...
+        };
+    });
 
     builder.Services.AddAuthorization(options =>
     {
@@ -160,6 +179,8 @@ try
     app.UseAuthorization();
 
     app.MapControllers();
+
+    app.MapGet("/", () => "Hello, his is the Products.Read API.");
 
     // YARP healthcheck endpoint
     app.MapHealthChecks("/api/products/healthYarp", new HealthCheckOptions
