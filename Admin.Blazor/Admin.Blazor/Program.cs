@@ -165,12 +165,12 @@ builder.Services.AddAuthorization(options =>
 });
 
 // Downstream API Services
-builder.Services.AddSingleton<IProductsReadHttpService, ProductsReadApiService>();
-builder.Services.AddSingleton<IProductsWriteHttpService, ProductsWriteApiService>();
-builder.Services.AddSingleton<ICartsHttpService, CartsApiService>();
-builder.Services.AddSingleton<IAccountsHttpService, AccountsApiService>();
-builder.Services.AddSingleton<IOrdersHttpService, OrdersApiService>();
-builder.Services.AddSingleton<IClaimsHttpService, ClaimsApiService>();
+builder.Services.AddScoped<IProductsReadHttpService, ProductsReadApiService>();
+builder.Services.AddScoped<IProductsWriteHttpService, ProductsWriteApiService>();
+builder.Services.AddScoped<ICartsHttpService, CartsApiService>();
+builder.Services.AddScoped<IAccountsHttpService, AccountsApiService>();
+builder.Services.AddScoped<IOrdersHttpService, OrdersApiService>();
+builder.Services.AddScoped<IClaimsHttpService, ClaimsApiService>();
 
 // HTTP Clients
 //builder.Services.AddHttpClient(name: StaticData.ProductsReadHttpClient_ClientName, configureClient: config =>
