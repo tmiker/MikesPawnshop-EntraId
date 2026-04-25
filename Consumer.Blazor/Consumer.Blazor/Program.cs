@@ -88,12 +88,9 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
         msIdentityOptions.Authority = "https://login.microsoftonline.com/2fd80906-88f0-4874-8d94-1d87e82053f7/v2.0";
 
         msIdentityOptions.CallbackPath = "/signin-oidc";                        // for local development
-        //// msIdentityOptions.CallbackPath = "https://ubiquitous-hudta7feejabdyew.centralus-01.azurewebsites.net/.auth/login/aad/callback";    // wasn't used
         // msIdentityOptions.CallbackPath = "/.auth/login/aad/callback";        // for azure hosted
 
-
         msIdentityOptions.SignedOutCallbackPath = "/signout-callback-oidc";             // for local development
-        //// msIdentityOptions.SignedOutCallbackPath = "https://ubiquitous-hudta7feejabdyew.centralus-01.azurewebsites.net/.auth/logout/aad/callback";      // wasn't used
         // msIdentityOptions.SignedOutCallbackPath = "/.auth/logout/aad/callback";      // for azure hosted
 
         // msIdentityOptions.ClientId = builder.Configuration["MicrosoftIdentity:ClientId"];                   // Application (client) ID for this blazor app";

@@ -5,6 +5,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.AddAuthentication("Bearer")
+.AddJwtBearer("Bearer", options =>
+{
+    options.Authority = builder.Configuration["AZURE_CREDENTIALS_AUTHORITY"];       //  "https://login.microsoftonline.com/{tenantId}/v2.0";
+    options.Audience = builder.Configuration["AZURE_CREDENTIALS_CLIENT_ID"];        // "{clientId}";
+    options.TokenValidationParameters.ValidateAudience = true;
+});
+
+builder.Services.AddAuthorization();
+
+
 //// ADD RATE LIMITING POLICIES 
 /// Rate Limiting Policies can be global or named - named are specified by endpoint or page
 
@@ -54,6 +65,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseRouting();
 
 app.UseAuthorization();
@@ -66,6 +80,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapReverseProxy();
+app.MapReverseProxy();  // .RequireAuthorization();  // this would require authentication for all proxied requests, which is not desired - need to add authentication to specific endpoints 
 
 app.Run();
