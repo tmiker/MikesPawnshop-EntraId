@@ -78,7 +78,7 @@ builder.Services.AddScoped<AuthenticationStateProvider, PersistingAuthentication
 ///
 /// MS ENTRA ID AUTH CONFIG START
 // Configure authentication to use Microsoft Entra ID
-JsonWebTokenHandler.DefaultInboundClaimTypeMap.Clear();
+// JsonWebTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApp(msIdentityOptions =>
@@ -100,12 +100,13 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
         // msIdentityOptions.Domain = builder.Configuration["MicrosoftIdentity:Domain"];                       //  { DIRECTORY (tenant) NAME}.onmicrosoft.com";
         msIdentityOptions.Domain = builder.Configuration["AZURE_CREDENTIALS_DOMAIN"];                    // for azure deploy
 
-        msIdentityOptions.Instance = "https://login.microsoftonline.com/";
-        msIdentityOptions.ResponseType = "code";
+        /// warn: Microsoft.Identity.Web.MergedOptions[500]
+        /// [MsIdWeb] Authority 'https://login.microsoftonline.com/2fd80906-88f0-4874-8d94-1d87e82053f7/v2.0' is being ignored because Instance 'https://login.microsoftonline.com/' and / or TenantId '2fd80906-88f0-4874-8d94-1d87e82053f7' are already configured.To use Authority, remove Instance and TenantId from the configuration.
 
-        // msIdentityOptions.TenantId = builder.Configuration["MicrosoftIdentity:TenantId"];
+        msIdentityOptions.Instance = "https://login.microsoftonline.com/";
         msIdentityOptions.TenantId = builder.Configuration["AZURE_CREDENTIALS_TENANT_ID"];                // for azure deploy
 
+        msIdentityOptions.ResponseType = "code";
         msIdentityOptions.GetClaimsFromUserInfoEndpoint = true;
         msIdentityOptions.MapInboundClaims = false;
         msIdentityOptions.TokenValidationParameters.NameClaimType = JwtRegisteredClaimNames.Name;

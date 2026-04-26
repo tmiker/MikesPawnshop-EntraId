@@ -42,6 +42,17 @@ try
     builder.Services.AddHealthChecks()
     .AddCheck<MongoDbHealthCheck>(name: "MongoLocalConnectionHealthCheck");
 
+    builder.Services.AddCors(setup =>
+    {
+        setup.AddPolicy("AllowAnyPolicy", policy =>
+        {
+            policy.AllowAnyOrigin();
+            policy.AllowAnyHeader();
+            policy.AllowAnyMethod();
+            policy.WithExposedHeaders("X-Pagination");
+        });
+    });
+
     builder.Services.Configure<MongoSettings>(builder.Configuration.GetRequiredSection(nameof(MongoSettings)));
     builder.Services.AddSingleton<IMongoSettings>(sp => sp.GetRequiredService<IOptions<MongoSettings>>().Value);
 
@@ -123,6 +134,8 @@ try
     app.UseSerilogRequestLogging();
 
     app.UseHttpsRedirection();
+
+    app.UseCors("AllowAnyPolicy");
 
     app.UseAuthentication();
     app.UseAuthorization();

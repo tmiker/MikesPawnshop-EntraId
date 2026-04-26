@@ -56,6 +56,17 @@ try
 
     builder.Services.AddProblemDetails(); // Registers the ProblemDetails service - configured in ExceptionHandlers using ExceptionHandlerExtensions 
 
+    builder.Services.AddCors(setup =>
+    {
+        setup.AddPolicy("AllowGetPolicy", policy =>
+        {
+            policy.AllowAnyOrigin();
+            policy.AllowAnyHeader();
+            policy.WithMethods("GET");
+            policy.WithExposedHeaders("X-Pagination");
+        });
+    });
+
     // Configure Auth
     //// DUENDE AUTH CONFIG
     //JsonWebTokenHandler.DefaultInboundClaimTypeMap.Clear(); // Note: As configured, Roles are not populated by HttpContext.User.Claims without this
@@ -80,7 +91,7 @@ try
     .AddJwtBearer(options =>
     {
         // Authority should match the issurer (`iss`) of the JWT returned by the identity provider.
-        options.Authority = builder.Configuration["AZURE_CREDENTIALS_AUTHORITY"];
+        options.Authority = builder.Configuration["AZURE_CREDENTIALS_AUTHORITY"];   
         // Audience is this API's Application ID URI
         options.Audience = builder.Configuration["AZURE_CREDENTIALS_AUDIENCE"];
         options.MapInboundClaims = false;
@@ -149,6 +160,8 @@ try
     }
 
     app.UseHttpsRedirection();
+
+    app.UseCors("AllowGetPolicy");
 
     app.UseAuthentication();
     app.UseAuthorization();

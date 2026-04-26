@@ -2,7 +2,8 @@
 @using Consumer.Blazor.Client.DTOs.Products.Test
 @rendermode InteractiveServer
 @inject IProductsReadHttpService _readSideHttpClient
-@attribute [Authorize(Policy = "IsAdminOrManager")]
+@attribute [Authorize]
+@* @attribute [Authorize(Policy = "IsAdminOrManager")] *@
 
 <PageTitle>Dev Testing</PageTitle>
 

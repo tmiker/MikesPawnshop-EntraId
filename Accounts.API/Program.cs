@@ -80,18 +80,24 @@ try
     //        //options.MapInboundClaims = false;
     //    });
     // MS ENTRA ID AUTH CONFIG
+
+    // JsonWebTokenHandler.DefaultInboundClaimTypeMap.Clear();
+    // JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); 
+
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         // Authority should match the issurer (`iss`) of the JWT returned by the identity provider.
-        options.Authority = builder.Configuration["AZURE_CREDENTIALS_AUTHORITY"];           
+        options.Authority = builder.Configuration["AZURE_CREDENTIALS_AUTHORITY"];
+        // Received Token: "aud": "0a5c9d6e-24c4-4fec-a018-e6f682d31921", "iss": "https://login.microsoftonline.com/2fd80906-88f0-4874-8d94-1d87e82053f7/v2.0",
+        // NOTE this 'idp' = live.com and BLAZOR CONSUMER 'idp' = https://sts.windows.net/9188040d-6c67-4c5b-b112-36a304b66dad/     
         // Audience is this API's Application ID URI
         options.Audience = builder.Configuration["AZURE_CREDENTIALS_AUDIENCE"];         
         options.MapInboundClaims = false;
         options.TokenValidationParameters = new TokenValidationParameters
         {
             // make sure claims are mapped consistently
-            NameClaimType = JwtRegisteredClaimNames.Name,
+            NameClaimType = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames.Name,
             RoleClaimType = "roles",                                                // roles plural to match Entra Id implementation of roles
             ValidIssuer = builder.Configuration["AZURE_CREDENTIALS_VALID_ISSUER"]      
             // Validate ...
@@ -135,6 +141,7 @@ try
     var app = builder.Build();
 
     // Configure the HTTP request pipeline.
+    app.UseMiddleware<DevelopmentOnlyMiddleware>();
     app.UseMiddleware<CorrelationIdMiddleware>();
     app.UseMiddleware<SerilogMiddleware>();
 
