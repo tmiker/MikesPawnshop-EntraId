@@ -5,8 +5,6 @@ using Admin.Blazor.Client.Services;
 using Admin.Blazor.Client.Utility;
 using Admin.Blazor.Components;
 using Admin.Blazor.DownstreamApiServices;
-using Admin.Blazor.HttpServices;
-using Duende.AccessTokenManagement.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -15,8 +13,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.TokenCacheProviders.Distributed;
 using Microsoft.IdentityModel.JsonWebTokens;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using System.Net.Http.Headers;
 using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,52 +26,6 @@ builder.Services.AddRazorComponents()
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingAuthenticationStateProvider>();
 
-///// DUENDE AUTH CONFIG START
-////// Duende Access Token Management
-//builder.Services.AddDistributedMemoryCache();   // to store tokens
-//builder.Services.AddOpenIdConnectAccessTokenManagement();   // decorate http client with handler
-
-////// Configure Auth
-
-//JsonWebTokenHandler.DefaultInboundClaimTypeMap.Clear();
-//builder.Services.AddAuthentication(options =>
-//{
-//    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-//    options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;    
-//}).AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, oidcOptions => 
-//{
-//    oidcOptions.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-//    oidcOptions.Authority = "https://localhost:5001";
-//    oidcOptions.ResponseType = OpenIdConnectResponseType.Code;
-//    oidcOptions.UsePkce = true;
-//    oidcOptions.ClientId = "adminBlazorServer";
-//    oidcOptions.ClientSecret = builder.Configuration["AuthenticationSettings:IdentityProviderClientSecret"];
-//    oidcOptions.Scope.Add(OpenIdConnectScope.OpenIdProfile);
-//    // oidcOptions.Scope.Add(OpenIdConnectScope.OfflineAccess);
-//    oidcOptions.Scope.Add("roles");
-//    oidcOptions.Scope.Add("cartsapi.fullaccess");
-//    oidcOptions.Scope.Add("productsreadapi.fullaccess");
-//    oidcOptions.Scope.Add("productswriteapi.fullaccess");
-//    oidcOptions.Scope.Add("accountsapi.fullaccess");
-//    oidcOptions.Scope.Add("ordersapi.fullaccess");
-//    oidcOptions.CallbackPath = new PathString("/signin-oidc");
-//    oidcOptions.SignedOutCallbackPath = new PathString("/signout-callback-oidc");
-//    oidcOptions.GetClaimsFromUserInfoEndpoint = true;
-//    oidcOptions.MapInboundClaims = false;
-//    // Mapped claim args are claim type in incoming token, claim type in users claims list
-//    oidcOptions.ClaimActions.MapJsonKey("role", "role");    // can have more than one claim of the type
-//    // oidcOptions.ClaimActions.MapUniqueJsonKey("employeeId", "employeeId");  // if single instance of claim type
-//    oidcOptions.TokenValidationParameters.NameClaimType = JwtRegisteredClaimNames.Name;
-//    oidcOptions.TokenValidationParameters.RoleClaimType = "role";
-//    oidcOptions.SaveTokens = true;
-//    // oidcOptions.EventsType = typeof(CustomTokenStorageOidcEvents);
-
-//}).AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
-//{
-//    options.AccessDeniedPath = "/AccessDenied";
-//});
-///// DUENDE AUTH CONFIG END
-///
 /// MS ENTRA ID AUTH CONFIG START
 // Configure authentication to use Microsoft Entra ID
 // JsonWebTokenHandler.DefaultInboundClaimTypeMap.Clear();
@@ -83,7 +33,15 @@ builder.Services.AddScoped<AuthenticationStateProvider, PersistingAuthentication
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApp(msIdentityOptions =>
     {
-        msIdentityOptions.Authority = "https://login.microsoftonline.com/2fd80906-88f0-4874-8d94-1d87e82053f7/v2.0";
+        /// see: http s://learn.microsoft.com/en-us/entra/identity-platform/msal-client-application-configuration#:~:text=The%20authority%20is%20a%20U
+
+        /// NOTE: If configure 'Authority' when using Microsoft.Identity.Web, the 'Instance', 'TenantId', and 'Domain' options are ignored. 
+        /// So, to use those options, do not configure 'Authority' and instead configure 'Instance', 'TenantId', and 'Domain' as shown below.
+        
+        // msIdentityOptions.Authority = "https://login.microsoftonline.com/2fd80906-88f0-4874-8d94-1d87e82053f7/v2.0";
+        msIdentityOptions.Instance = "https://login.microsoftonline.com/";
+        msIdentityOptions.TenantId = builder.Configuration["AZURE_CREDENTIALS_TENANT_ID"];                // for azure deploy
+        msIdentityOptions.Domain = builder.Configuration["AZURE_CREDENTIALS_DOMAIN"];                    // for azure deploy
 
         msIdentityOptions.CallbackPath = "/signin-oidc";                        // for local development
         // msIdentityOptions.CallbackPath = "/.auth/login/aad/callback";        // for azure hosted
@@ -91,20 +49,12 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
         msIdentityOptions.SignedOutCallbackPath = "/signout-callback-oidc";             // for local development
         // msIdentityOptions.SignedOutCallbackPath = "/.auth/logout/aad/callback";      // for azure hosted
 
-        // msIdentityOptions.ClientId = builder.Configuration["MicrosoftIdentity:ClientId"];                   // Application (client) ID for this blazor app";
         msIdentityOptions.ClientId = builder.Configuration["AZURE_CREDENTIALS_CLIENT_ID"];                // for azure deploy
 
-        // msIdentityOptions.ClientSecret = builder.Configuration["MicrosoftIdentity:ClientSecret"];
-        msIdentityOptions.ClientSecret = builder.Configuration["AZURE_CREDENTIALS_CLIENT_SECRET"];        // for azure deploy
-
-        // msIdentityOptions.Domain = builder.Configuration["MicrosoftIdentity:Domain"];                       //  { DIRECTORY (tenant) NAME}.onmicrosoft.com";
-        msIdentityOptions.Domain = builder.Configuration["AZURE_CREDENTIALS_DOMAIN"];                    // for azure deploy
+        msIdentityOptions.ClientSecret = builder.Configuration["AZURE_CREDENTIALS_CLIENT_SECRET"];        // for azure deploy      
 
         /// warn: Microsoft.Identity.Web.MergedOptions[500]
         /// [MsIdWeb] Authority 'https://login.microsoftonline.com/2fd80906-88f0-4874-8d94-1d87e82053f7/v2.0' is being ignored because Instance 'https://login.microsoftonline.com/' and / or TenantId '2fd80906-88f0-4874-8d94-1d87e82053f7' are already configured.To use Authority, remove Instance and TenantId from the configuration.
-
-        msIdentityOptions.Instance = "https://login.microsoftonline.com/";
-        msIdentityOptions.TenantId = builder.Configuration["AZURE_CREDENTIALS_TENANT_ID"];                // for azure deploy
 
         msIdentityOptions.ResponseType = "code";
         msIdentityOptions.GetClaimsFromUserInfoEndpoint = true;
@@ -113,7 +63,6 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
         msIdentityOptions.TokenValidationParameters.RoleClaimType = "roles";
         msIdentityOptions.SaveTokens = true;
         msIdentityOptions.AccessDeniedPath = new PathString("/AccessDenied");
-
     })
     .EnableTokenAcquisitionToCallDownstreamApi()
     .AddDownstreamApi(StaticData.AccountsApiService_ServiceName, configOptions =>              // api name

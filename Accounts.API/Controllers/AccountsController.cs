@@ -54,7 +54,7 @@ namespace Accounts.API.Controllers
         }
 
         [HttpGet("accountEstablished")]
-        [Authorize]
+        // [Authorize]
         public async Task<ActionResult<bool>> AccountIsEstablished()
         {
             string? ownerId = User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
@@ -67,7 +67,7 @@ namespace Accounts.API.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        // [Authorize]
         public async Task<ActionResult<AccountDTO>> GetByOwnerId()
         {
             string? ownerId = User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
@@ -86,7 +86,7 @@ namespace Accounts.API.Controllers
         }
 
         [HttpGet("{accountId}")]
-        [Authorize]
+        // [Authorize]
         public async Task<ActionResult<AccountDTO>> GetByAccountId(string accountId)
         {
             var result = await _accountService.GetAccountByAccountIdAsync(accountId);
@@ -95,7 +95,7 @@ namespace Accounts.API.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        // [Authorize]
         public async Task<IActionResult> Post(AddAccountDTO addAccountDTO)
         {
             string? ownerId = User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
@@ -107,7 +107,7 @@ namespace Accounts.API.Controllers
         }
 
         [HttpPut("addAddress")]
-        [Authorize]
+        // [Authorize]
         public async Task<IActionResult> Put(AddAddressDTO addAddressDTO)
         {
             string? ownerId = User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
@@ -119,7 +119,7 @@ namespace Accounts.API.Controllers
         }
 
         [HttpGet("[action]")]
-        [Authorize(Roles = "Admin")]
+        // [Authorize(Roles = "Admin")]
         public ActionResult<string> AllowAdminUserByRole()
         {
             bool isAdmin = User.IsInRole("Admin");
@@ -138,7 +138,7 @@ namespace Accounts.API.Controllers
         }
 
         [HttpGet("[action]")]
-        [Authorize(Policy = "IsAdmin")]
+        // [Authorize(Policy = "IsAdmin")]
         public ActionResult<string> AllowAdminUserByPolicy()
         {
             bool isAdmin = User.IsInRole("Admin");

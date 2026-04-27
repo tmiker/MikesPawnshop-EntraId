@@ -21,7 +21,7 @@ namespace Admin.Blazor.DownstreamApiServices
         {
             string uri = $"{StaticData.AccountsApiService_DevTestsPath}{StaticData.AccountsApiService_GetApiUserInfoSubpath}";
 
-            var response = await _downstreamApi.CallApiForAppAsync(
+            var response = await _downstreamApi.CallApiForUserAsync(
                 serviceName: StaticData.AccountsApiService_ServiceName,
                 downstreamApiOptionsOverride: options =>
                 {
@@ -45,8 +45,7 @@ namespace Admin.Blazor.DownstreamApiServices
         {
             string uri = $"{StaticData.CartsApiService_DevTestsPath}{StaticData.CartsApiService_GetApiUserInfoSubpath}";
 
-
-            var response = await _downstreamApi.CallApiForAppAsync(
+            var response = await _downstreamApi.CallApiForUserAsync(
                 serviceName: StaticData.CartsApiService_ServiceName,
                 downstreamApiOptionsOverride: options =>
                 {
@@ -70,7 +69,7 @@ namespace Admin.Blazor.DownstreamApiServices
         {
             string uri = $"{StaticData.OrdersApiService_DevTestsPath}{StaticData.OrdersApiService_GetApiUserInfoSubpath}";
 
-            var response = await _downstreamApi.CallApiForAppAsync(
+            var response = await _downstreamApi.CallApiForUserAsync(
                 serviceName: StaticData.OrdersApiService_ServiceName,
                 downstreamApiOptionsOverride: options =>
                 {
@@ -94,7 +93,7 @@ namespace Admin.Blazor.DownstreamApiServices
         {
             string uri = $"{StaticData.ProductsReadApiService_DevTestsPath}{StaticData.ProductsReadApiService_GetApiUserInfoSubpath}";
 
-            var response = await _downstreamApi.CallApiForAppAsync(
+            var response = await _downstreamApi.CallApiForUserAsync(
                 serviceName: StaticData.ProductsReadApiService_ServiceName,
                 downstreamApiOptionsOverride: options =>
                 {
@@ -118,7 +117,7 @@ namespace Admin.Blazor.DownstreamApiServices
         {
             string uri = $"{StaticData.ProductsWriteApiService_DevTestsPath}{StaticData.ProductsWriteApiService_GetApiUserInfoSubpath}";
 
-            var response = await _downstreamApi.CallApiForAppAsync(
+            var response = await _downstreamApi.CallApiForUserAsync(
                 serviceName: StaticData.ProductsWriteApiService_ServiceName,
                 downstreamApiOptionsOverride: options =>
                 {

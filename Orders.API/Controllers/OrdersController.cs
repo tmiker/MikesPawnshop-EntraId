@@ -76,7 +76,7 @@ namespace Orders.API.Controllers
         //}
 
         [HttpPost]
-        [Authorize]
+        // [Authorize]
         public async Task<IActionResult> PostOrder(AddOrderDTO addOrderDTO)
         {
             // await LogIdentityInformation();
@@ -97,7 +97,7 @@ namespace Orders.API.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        // [Authorize]
         public async Task<ActionResult<IEnumerable<OrderDTO>>> GetUserOrders(string? filter = null, string? sortColumn = null, string? sortOrder = null, int pageNumber = 1, int pageSize = 10)
         {
             string? ownerId = User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
@@ -118,7 +118,7 @@ namespace Orders.API.Controllers
         }
 
         [HttpGet("{orderId}")]
-        [Authorize]
+        // [Authorize]
         public async Task<ActionResult<OrderDTO?>> GetOrderByOrderId(string orderId)
         {
             string? ownerId = User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;

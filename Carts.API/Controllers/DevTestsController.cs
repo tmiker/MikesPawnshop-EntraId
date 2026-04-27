@@ -63,7 +63,7 @@ namespace Carts.API.Controllers
             {
                 foreach (var claim in userClaims)
                 {
-                    if (claim.Type == "role") apiUserInfoDTO.ApiUserClaimsRolesList.Add(claim.Value);
+                    if (claim.Type == "roles") apiUserInfoDTO.ApiUserClaimsRolesList.Add(claim.Value);
                     apiUserInfoDTO.ApiUserClaimsClaimsList.Add($"{claim.Type} : {claim.Value}");
                 }
             }
@@ -71,6 +71,9 @@ namespace Carts.API.Controllers
             {
                 apiUserInfoDTO.ApiUserClaimsClaimsList.Add("User.Claims did not contain any claims.");
             }
+
+            await LogIdentityInformation();
+
             return Ok(apiUserInfoDTO);
         }
 
@@ -84,18 +87,22 @@ namespace Carts.API.Controllers
 
         private async Task LogIdentityInformation()
         {
-            // get saved identity token
-            var identityToken = await HttpContext.GetTokenAsync(OpenIdConnectParameterNames.IdToken);
-            var accessToken = await HttpContext.GetTokenAsync(OpenIdConnectParameterNames.AccessToken);
-            var userClaimsStringBuilder = new StringBuilder();
-            foreach (var claim in User.Claims)
+            try
             {
-                userClaimsStringBuilder.AppendLine($"Claim Type: {claim.Type}, Claim Value: {claim.Value}");
+                // get saved identity token
+                var identityToken = await HttpContext.GetTokenAsync(OpenIdConnectParameterNames.IdToken);
+                var accessToken = await HttpContext.GetTokenAsync(OpenIdConnectParameterNames.AccessToken);
+                var userClaimsStringBuilder = new StringBuilder($"LOG INDENTITY INFORMATION METHOD RESULT: \n");
+                foreach (var claim in User.Claims)
+                {
+                    userClaimsStringBuilder.AppendLine($"Claim Type: {claim.Type}, Claim Value: {claim.Value}");
+                }
+                _logger.LogInformation("LOG INDENTITY INFORMATION METHOD RESULT: ");
+                _logger.LogInformation("Identity Token: \n{identityToken}\n", identityToken);
+                _logger.LogInformation("Access Token: \n{accessToken}\n", accessToken);
+                _logger.LogInformation("User Claims: \n{userClaimsStringBuilder}\n", userClaimsStringBuilder);
             }
-            _logger.LogInformation($"LOG INDENTITY INFORMATION METHOD RESULT: ");
-            _logger.LogInformation($"Identity Token: \n{identityToken}\n   ");
-            _logger.LogInformation($"Access Token: \n{accessToken}\n");
-            _logger.LogInformation($"User Claims: \n{userClaimsStringBuilder}\n");
+            catch (Exception ex) { _logger.LogError(ex, "ERROR: An error occurred while logging identity information: {ex.Message}", ex.Message); }
         }
 
         private string? GetCurrentOwnerId()
