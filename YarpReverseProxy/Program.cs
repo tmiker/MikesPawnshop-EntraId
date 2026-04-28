@@ -1,9 +1,6 @@
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.TokenCacheProviders.Distributed;
-using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Logging;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading.RateLimiting;
@@ -16,94 +13,49 @@ var builder = WebApplication.CreateBuilder(args);
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 IdentityModelEventSource.ShowPII = true;  // Enable detailed error messages for token validation issues (useful for debugging, but should be disabled in production)
 JwtSecurityTokenHandler.DefaultMapInboundClaims = false;  // Prevent automatic mapping of standard JWT claims to Microsoft-specific claim types (e.g. "sub" to "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+
+/// ADD JWT BEARER AUTHENTICATION WITH MICROSOFT IDENTITY WEB API
+/// OPTION 1: Use Microsoft.Identity.Web's built-in extension method for adding JWT Bearer authentication, 
+/// which simplifies configuration by automatically binding settings from configuration (e.g. appsettings.json) 
+/// and provides additional features like automatic token validation and integration with Azure AD.
 builder.Services.AddMicrosoftIdentityWebApiAuthentication(builder.Configuration, "AzureAd", subscribeToJwtBearerMiddlewareDiagnosticsEvents: true);
-builder.Services.AddReverseProxy()
-    .LoadFromConfig(builder.Configuration.GetRequiredSection("YarpProxySettings"))
-    .AddTransforms(transforms =>
-    {
-        transforms.AddRequestTransform(async context =>
-        {
-            string? token = await context.HttpContext.GetTokenAsync("access_token");
-            
-            if (!string.IsNullOrEmpty(token))
-            {
-                // context.ProxyRequest.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-                Console.WriteLine($"\n************** YARP Reverse Proxy - Transform - Access Token: *************** \n{token}\n");
-            }
-            else Console.WriteLine($"\n************** YARP Reverse Proxy - Transform - ACCESS TOKEN IS NULL ***************\n");
-        });
-    }); 
-
-builder.Services.AddAuthorization();
-
-// IDX10214: Audience validation failed. See https://aka.ms/identitymodel/app-context-switches
-
+/// OPTION 2: Manually configure JWT Bearer authentication, which provides more control over the configuration but 
+/// requires more code and careful handling of token validation parameters.
+/// If use this option, make sure to set TokenValidationParameters.ValidateAudience to false and ADD TRANSFORM TO PASS THE TOKEN in AddReverseProxy() below
 //builder.Services.AddAuthentication("Bearer")
 //.AddJwtBearer("Bearer", options =>
 //{
 //    options.Authority = builder.Configuration["AZURE_CREDENTIALS_AUTHORITY"];       //  "https://login.microsoftonline.com/{tenantId}/v2.0";
 //    // options.Audience = builder.Configuration["AZURE_CREDENTIALS_CLIENT_ID"];        // "{clientId}";
-//    options.Audience = "https://localhost:7245";
-//    options.TokenValidationParameters.ValidateAudience = true;
+//    // options.Audience = "https://localhost:7245";
+//    options.TokenValidationParameters.ValidateAudience = false;
 //});
 
-//builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-//    .AddMicrosoftIdentityWebApp(msIdentityOptions =>
-//    {
-//        msIdentityOptions.Authority = builder.Configuration["AZURE_CREDENTIALS_AUTHORITY"];     // "https://login.microsoftonline.com/2fd80906-88f0-4874-8d94-1d87e82053f7/v2.0";
+builder.Services.AddReverseProxy()
+    .LoadFromConfig(builder.Configuration.GetRequiredSection("YarpProxySettings"));
+    //.AddTransforms(transforms =>
+    //{
+    //    transforms.AddRequestTransform(async context =>
+    //    {
+    //        if (context.HttpContext.User.Identity is not null && context.HttpContext.User.Identity.IsAuthenticated)
+    //        {
+    //            // Extract the JWT token from the incoming request
+    //            var token = await context.HttpContext.GetTokenAsync("access_token");
 
-//        // msIdentityOptions.CallbackPath = "/signin-oidc";                        // for local development
-//        // msIdentityOptions.CallbackPath = "/.auth/login/aad/callback";        // for azure hosted
+    //            // Add the token to the outgoing request headers
+    //            if (!string.IsNullOrEmpty(token))
+    //            {
+    //                context.ProxyRequest.Headers.Authorization =
+    //                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+    //            }
+    //        }
+    //    });
+    //});
 
-//        // msIdentityOptions.SignedOutCallbackPath = "/signout-callback-oidc";             // for local development
-//        // msIdentityOptions.SignedOutCallbackPath = "/.auth/logout/aad/callback";      // for azure hosted
-
-//        msIdentityOptions.ClientId = builder.Configuration["AZURE_CREDENTIALS_CLIENT_ID"];                // for azure deploy
-
-//        // msIdentityOptions.ClientSecret = builder.Configuration["AZURE_CREDENTIALS_CLIENT_SECRET"];        // for azure deploy
-
-//        msIdentityOptions.Domain = builder.Configuration["AZURE_CREDENTIALS_DOMAIN"];                    // for azure deploy
-
-//        msIdentityOptions.Instance = "https://login.microsoftonline.com/";
-
-//        // msIdentityOptions.ResponseType = "code";
-
-//        msIdentityOptions.TenantId = builder.Configuration["AZURE_CREDENTIALS_TENANT_ID"];                // for azure deploy
-
-//        //msIdentityOptions.GetClaimsFromUserInfoEndpoint = true;
-//        //msIdentityOptions.MapInboundClaims = false;
-//        //msIdentityOptions.TokenValidationParameters.NameClaimType = JwtRegisteredClaimNames.Name;
-//        //msIdentityOptions.TokenValidationParameters.RoleClaimType = "roles";
-//        //msIdentityOptions.SaveTokens = true;
-//        //msIdentityOptions.AccessDeniedPath = new PathString("/AccessDenied");
-
-//    })
-//     .EnableTokenAcquisitionToCallDownstreamApi()
-//     .AddDistributedTokenCaches();
-
-//builder.Services.AddDistributedMemoryCache();
-
-//builder.Services.Configure<MsalDistributedTokenCacheAdapterOptions>(
-//    options =>
-//    {
-//        //options.DisableL1Cache = false;                           // Disable L1 Cache default: false
-//        //options.L1CacheOptions.SizeLimit = 500 * 1024 * 1024;     // L1 Cache Size Limit default: 500 MB
-//        // options.Encrypt = true;                                     // Encrypt tokens at rest default: false
-//        //options.SlidingExpiration = TimeSpan.FromHours(1);        // Sliding Expiration default: 1 hour
-//    });
-/// MS ENTRA ID AUTH CONFIG END
-
-
-
-/// TRY THIS!!!
-//builder.Services.AddMicrosoftIdentityWebApiAuthentication(builder.Configuration);   // looks for config section named "AzureAd" by default, but can be overridden with second parameter to specify different section name (e.g. "AzureAdB2C" for Azure AD B2C)
-
-// builder.Services.AddAuthorization();
-
+builder.Services.AddAuthorization();
 
 //// ADD RATE LIMITING POLICIES 
 /// Rate Limiting Policies can be global or named - named are specified by endpoint or page
-
 //// 1. Global Rate Limiting Policy that permits 10 requests per minute by user (identity) or globally:
 //builder.Services.AddRateLimiter(options =>
 //{
@@ -118,7 +70,6 @@ builder.Services.AddAuthorization();
 //                Window = TimeSpan.FromMinutes(1)
 //            }));
 //});
-
 // 2. Named Rate Limiting Policy to be added to specific endpoints or globally (see yarp_notes.txt):
 builder.Services.AddRateLimiter(options =>
 {
@@ -130,26 +81,6 @@ builder.Services.AddRateLimiter(options =>
         opt.QueueLimit = 2;
     });
 });
-
-//// ADD REVERSE PROXY
-//builder.Services.AddReverseProxy()
-//    .LoadFromConfig(builder.Configuration.GetRequiredSection("YarpProxySettings"));
-//// ADD REVERSE PROXY WITH TRANSORM FOR PASSING TOKENS
-//builder.Services.AddReverseProxy()
-//    .LoadFromConfig(builder.Configuration.GetRequiredSection("YarpProxySettings"))
-//    .AddTransforms(transforms =>
-//    {
-//        transforms.AddRequestTransform(async context =>
-//        {
-//            var token = await context.HttpContext.GetTokenAsync("access_token");
-//            Console.WriteLine($"************** YARP Reverse Proxy - Transform - Access Token: *************** \n{token}");
-//            if (!string.IsNullOrEmpty(token))
-//            {
-//                context.ProxyRequest.Headers.Authorization =
-//                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-//            }
-//        });
-//    });
 
 builder.Services.AddControllers();
 

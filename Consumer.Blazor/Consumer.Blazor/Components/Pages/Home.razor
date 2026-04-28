@@ -6,11 +6,12 @@
 
 <h2 class="mt-4">Mikes Pawnshop with Entra Id and APIs using Azure Cosmos Db</h2>
 
-<p class="mt-4">Accounts API DevTestController - removed [Authorize] attribute from User Info endpoint.</p>
-<p>Blazor Consumer Products > Dev Test at-page "/products/devTesting" - removed auth attribute</p>
-<p>Check remove DevTestOnlyMiddleware from Blazor Consumer and Accounts API</p>
+<p class="mt-4">APIs - check [Authorize] attributes.</p>
+<p>If have no account - get option to add address or account - need to show only add account (adding an address without an account will throw)</p>
+<p>Cart and Checkout button display</p>
 
 
-<h4 class="mt-2">CHECK AUDIENCE VALUE RECIEVED BY ACCOUNTS API</h4>
-
-<h2 class="mt-2">!!!!!!!!!!!!!!! CHECK APIs and CLIENTs HAVE JsonWebTokenHandler.DefaultInboundClaimTypeMap.Clear(); - ACCOUNTS DOES NOT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</h2>
+<h4 class="mt-2">Can't use anonymous endpoints with DownstreamApi - Products.Read API and nay other anonymous endpoints need standard HttpClient not DownstreamApi.</h4>
+<h5 class="mt-2">    --- need separate interfaces to use both DownstreamApi and HttpClient services, register both.</h5>
+<h5 class="mt-2">    --- comment endpoints in each service as appropriate based on whether should be anonymous or authenticated .</h5>
+<h5 class="mt-2">    --- razor pages need to be updated to call correct service - if comment correctly should show method undefined error on page.</h5>
