@@ -98,9 +98,9 @@ builder.Services.Configure<MsalDistributedTokenCacheAdapterOptions>(
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("IsAdmin", policy => policy.RequireClaim("role", "Admin"));
-    options.AddPolicy("IsManager", policy => policy.RequireClaim("role", "Manager"));
-    options.AddPolicy("IsAdminOrManager", policy => policy.RequireClaim("role", "Admin", "Manager"));
+    options.AddPolicy("IsAdmin", policy => policy.RequireClaim("roles", "Admin"));
+    options.AddPolicy("IsManager", policy => policy.RequireClaim("roles", "Manager"));
+    options.AddPolicy("IsAdminOrManager", policy => policy.RequireClaim("roles", "Admin", "Manager"));
     options.AddPolicy("MarlowAndWendy", policy => policy.RequireClaim(ClaimTypes.Name, "Wendy Davenport", "Marlow Bean"));
     options.AddPolicy("DomesticDogs", policy => policy.RequireClaim("Genus", "Canis").RequireClaim("Species", "Familiaris"));
 });
