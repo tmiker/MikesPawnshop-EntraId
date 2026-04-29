@@ -1,0 +1,12 @@
+﻿@page "/claims/testAccessDeniedRouting"
+@rendermode InteractiveServer
+@attribute [Authorize(Policy = "NoOneHasThisPolicy")]
+
+@inject IToastrService _toastrService
+
+<PageTitle>Test Routing</PageTitle>
+
+<h1>Test Access Denied Routing</h1>
+
+<p>Trying to navigate to this component while logged in should result in a redirect to the Access Denied page.</p>
+

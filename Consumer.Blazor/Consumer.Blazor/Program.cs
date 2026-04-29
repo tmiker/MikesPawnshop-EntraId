@@ -103,6 +103,8 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("IsAdminOrManager", policy => policy.RequireClaim("roles", "Admin", "Manager"));
     options.AddPolicy("MarlowAndWendy", policy => policy.RequireClaim(ClaimTypes.Name, "Wendy Davenport", "Marlow Bean"));
     options.AddPolicy("DomesticDogs", policy => policy.RequireClaim("Genus", "Canis").RequireClaim("Species", "Familiaris"));
+    // testing
+    options.AddPolicy("NoOneHasThisPolicy", policy => policy.RequireClaim("roles", "NoOneHasBeenAssignedThisRole"));
 });
 
 //// Downstream API Clients

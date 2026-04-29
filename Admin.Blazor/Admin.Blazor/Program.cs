@@ -37,7 +37,7 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
 
         /// NOTE: If configure 'Authority' when using Microsoft.Identity.Web, the 'Instance', 'TenantId', and 'Domain' options are ignored. 
         /// So, to use those options, do not configure 'Authority' and instead configure 'Instance', 'TenantId', and 'Domain' as shown below.
-        
+
         // msIdentityOptions.Authority = "https://login.microsoftonline.com/2fd80906-88f0-4874-8d94-1d87e82053f7/v2.0";
         msIdentityOptions.Instance = "https://login.microsoftonline.com/";
         msIdentityOptions.TenantId = builder.Configuration["AZURE_CREDENTIALS_TENANT_ID"];                // for azure deploy
@@ -112,6 +112,8 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("IsAdminOrManager", policy => policy.RequireClaim("roles", "Admin", "Manager"));      
     options.AddPolicy("MarlowAndWendy", policy => policy.RequireClaim(ClaimTypes.Name, "Wendy Davenport", "Marlow Bean"));
     options.AddPolicy("DomesticDogs", policy => policy.RequireClaim("Genus", "Canis").RequireClaim("Species", "Familiaris"));
+    // testing
+    options.AddPolicy("NoOneHasThisPolicy", policy => policy.RequireClaim("roles", "NoOneHasBeenAssignedThisRole"));
 });
 
 // Downstream API Services

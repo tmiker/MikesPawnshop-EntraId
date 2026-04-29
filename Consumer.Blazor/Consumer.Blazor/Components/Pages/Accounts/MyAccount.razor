@@ -16,7 +16,7 @@
     }
 </div>
 
-@if (!string.IsNullOrWhiteSpace(_errorMessage))
+@* @if (!string.IsNullOrWhiteSpace(_errorMessage))
 {
     <div class="row mt-2">
         <div class="col-10">
@@ -31,7 +31,7 @@
             <textarea rows="2" class="bg-dark text-danger form-control">@_errorMessage</textarea>
         </div>
     </div>
-}
+} *@
 
 @if (_accountInfo is not null)
 {
@@ -93,6 +93,80 @@
             <InputNumber inert class="bg-dark text-light form-control " id="credit" @bind-Value="@_accountInfo.CreditLimit" />
         </div>
     </div>
+
+    <div class="row mt-4">
+        <div class="col-10">
+            <h4>My Addresses</h4>
+        </div>
+        @* <div class="col-2">
+        <a class="btn btn-success form-control" @onclick="AddAddress">Add Address</a>
+    </div> *@
+    </div>
+    <div class="row mt-2">
+        <div class="col-12">
+            @if (_accountInfo?.Addresses != null && _accountInfo.Addresses.Any())
+            {
+                <table class="table table-dark table-bordered text-center">
+                    <thead>
+                        <tr>
+                            <th>Street 1</th>
+                            <th>Street 2</th>
+                            <th>City</th>
+                            <th>State</th>
+                            <th>Zipcode</th>
+                            <th>Shipping</th>
+                            <th>Billing</th>
+
+                            <th colspan="3"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var address in _accountInfo.Addresses)    // System.NullReferenceException: 'Object reference not set to an instance of an object.'  address was null.
+                        {
+                            <tr>
+                                <td>@address.Street1</td>
+                                <td>@address.Street2</td>
+                                <td>@address.City</td>
+                                <td>@address.State</td>
+                                <td>@address.PostalCode</td>
+                                <td class="text-center">
+                                    @if (address.IsPrimaryShipping)
+                                    {
+                                        <p class="text-success-alt m-0 p-0"><b>&#10004</b></p>
+                                    }
+                                </td>
+
+                                <td class="text-center">
+                                    @if (address.IsPrimaryBilling)
+                                    {
+                                        <p class="text-success-alt m-0 p-0"><b>&#10004</b></p>
+                                    }
+                                </td>
+                                <td colspan="1">
+                                    <a class="btn btn-primary form-control" style="width:100px;">Detail</a>
+                                </td>
+                                <td colspan="1">
+                                    <a class="btn btn-success form-control" style="width:100px;">Edit</a>
+                                </td>
+                                <td colspan="1">
+                                    <a class="btn btn-danger form-control" style="width:100px;">Delete</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="row mt-2">
+                    <div class="col-4 offset-4 text-center">
+                        <a class="btn btn-success form-control" @onclick="AddAddress">Add Address</a>
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
 }
 else
 {
@@ -102,80 +176,6 @@ else
         </div>
     </div>
 }
-
-<div class="row mt-4">
-    <div class="col-10">
-        <h4>My Addresses</h4>
-    </div>
-    @* <div class="col-2">
-        <a class="btn btn-success form-control" @onclick="AddAddress">Add Address</a>
-    </div> *@
-</div>
-<div class="row mt-2">
-    <div class="col-12">
-        @if (_accountInfo?.Addresses != null && _accountInfo.Addresses.Any())
-        {
-            <table class="table table-dark table-bordered text-center">
-                <thead>
-                    <tr>
-                        <th>Street 1</th>
-                        <th>Street 2</th>
-                        <th>City</th>
-                        <th>State</th>
-                        <th>Zipcode</th>
-                        <th>Shipping</th>
-                        <th>Billing</th>
-
-                        <th colspan="3"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var address in _accountInfo.Addresses)    // System.NullReferenceException: 'Object reference not set to an instance of an object.'  address was null.
-                    {
-                        <tr>
-                            <td>@address.Street1</td>
-                            <td>@address.Street2</td>
-                            <td>@address.City</td>
-                            <td>@address.State</td>
-                            <td>@address.PostalCode</td>
-                            <td class="text-center">
-                                @if (address.IsPrimaryShipping)
-                                {
-                                    <p class="text-success-alt m-0 p-0"><b>&#10004</b></p>
-                                }
-                            </td>
-
-                            <td class="text-center">
-                                @if (address.IsPrimaryBilling)
-                                {
-                                    <p class="text-success-alt m-0 p-0"><b>&#10004</b></p>
-                                }
-                            </td>
-                            <td colspan="1">
-                                <a class="btn btn-primary form-control" style="width:100px;">Detail</a>
-                            </td>
-                            <td colspan="1">
-                                <a class="btn btn-success form-control" style="width:100px;">Edit</a>
-                            </td>
-                            <td colspan="1">
-                                <a class="btn btn-danger form-control" style="width:100px;">Delete</a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
-        else
-        {
-            <div class="row mt-2">
-                <div class="col-4 offset-4 text-center">
-                    <a class="btn btn-success form-control" @onclick="AddAddress">Add Address</a>
-                </div>
-            </div>
-        }
-
-    </div>
-</div>
 
 @if (_thinking)
 {
