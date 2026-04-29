@@ -1,6 +1,7 @@
 ﻿@page "/products/productsRead"
 @rendermode InteractiveServer
-@inject IProductsReadHttpService _readProductsClient
+@* @inject IProductsReadHttpService _productReadSideHttpClient *@
+@inject IPublicProductsReadHttpService _readProductsClient
 @attribute [Authorize(Policy = "IsAdminOrManager")]
 
 <div class="row mt-2">

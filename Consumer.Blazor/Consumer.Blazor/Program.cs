@@ -79,11 +79,11 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
          configOptions.BaseUrl = StaticData.OrdersApiService_LocalBaseURL;
          configOptions.Scopes = [builder.Configuration["ORDERS_API_SCOPE"]!];
     })
-    .AddDownstreamApi(StaticData.ProductsReadApiService_ServiceName, configOptions =>
-    {
-        configOptions.BaseUrl = StaticData.ProductsReadApiService_LocalBaseURL;
-        configOptions.Scopes = [builder.Configuration["PRODUCTS_READ_API_SCOPE"]!];
-    })
+    //.AddDownstreamApi(StaticData.ProductsReadApiService_ServiceName, configOptions =>
+    //{
+    //    configOptions.BaseUrl = StaticData.ProductsReadApiService_LocalBaseURL;
+    //    configOptions.Scopes = [builder.Configuration["PRODUCTS_READ_API_SCOPE"]!];
+    //})
     .AddDistributedTokenCaches();
 
 builder.Services.AddDistributedMemoryCache();

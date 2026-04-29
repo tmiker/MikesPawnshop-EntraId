@@ -11,7 +11,8 @@
 <p>Cart and Checkout button display</p>
 
 <h4 class="mt-2">Can't use anonymous endpoints with DownstreamApi - Products.Read API and any other anonymous endpoints need standard HttpClient not DownstreamApi.</h4>
-<h4>NOTE: READ SIDE PRODUCTS ONLY:  GET METHODS ON RIGHT SIDE QUERY THE EVENT STORE OR USE EVENT SOURCING TO REHYDRATE ENTITIES</h4>
+<h4>NOTE: BLAZOR CONSUMER, READ SIDE PRODUCTS ONLY:  GET METHODS ON RIGHT SIDE QUERY THE EVENT STORE OR USE EVENT SOURCING TO REHYDRATE ENTITIES</h4>
+<h4>NOTE: FOR BLAZOR ADMIN, FORCE ADMIN LOGIN - PUBLIC HTTP CLIENT IS AVAILABLE FOR A LANDING PAGE PRODUCTS, BUT CURRENTLY NOT USED ANYWHERE</h4>
 <h5 class="mt-2">    --- need separate interfaces to use both DownstreamApi and HttpClient services, register both.</h5>
 <h5 class="mt-2">    --- comment endpoints in each service as appropriate based on whether should be anonymous or authenticated .</h5>
 <h5 class="mt-2">    --- razor pages need to be updated to call correct service - if comment correctly should show method undefined error on page.</h5>
