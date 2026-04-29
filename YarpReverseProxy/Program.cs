@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.TokenCacheProviders.Distributed;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Logging;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading.RateLimiting;
 using Yarp.ReverseProxy.Transforms;
@@ -22,6 +24,19 @@ JwtSecurityTokenHandler.DefaultMapInboundClaims = false;  // Prevent automatic m
 /// which simplifies configuration by automatically binding settings from configuration (e.g. appsettings.json) 
 /// and provides additional features like automatic token validation and integration with Azure AD.
 builder.Services.AddMicrosoftIdentityWebApiAuthentication(builder.Configuration, "AzureAd", subscribeToJwtBearerMiddlewareDiagnosticsEvents: true);
+/// If use Option 1, configure a custom validator to prevent audience validation if have multiple downstream APIs with different audiences 
+builder.Services.Configure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateAudience = false, // Skip audience validation
+        ValidIssuer = builder.Configuration["AZURE_CREDENTIALS_AUTHORITY"],  
+        ValidateIssuer = true
+        /// configure other settings as desired ...
+        // ValidateIssuerSigningKey = true,
+        // ValidateLifetime = true
+    };
+});
 /// OPTION 2: Manually configure JWT Bearer authentication, which provides more control over the configuration but 
 /// requires more code and careful handling of token validation parameters.
 /// If use this option, make sure to set TokenValidationParameters.ValidateAudience to false and ADD TRANSFORM TO PASS THE TOKEN in AddReverseProxy() below
