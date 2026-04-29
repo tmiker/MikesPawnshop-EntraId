@@ -10,23 +10,26 @@
 <p>If have no account - get option to add address or account - need to show only add account (adding an address without an account will throw)</p>
 <p>Cart and Checkout button display</p>
 
-<h4 class="mt-2">Can't use anonymous endpoints with DownstreamApi - Products.Read API and any other anonymous endpoints need standard HttpClient not DownstreamApi.</h4>
+<h3 class="mt-4">YARP Auth settings:</h3>
+<h4 class="mt-2">Blazor Consumer - needed to remove "AuthorizationPolicy": "anonymous" from Yarp Products route as will always cause to omit token. </h4>
+<p class="text-danger">    --- Setting Route "AuthorizationPolicy": "anonymous" causes downstream api for Claims to fail as the token is omitted for the products api.</p>
+<p class="text-danger">    --- Removing "AuthorizationPolicy": "anonymous" allows both authenticated and anonymous access to the API alone with the API determining access or not.</p>
+<h4 class="mt-2">For API routes other than Products, i.e. those always requiring auth, could set an auth policy to enforce at YARP vs at the API. </h4>
+<p class="text-danger">    --- Currently no auth policies are set for YARP routes.</p>
+
+<h4 class="mt-4">Can't use anonymous endpoints with DownstreamApi - Products.Read API and any other anonymous endpoints need standard HttpClient not DownstreamApi.</h4>
 <h4>NOTE: BLAZOR CONSUMER, READ SIDE PRODUCTS ONLY:  GET METHODS ON RIGHT SIDE QUERY THE EVENT STORE OR USE EVENT SOURCING TO REHYDRATE ENTITIES</h4>
-<h4>NOTE: FOR BLAZOR ADMIN, FORCE ADMIN LOGIN - PUBLIC HTTP CLIENT IS AVAILABLE FOR A LANDING PAGE PRODUCTS, BUT CURRENTLY NOT USED ANYWHERE</h4>
+<h4>NOTE: FOR BLAZOR ADMIN, FORCE ADMIN LOGIN - PUBLIC HTTP CLIENT IS AVAILABLE FOR A LANDING PAGE PRODUCTS OR IF DESIRED STOREFRONT, BUT CURRENTLY NOT USED ANYWHERE</h4>
 <h5 class="mt-2">    --- need separate interfaces to use both DownstreamApi and HttpClient services, register both.</h5>
 <h5 class="mt-2">    --- comment endpoints in each service as appropriate based on whether should be anonymous or authenticated .</h5>
 <h5 class="mt-2">    --- razor pages need to be updated to call correct service - if comment correctly should show method undefined error on page.</h5>
 
 
-@* <h1>CONSUMER CLIENT</h1>
-
-<h2 class="mt-4">Mikes Pawnshop with Entra Id and APIs using Azure Cosmos Db</h2>
-
-<p class="mt-4">Accounts API DevTestController - removed [Authorize] attribute from User Info endpoint.</p>
-<p>Blazor Consumer Products > Dev Test at-page "/products/devTesting" - removed auth attribute</p>
-<p>Check remove DevTestOnlyMiddleware from Blazor Consumer and Accounts API</p>
-
-
-<h4 class="mt-2">CHECK AUDIENCE VALUE RECIEVED BY ACCOUNTS API</h4>
-
-<h2 class="mt-2">!!!!!!!!!!!!!!! CHECK APIs and CLIENTs HAVE JsonWebTokenHandler.DefaultInboundClaimTypeMap.Clear(); - ACCOUNTS DOES NOT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</h2> *@
+<h1>CACHING</h1>
+<h2 class="mt-4">Caching on anonymous requests for Products GET (Blazor Consumer, not Blazor Admin).</h2>
+<h4 class="mt-2">2 Factors affect appearance of caching</h4>
+<p class="mt-2">Whether the request is actually cached based on time.</p>
+<p class="mt-2">Whether the page data is refreshed based on Blazor Component architecture </p>
+<p>    --- Product List and Detail are child components of Storefront, so unless they are intentionally refreshed after add/update/delete, the data is not refetched when switch pages.</p>
+<p>    --- This means, even with no caching, the data in the list and detail is not refreshed unless a PAGE CHANGE is commanded, or a product is ADDED, UPDATED, DELETED.</p>
+<p class="mt-2">For Blazor Admin, caching is currently not used as it uses DownstreamApi, hence requests have auth header, so API will not cache response.</p>
