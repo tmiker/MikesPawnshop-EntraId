@@ -5,6 +5,7 @@ using Consumer.Blazor.Client.Services;
 using Consumer.Blazor.Client.Utility;
 using Consumer.Blazor.Components;
 using Consumer.Blazor.DownstreamApiServices;
+using Consumer.Blazor.HttpServices;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -13,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.TokenCacheProviders.Distributed;
 using Microsoft.IdentityModel.JsonWebTokens;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -115,13 +117,13 @@ builder.Services.AddScoped<IOrdersHttpService, OrdersApiService>();
 builder.Services.AddScoped<IClaimsHttpService, ClaimsApiService>();
 
 //// HTTP Clients
-//builder.Services.AddHttpClient(name: StaticData.ProductsReadHttpClient_ClientName, configureClient: config =>
-//{
-//    config.BaseAddress = new Uri(StaticData.ProductsReadHttpClient_BaseURL);
-//    config.DefaultRequestHeaders.Clear();
-//    config.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-//}).AddUserAccessTokenHandler();
-// builder.Services.AddSingleton<IProductsReadHttpService, ProductsReadHttpService>();
+builder.Services.AddHttpClient(name: StaticData.ProductsReadHttpClient_ClientName, configureClient: config =>
+{
+    config.BaseAddress = new Uri(StaticData.ProductsReadHttpClient_BaseURL);
+    config.DefaultRequestHeaders.Clear();
+    config.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+});     // NO TOKEN HANDLER REQUIRED - INTENDED FOR PUBLIC ENDPOINTS    // .AddUserAccessTokenHandler();
+builder.Services.AddSingleton<IPublicProductsReadHttpService, ProductsReadHttpService>();
 //builder.Services.AddHttpClient(name: StaticData.CartsHttpClient_ClientName, configureClient: config =>
 //{
 //    config.BaseAddress = new Uri(StaticData.CartsHttpClient_BaseURL);

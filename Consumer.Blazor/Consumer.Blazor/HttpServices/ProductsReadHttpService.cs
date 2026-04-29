@@ -9,7 +9,7 @@ using System.Text.Json;
 
 namespace Consumer.Blazor.HttpServices
 {
-    public class ProductsReadHttpService : IProductsReadHttpService
+    public class ProductsReadHttpService : IPublicProductsReadHttpService
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<ProductsReadHttpService> _logger;
