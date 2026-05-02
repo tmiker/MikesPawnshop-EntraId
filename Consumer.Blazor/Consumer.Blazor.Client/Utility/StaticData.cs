@@ -4,6 +4,7 @@
     {
         /// WASM API Base Address
         public const string WasmClient_LocalApiBaseAddress = "https://localhost:7217";
+        public const string WasmClient_AzureApiBaseAddress = "https://pawnshopconsumer-dtaugcdmfrfvbygz.centralus-01.azurewebsites.net";
 
         /// NOTE: This webclient accesses API Resources through the YARP Reverse Proxy.
 

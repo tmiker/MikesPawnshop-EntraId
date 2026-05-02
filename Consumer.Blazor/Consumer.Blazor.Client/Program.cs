@@ -11,7 +11,7 @@ builder.Services.AddKeyedScoped<HttpClient>("LocalConsumerWasmClient",
     (sp, key) =>
        new HttpClient
        {
-           BaseAddress = new Uri(StaticData.WasmClient_LocalApiBaseAddress ??                    // new Uri(builder.Configuration["LocalConsumerWasmClientBaseAddress"] ??
+           BaseAddress = new Uri(StaticData.WasmClient_AzureApiBaseAddress ??                    // new Uri(builder.Configuration["LocalConsumerWasmClientBaseAddress"] ??
                 throw new Exception("LocalConsumerWasmClient BaseAddress is missing."))
        });
 
