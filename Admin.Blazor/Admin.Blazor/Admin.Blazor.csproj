@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>507195f0-b0f8-492f-8178-90121f971a5d</UserSecretsId>
@@ -9,11 +9,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Admin.Blazor.Client\Admin.Blazor.Client.csproj" />
-    <PackageReference Include="Duende.AccessTokenManagement.OpenIdConnect" Version="4.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="9.0.11" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.11" />
-    <PackageReference Include="Microsoft.Identity.Web" Version="4.8.0" />
-    <PackageReference Include="Microsoft.Identity.Web.DownstreamApi" Version="4.8.0" />
+    <PackageReference Include="Duende.AccessTokenManagement.OpenIdConnect" Version="4.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.7" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="4.9.0" />
+    <PackageReference Include="Microsoft.Identity.Web.DownstreamApi" Version="4.9.0" />
     <PackageReference Include="Serilog.Sinks.Console.LogThemes" Version="0.4.0" />
   </ItemGroup>
 
