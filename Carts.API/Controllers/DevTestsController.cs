@@ -41,8 +41,8 @@ namespace Carts.API.Controllers
             _logger.LogInformation("External Carts API method GetApiUserInfo ACTION CLAIMS COUNT: {count}", actionClaims.Count());          // 20
             var username = User.Identity?.Name; // Works if "sub" or "name" claim is mapped
             _logger.LogInformation("External Carts API method GetApiUserInfo was called. USERNAME: {username}", username);                  // null
-            string? ownerId = User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
-            _logger.LogInformation("External Carts API method GetApiUserInfo Owner Id: {id}.", ownerId);                                    // 3
+            string? ownerId = User.Claims.FirstOrDefault(c => c.Type == "oid")?.Value;
+            _logger.LogInformation("External Carts API method GetApiUserInfo Owner Id: {id}.", ownerId);                                   
 
             string authHeaderPrefix = "Bearer ";
             string authorizationHeaderValue = Request.Headers.Authorization.ToString();

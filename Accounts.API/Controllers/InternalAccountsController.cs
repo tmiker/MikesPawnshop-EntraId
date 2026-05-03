@@ -57,6 +57,5 @@ namespace Accounts.API.Controllers
             if (result.IsSuccess) return Ok(result);
             return BadRequest(result);
         }
-
     }
 }

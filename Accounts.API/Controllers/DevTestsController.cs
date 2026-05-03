@@ -45,10 +45,10 @@ namespace Accounts.API.Controllers
                 //// Log HttpContext IdToken and AccessToken
                 string? identityToken = await HttpContext.GetTokenAsync(OpenIdConnectParameterNames.IdToken);
                 // string jsonIdentityToken = JsonSerializer.Serialize(identityToken, _jsonOptions);
-                _logger.LogInformation("External Carts API method GetApiUserInfo IDENTITY TOKEN from HttpContext: {idtoken}", identityToken);
+                _logger.LogInformation("External Accounts API method GetApiUserInfo IDENTITY TOKEN from HttpContext: {idtoken}", identityToken);
                 string? accessToken = await HttpContext.GetTokenAsync(OpenIdConnectParameterNames.AccessToken);
                 // string jsonAccessToken = JsonSerializer.Serialize(accessToken, _jsonOptions);
-                _logger.LogInformation("External Carts API method GetApiUserInfo ACCESS TOKEN from HttpContext: {accesstoken}", accessToken);
+                _logger.LogInformation("External Accounts API method GetApiUserInfo ACCESS TOKEN from HttpContext: {accesstoken}", accessToken);
 
                 //// Add HttpContext.User.Claims to ApiUserInfoDTO and Log HttpContext.User.Claims
                 List<Claim>? userClaims = HttpContext.User?.Claims.ToList();
@@ -59,7 +59,7 @@ namespace Accounts.API.Controllers
                         if (claim.Type == "roles") apiUserInfoDTO.ApiUserClaimsRolesList.Add(claim.Value);
                         apiUserInfoDTO.ApiUserClaimsClaimsList.Add($"{claim.Type} : {claim.Value}");
                     }
-                    _logger.LogInformation("External Carts API method GetApiUserInfo HTTPCONTEXT USER CLAIMS COUNT: {count}", userClaims.Count());    // 20
+                    _logger.LogInformation("External Accounts API method GetApiUserInfo HTTPCONTEXT USER CLAIMS COUNT: {count}", userClaims.Count());    // 20
                 }
                 else
                 {
@@ -68,11 +68,11 @@ namespace Accounts.API.Controllers
 
                 //// Log User.Claims and User.Identity.Name and "sub" claim value
                 var actionClaims = User.Claims;
-                _logger.LogInformation("External Carts API method GetApiUserInfo ACTION CLAIMS COUNT: {count}", actionClaims.Count());          // 20
+                _logger.LogInformation("External Accounts API method GetApiUserInfo ACTION CLAIMS COUNT: {count}", actionClaims.Count());          // 20
                 var username = User.Identity?.Name; // Works if "sub" or "name" claim is mapped
-                _logger.LogInformation("External Carts API method GetApiUserInfo was called. USERNAME: {username}", username);                  // null
-                string? ownerId = User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
-                _logger.LogInformation("External Carts API method GetApiUserInfo Owner Id: {id}.", ownerId);                                    // 3
+                _logger.LogInformation("External Accounts API method GetApiUserInfo was called. USERNAME: {username}", username);                  // null
+                string? ownerId = User.Claims.FirstOrDefault(c => c.Type == "oid")?.Value;
+                _logger.LogInformation("External Accounts API method GetApiUserInfo Owner Id: {id}.", ownerId);
 
                 await LogIdentityInformation();
 

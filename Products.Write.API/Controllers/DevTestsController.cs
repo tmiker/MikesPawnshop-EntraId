@@ -45,13 +45,13 @@ namespace Products.Write.API.Controllers
         public async Task<ActionResult<ApiUserInfoDTO>> GetApiUserInfo()
         {
             var contextClaims = HttpContext.User.Claims;
-            _logger.LogInformation("External Carts API method GetApiUserInfo HTTPCONTEXT CLAIMS COUNT: {count}", contextClaims.Count());    // 20
+            _logger.LogInformation("Products Write API method GetApiUserInfo HTTPCONTEXT CLAIMS COUNT: {count}", contextClaims.Count());    // 20
             var actionClaims = User.Claims;
-            _logger.LogInformation("External Carts API method GetApiUserInfo ACTION CLAIMS COUNT: {count}", actionClaims.Count());          // 20
+            _logger.LogInformation("Products Write API method GetApiUserInfo ACTION CLAIMS COUNT: {count}", actionClaims.Count());          // 20
             var username = User.Identity?.Name; // Works if "sub" or "name" claim is mapped
-            _logger.LogInformation("External Carts API method GetApiUserInfo was called. USERNAME: {username}", username);                  // null
-            string? ownerId = User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
-            _logger.LogInformation("External Carts API method GetApiUserInfo Owner Id: {id}.", ownerId);                                    // 3
+            _logger.LogInformation("Products Write API method GetApiUserInfo was called. USERNAME: {username}", username);                  // null
+            string? ownerId = User.Claims.FirstOrDefault(c => c.Type == "oid")?.Value;
+            _logger.LogInformation("Products Write API method GetApiUserInfo Owner Id: {id}.", ownerId);                                    
 
             string authHeaderPrefix = "Bearer ";
             string authorizationHeaderValue = Request.Headers.Authorization.ToString();
@@ -59,10 +59,10 @@ namespace Products.Write.API.Controllers
 
             string? identityToken = await HttpContext.GetTokenAsync(OpenIdConnectParameterNames.IdToken);
             // string jsonIdentityToken = JsonSerializer.Serialize(identityToken, _jsonOptions);
-            _logger.LogInformation("External Carts API method GetApiUserInfo IDENTITY TOKEN from HttpContext: {idtoken}", identityToken);
+            _logger.LogInformation("Products Write API method GetApiUserInfo IDENTITY TOKEN from HttpContext: {idtoken}", identityToken);
             string? accessToken = await HttpContext.GetTokenAsync(OpenIdConnectParameterNames.AccessToken);
             // string jsonAccessToken = JsonSerializer.Serialize(accessToken, _jsonOptions);
-            _logger.LogInformation("External Carts API method GetApiUserInfo ACCESS TOKEN from HttpContext: {accesstoken}", accessToken);
+            _logger.LogInformation("Products Write API method GetApiUserInfo ACCESS TOKEN from HttpContext: {accesstoken}", accessToken);
 
             ApiUserInfoDTO apiUserInfoDTO = _tokenDecoder.GetTokenData(accessTokenFromHeader);
 
@@ -85,7 +85,7 @@ namespace Products.Write.API.Controllers
         // Query service propagated endpoints
 
         [HttpGet("pagedAndFilteredProductSnapshots")]
-        // [Authorize(Policy = "IsAdmin")]
+        [Authorize(Policy = "IsAdmin")]
         public async Task<ActionResult<PagedProductSnapshotResult>> GetPagedAndFilteredProductSnapshots(
             string? aggregateId,
             string? category,
@@ -102,7 +102,7 @@ namespace Products.Write.API.Controllers
         }
 
         [HttpGet("productSnapshots")]
-        // [Authorize(Policy = "IsAdmin")]
+        [Authorize(Policy = "IsAdmin")]
         public async Task<ActionResult<PagedProductSnapshotResult>> GetProductSnapshots(
             string? aggregateId,
             int minVersion = 0,
@@ -118,7 +118,7 @@ namespace Products.Write.API.Controllers
         }
 
         [HttpGet("productSnapshot/{aggregateId}")]
-        // [Authorize(Policy = "IsAdmin")]
+        [Authorize(Policy = "IsAdmin")]
         public async Task<ActionResult<ProductSnapshot>> GetProductSnapshot(
             string? aggregateId,
             int minVersion = 0,
@@ -132,7 +132,7 @@ namespace Products.Write.API.Controllers
         }
 
         [HttpGet("eventRecords")]
-        // [Authorize(Policy = "IsAdmin")]
+        [Authorize(Policy = "IsAdmin")]
         public async Task<ActionResult<PagedEventRecordResult>>  GetEventRecords(
             string? aggregateId,
             string? correlationId = null,
@@ -153,7 +153,7 @@ namespace Products.Write.API.Controllers
         }
 
         [HttpGet("outboxRecords")]
-        // [Authorize(Policy = "IsAdmin")]
+        [Authorize(Policy = "IsAdmin")]
         public async Task<ActionResult<PagedOutboxRecordResult>> GetOutboxRecords(
             string? aggregateId,
             string? correlationId = null,
@@ -170,7 +170,7 @@ namespace Products.Write.API.Controllers
         }
 
         [HttpGet("snapshotRecords")]
-        // [Authorize(Policy = "IsAdmin")]
+        [Authorize(Policy = "IsAdmin")]
         public async Task<ActionResult<PagedSnapshotRecordResult>> GetSnapshotRecords(
             string? aggregateId,
             string? correlationId = null,
@@ -189,7 +189,7 @@ namespace Products.Write.API.Controllers
         // Command propagated endpoints
 
         [HttpPost("throwExceptionForTesting")]
-        // [Authorize(Policy = "IsAdmin")]
+        [Authorize(Policy = "IsAdmin")]
         public async Task<IActionResult> ThrowExceptionForTesting([FromBody] ThrowExceptionDTO throwExceptionDTO, CancellationToken cancellationToken)
         {
             // Note passing Correlation ID from the request headers to the command as Microsoft recommends
@@ -208,7 +208,7 @@ namespace Products.Write.API.Controllers
 
 
         [HttpGet("getCloudAmqpSettingsTestingDummyValue")]
-        // [Authorize(Policy = "IsAdmin")]
+        [Authorize(Policy = "IsAdmin")]
         public IActionResult GetCloudAmqpTestingDummyValue(CancellationToken cancellationToken)
         {
             string? value = _cloudAmqpSettings.Value.TestingDummyValue;
@@ -217,7 +217,7 @@ namespace Products.Write.API.Controllers
         }
 
         [HttpPost("purgeData")]
-        // [Authorize(Policy = "IsAdmin")]
+        [Authorize(Policy = "IsAdmin")]
         public async Task<IActionResult> PurgeData([FromBody] PurgeDataDTO purgeDataDTO, CancellationToken cancellationToken)
         {
             var validator = new PurgeDataDtoValidator();

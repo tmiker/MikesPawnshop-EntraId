@@ -52,6 +52,7 @@ namespace Accounts.API.Services
             string decryptedOwnerId = _rsaEncryptor.DecryptUsingRsaXmlString(requestDTO.EncryptedOwnerId, publicAndPrivateKeys);
             // _logger.LogInformation("*** {this}: Decrypted OwnerId using RSA decryption keys. Decrypted OwnerId: {did} ***", this.GetType().Name, decryptedOwnerId); // *** DEV ONLY REMOVE *** //
 
+            // DELETE KEYS AND CONTAINER TO CLEAN UP RESOURCES AS NO LONGER NEEDED
             _rsaKeyContainerManager.DeleteKeyFromContainer(requestDTO.KeyContainerName);
 
             if (decryptedOwnerId == null)

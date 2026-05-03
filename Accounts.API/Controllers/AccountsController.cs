@@ -57,7 +57,7 @@ namespace Accounts.API.Controllers
         [Authorize]
         public async Task<ActionResult<bool>> AccountIsEstablished()
         {
-            string? ownerId = User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
+            string? ownerId = User.Claims.FirstOrDefault(c => c.Type == "oid")?.Value;
             if (ownerId == null) throw new InvalidUserCredentitalsException($"User identity information unavailable. Unauthorized access to restricted resource.");
 
             var result = await _accountService.GetAccountByOwnerIdAsync(ownerId);
@@ -70,7 +70,7 @@ namespace Accounts.API.Controllers
         [Authorize]
         public async Task<ActionResult<AccountDTO>> GetByOwnerId()
         {
-            string? ownerId = User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
+            string? ownerId = User.Claims.FirstOrDefault(c => c.Type == "oid")?.Value;
             if (ownerId == null) throw new InvalidUserCredentitalsException($"User identity information unavailable. Unauthorized access to restricted resource.");
 
             var result = await _accountService.GetAccountByOwnerIdAsync(ownerId);
@@ -98,7 +98,7 @@ namespace Accounts.API.Controllers
         [Authorize]
         public async Task<IActionResult> Post(AddAccountDTO addAccountDTO)
         {
-            string? ownerId = User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
+            string? ownerId = User.Claims.FirstOrDefault(c => c.Type == "oid")?.Value;
             if (ownerId == null) throw new InvalidUserCredentitalsException($"User identity information unavailable. Unauthorized access to restricted resource.");
 
             var result = await _accountService.CreateAccountAsync(ownerId, addAccountDTO);
@@ -110,7 +110,7 @@ namespace Accounts.API.Controllers
         [Authorize]
         public async Task<IActionResult> Put(AddAddressDTO addAddressDTO)
         {
-            string? ownerId = User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
+            string? ownerId = User.Claims.FirstOrDefault(c => c.Type == "oid")?.Value;
             if (ownerId == null) throw new InvalidUserCredentitalsException($"User identity information unavailable. Unauthorized access to restricted resource.");
 
             var result = await _accountService.AddAddressAsync(ownerId, addAddressDTO);
