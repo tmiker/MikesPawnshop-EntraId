@@ -1,2 +1,2 @@
 Deployed Consumer.Blazor
-	test
+	test, test
