@@ -30,14 +30,14 @@ jobs:
         run: dotnet restore
 
       - name: Build with dotnet
-        run: dotnet build ./Consumer.Blazor/Consumer.Blazor.csproj --configuration Release
+        run: dotnet build ./Consumer.Blazor/Consumer.Blazor/Consumer.Blazor.csproj --configuration Release
         # run: dotnet build --configuration Release
 
       - name: Install wasm-tools workload 
         run: dotnet workload install wasm-tools
 
       - name: dotnet publish
-        run: dotnet publish ./Consumer.Blazor/Consumer.Blazor.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish ./Consumer.Blazor/Consumer.Blazor/Consumer.Blazor.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
         # run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload artifact for deployment job
