@@ -13,6 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notes", "Notes", "{02EA681E
 		azure_notes.txt = azure_notes.txt
 		cache_notes.txt = cache_notes.txt
 		correlationid_notes.txt = correlationid_notes.txt
+		deploy.txt = deploy.txt
 		error_handling.txt = error_handling.txt
 		event_dispatch.txt = event_dispatch.txt
 		fluent_validation.txt = fluent_validation.txt
