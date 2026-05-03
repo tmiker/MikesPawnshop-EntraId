@@ -42,6 +42,7 @@ namespace Accounts.API.Controllers
         [OrdersApiKey]
         public async Task<ActionResult<AccountStatusResponseDTO?>> GetAccountStatus(AccountStatusRequestDTO requestDTO)
         {
+            // the AccountStatusRequestDTO contains the KeyContainerName and the EncryptedOwnerId
             _logger.LogInformation("{this}: GetAccountDetail(AccountStatusRequestDTO requestDTO) endpoint entered", this.GetType().Name);
 
             // DEV ONLY: Check API Key from header via Auth Filter Attribute
