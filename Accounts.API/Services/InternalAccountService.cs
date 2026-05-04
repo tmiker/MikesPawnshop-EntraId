@@ -7,6 +7,7 @@ namespace Accounts.API.Services
 {
     public class InternalAccountService : IInternalAccountService
     {
+        private readonly IConfiguration _config;
         private readonly IMongoCollection<Account> _accounts;
         private readonly IAccountDataMapper _mapper;
         private readonly IRsaAsymmetricKeyContainerManager _rsaKeyContainerManager;
@@ -16,13 +17,16 @@ namespace Accounts.API.Services
         private const int _baseCreditLimit = 5000;
 
         public InternalAccountService(
+            IConfiguration config,
             IMongoSettings mongoSettings, 
             IAccountDataMapper mapper, 
             IRsaAsymmetricKeyContainerManager rsaKeyContainerManager,
             IRsaAsymmetricEncryptionManager rsaEncryptor,
             ILogger<InternalAccountService> logger)
         {
-            var client = new MongoClient(mongoSettings.MongoLocalConnection);
+            _config = config;
+            string? environment = _config["ASPNETCORE_ENVIRONMENT"];
+            var client = environment == "Development" ? new MongoClient(mongoSettings.MongoLocalConnection) : new MongoClient(mongoSettings.AZURE_MONGO_CONNECTION);
             var database = client.GetDatabase(mongoSettings.Database);
             _accounts = database.GetCollection<Account>(mongoSettings.AccountCollection);
             _mapper = mapper;

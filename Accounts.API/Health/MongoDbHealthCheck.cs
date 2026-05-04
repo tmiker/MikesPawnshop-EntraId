@@ -7,11 +7,14 @@ namespace Accounts.API.Health
 {
     public class MongoDbHealthCheck : IHealthCheck
     {
+        private readonly IConfiguration _config;
         private readonly IMongoDatabase _database;
 
-        public MongoDbHealthCheck(IMongoSettings mongoSettings)
+        public MongoDbHealthCheck(IConfiguration config, IMongoSettings mongoSettings)
         {
-            var client = new MongoClient(mongoSettings.MongoLocalConnection);
+            _config = config;
+            string? environment = _config["ASPNETCORE_ENVIRONMENT"];
+            var client = environment == "Development" ? new MongoClient(mongoSettings.MongoLocalConnection) : new MongoClient(mongoSettings.AZURE_MONGO_CONNECTION);
             _database = client.GetDatabase(mongoSettings.Database);
         }
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)

@@ -7,16 +7,18 @@ namespace Accounts.API.Services
 {
     public class AccountService : IAccountService
     {
+        private readonly IConfiguration _config;
         private readonly IMongoCollection<Account> _accounts;
         private readonly IAccountDataMapper _mapper;
         private readonly ILogger<AccountService> _logger;
 
         private const int _baseCreditLimit = 5000;
 
-        public AccountService(IMongoSettings mongoSettings, IAccountDataMapper mapper, ILogger<AccountService> logger)
+        public AccountService(IConfiguration config, IMongoSettings mongoSettings, IAccountDataMapper mapper, ILogger<AccountService> logger)
         {
-            var client = new MongoClient(mongoSettings.MongoLocalConnection);
-            // var client = new MongoClient(mongoSettings.MongoAzureConnection);  // SHOULD MOVE FROM APP SETTINGS TO SECRETS
+            _config = config;
+            string? environment = _config["ASPNETCORE_ENVIRONMENT"];
+            var client = environment == "Development" ? new MongoClient(mongoSettings.MongoLocalConnection) : new MongoClient(mongoSettings.AZURE_MONGO_CONNECTION);
             var database = client.GetDatabase(mongoSettings.Database);
             _accounts = database.GetCollection<Account>(mongoSettings.AccountCollection);
             _mapper = mapper;
