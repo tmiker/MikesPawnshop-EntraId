@@ -10,12 +10,12 @@ namespace Accounts.API.Health
         private readonly IConfiguration _config;
         private readonly IMongoDatabase _database;
 
-        public MongoDbHealthCheck(IConfiguration config, IMongoSettings mongoSettings)
+        public MongoDbHealthCheck(IConfiguration config)
         {
             _config = config;
             string? environment = _config["ASPNETCORE_ENVIRONMENT"];
-            var client = environment == "Development" ? new MongoClient(mongoSettings.MongoLocalConnection) : new MongoClient(mongoSettings.AZURE_MONGO_CONNECTION);
-            _database = client.GetDatabase(mongoSettings.Database);
+            var client = environment == "Development" ? new MongoClient(_config["MongoSettings__MongoLocalConnection"]) : new MongoClient(_config["MongoSettings__AZURE_MONGO_CONNECTION"]);
+            _database = client.GetDatabase(_config["MongoSettings__Database"]);
         }
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {

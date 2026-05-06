@@ -2,9 +2,9 @@
 {
     public interface IMongoSettings
     {
-        string? MongoLocalConnection { get; }
-        string? AZURE_MONGO_CONNECTION { get; }
-        string? Database { get; }
-        string? AccountCollection { get; }
+        string? MongoSettings__MongoLocalConnection { get; }
+        string? MongoSettings__AZURE_MONGO_CONNECTION { get; }
+        string? MongoSettings__Database { get; }
+        string? MongoSettings__AccountCollection { get; }
     }
 }

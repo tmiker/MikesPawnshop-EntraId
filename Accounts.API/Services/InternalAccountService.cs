@@ -18,7 +18,6 @@ namespace Accounts.API.Services
 
         public InternalAccountService(
             IConfiguration config,
-            IMongoSettings mongoSettings, 
             IAccountDataMapper mapper, 
             IRsaAsymmetricKeyContainerManager rsaKeyContainerManager,
             IRsaAsymmetricEncryptionManager rsaEncryptor,
@@ -26,9 +25,9 @@ namespace Accounts.API.Services
         {
             _config = config;
             string? environment = _config["ASPNETCORE_ENVIRONMENT"];
-            var client = environment == "Development" ? new MongoClient(mongoSettings.MongoLocalConnection) : new MongoClient(mongoSettings.AZURE_MONGO_CONNECTION);
-            var database = client.GetDatabase(mongoSettings.Database);
-            _accounts = database.GetCollection<Account>(mongoSettings.AccountCollection);
+            var client = environment == "Development" ? new MongoClient(_config["MongoSettings__MongoLocalConnection"]) : new MongoClient(_config["MongoSettings__AZURE_MONGO_CONNECTION"]);
+            var database = client.GetDatabase(_config["MongoSettings__Database"]);
+            _accounts = database.GetCollection<Account>(_config["MongoSettings__AccountCollection"]);
             _mapper = mapper;
             _rsaKeyContainerManager = rsaKeyContainerManager;
             _rsaEncryptor = rsaEncryptor;
