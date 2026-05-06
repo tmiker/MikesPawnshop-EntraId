@@ -10,5 +10,9 @@ namespace Admin.Blazor.Client.Abstractions
         Task<(bool IsSuccess, AccountDTO? Account, string? ErrorMessage)> GetAccountAsync();
         Task<(bool IsSuccess, string? ErrorMessage)> CreateAccountAsync(AddAccountDTO addAccountDTO);
         Task<(bool IsSuccess, string? ErrorMessage)> AddAddressAsync(AddAddressDTO addAddressDTO);
+
+        // DEV TESTING
+        Task<(bool IsSuccess, string? ErrorMessage)> CreateTestAccountAsync();
+        Task<(bool IsSuccess, AccountDTO? Account, string? ErrorMessage)> GetTestAccountAsync();
     }
 }

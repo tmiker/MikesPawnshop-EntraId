@@ -2,6 +2,7 @@
 using Admin.Blazor.Client.DTOs.Accounts;
 using Admin.Blazor.Client.DTOs.Health;
 using Admin.Blazor.Client.Utility;
+using Microsoft.Identity.Abstractions;
 using System.Text;
 using System.Text.Json;
 
@@ -136,6 +137,51 @@ namespace Admin.Blazor.HttpServices
             string responseContent = await response.Content.ReadAsStringAsync();
             if (!string.IsNullOrEmpty(responseContent)) errorMessage += $"Response Content: {responseContent}; ";
             return errorMessage;
+        }
+
+        // DEV TESTING
+        public async Task<(bool IsSuccess, string? ErrorMessage)> CreateTestAccountAsync()
+        {
+            string uri = $"{StaticData.AccountsApiService_AccountsPath}/testCreateAccount";
+            var client = _httpClientFactory.CreateClient(StaticData.AccountsHttpClient_ClientName);
+
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
+            HttpResponseMessage response = await client.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return (true, null);
+            }
+            else
+            {
+                string errorMessage = await GetErrorMessageAsync(response);
+                return (false, errorMessage);
+            }
+        }
+
+        public async Task<(bool IsSuccess, AccountDTO? Account, string? ErrorMessage)> GetTestAccountAsync()
+        {
+            string uri = $"{StaticData.AccountsApiService_AccountsPath}/getTestAccount";
+            var client = _httpClientFactory.CreateClient(StaticData.AccountsHttpClient_ClientName);
+
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
+            HttpResponseMessage response = await client.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                AccountDTO? accountDTO = await response.Content.ReadFromJsonAsync<AccountDTO>();
+                if (accountDTO is not null)
+                {
+                    string jsonAccount = JsonSerializer.Serialize(accountDTO);
+                    Console.WriteLine($"\n************\nAccountsHttpService GetTestAccountAsync() result: \n{jsonAccount}\n************\n");
+                }
+                return (true, accountDTO, null);
+            }
+            else
+            {
+                string errorMessage = await GetErrorMessageAsync(response);
+                return (false, null, errorMessage);
+            }
         }
     }
 }

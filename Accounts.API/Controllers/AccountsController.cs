@@ -27,6 +27,9 @@ namespace Accounts.API.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> TestCreateAccount()
         {
+            var accountExists = await _accountService.GetAccountByOwnerIdAsync("testOwnerId");
+            if (accountExists.IsSuccess && accountExists.Account is not null) return BadRequest("Test account already exists. Delete existing test account before creating a new one.");
+
             AddressDTO addressDTO = new AddressDTO()
             {
                 IsPrimaryBilling = true,
@@ -53,6 +56,25 @@ namespace Accounts.API.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
+        [HttpGet("getTestAccount")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetTestAccount()
+        {
+            string? ownerId = "testOwnerId";
+            if (ownerId == null) throw new InvalidUserCredentitalsException($"User identity information unavailable. Unauthorized access to restricted resource.");
+
+            var result = await _accountService.GetAccountByOwnerIdAsync(ownerId);
+
+            if (result.Account is not null)
+            {
+                string jsonAccount = JsonSerializer.Serialize(result.Account);
+                _logger.LogInformation("Account Retrieved: {@result.Account}", result.Account);
+            }
+
+            if (result.IsSuccess) return Ok(result.Account);
+            return BadRequest(result.ErrorMessage);
+        }
+
         [HttpGet("accountEstablished")]
         [Authorize]
         public async Task<ActionResult<bool>> AccountIsEstablished()
@@ -75,11 +97,11 @@ namespace Accounts.API.Controllers
 
             var result = await _accountService.GetAccountByOwnerIdAsync(ownerId);
 
-            if (result.Account is not null)
-            {
-                string jsonAccount = JsonSerializer.Serialize(result.Account);
-                _logger.LogInformation("Account Retrieved: {@result.Account}", result.Account);
-            }
+            //if (result.Account is not null)
+            //{
+            //    string jsonAccount = JsonSerializer.Serialize(result.Account);
+            //    _logger.LogInformation("Account Retrieved: {@result.Account}", result.Account);
+            //}
 
             if (result.IsSuccess) return Ok(result.Account);
             return BadRequest(result.ErrorMessage);

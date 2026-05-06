@@ -165,5 +165,61 @@ namespace Admin.Blazor.DownstreamApiServices
             if (!string.IsNullOrEmpty(responseContent)) errorMessage += $"Response Content: {responseContent}; ";
             return errorMessage;
         }
+
+        // DEV TESTING
+        public async Task<(bool IsSuccess, string? ErrorMessage)> CreateTestAccountAsync()
+        {
+            string uri = $"{StaticData.AccountsApiService_AccountsPath}/testCreateAccount";
+
+            var response = await _downstreamApi.CallApiForUserAsync(
+                serviceName: StaticData.AccountsApiService_ServiceName,
+                downstreamApiOptionsOverride: options =>
+                {
+                    options.HttpMethod = "POST";
+                    options.RelativePath = uri;
+                });
+
+            if (response.IsSuccessStatusCode)
+            {
+                return (true, null);
+            }
+            else
+            {
+                string errorMessage = await GetErrorMessageAsync(response);
+                return (false, errorMessage);
+            }
+        }
+
+        public async Task<(bool IsSuccess, AccountDTO? Account, string? ErrorMessage)> GetTestAccountAsync()
+        {
+            string uri = $"{StaticData.AccountsApiService_AccountsPath}/getTestAccount";
+
+            var response = await _downstreamApi.CallApiForUserAsync(
+                serviceName: StaticData.AccountsApiService_ServiceName,
+                downstreamApiOptionsOverride: options =>
+                {
+                    options.HttpMethod = "GET";
+                    options.RelativePath = uri;
+                });
+
+            if (response.IsSuccessStatusCode)
+            {
+                AccountDTO? accountDTO = await response.Content.ReadFromJsonAsync<AccountDTO>();
+                if (accountDTO is not null)
+                {
+                    _logger.LogInformation("Account retrieved successfully for user first name {accountDTO.FirstName}", accountDTO.FirstName);
+                }
+                else
+                {
+                    _logger.LogWarning("Unable to retrieve the Account data for the current user.");
+                }
+                return (true, accountDTO, null);
+            }
+            else
+            {
+                string errorMessage = await GetErrorMessageAsync(response);
+                return (false, null, errorMessage);
+            }
+        }
     }
 }
