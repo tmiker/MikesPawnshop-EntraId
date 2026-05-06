@@ -70,6 +70,7 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddDownstreamApi(StaticData.AccountsApiService_ServiceName, configOptions =>              // api name
     {
         configOptions.BaseUrl = StaticData.AccountsApiService_LocalBaseURL;                    // api base url
+        // configOptions.BaseUrl = "https://pawnshopaccounts-a3fggsfedtdhgwcx.centralus-01.azurewebsites.net";
         // configOptions.BaseUrl = StaticData.AccountsApiService_AzureBaseURL;
         configOptions.Scopes = [builder.Configuration["ACCOUNTS_API_SCOPE"]!];                 // Note: scope shows in api access token, not client identity token
     })

@@ -169,7 +169,7 @@ try
 
     app.MapControllers();
 
-    app.MapGet("/", () => "Hello, his is the Accounts API.").AllowAnonymous();
+    app.MapGet("/", () => "Hello, this is the Accounts API.").AllowAnonymous();
 
     //// YARP healthcheck endpoint - uncomment if configure YARP HealthChecks for Accounts - use this URL in YARP
     //app.MapHealthChecks("/api/accounts/healthYarp", new HealthCheckOptions

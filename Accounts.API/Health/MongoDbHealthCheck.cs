@@ -14,8 +14,8 @@ namespace Accounts.API.Health
         {
             _config = config;
             string? environment = _config["ASPNETCORE_ENVIRONMENT"];
-            var client = environment == "Development" ? new MongoClient(_config["MongoSettings__MongoLocalConnection"]) : new MongoClient(_config["MongoSettings__AZURE_MONGO_CONNECTION"]);
-            _database = client.GetDatabase(_config["MongoSettings__Database"]);
+            var client = environment == "Development" ? new MongoClient(_config["LOCAL_MONGO_CONNECTION"]) : new MongoClient(_config["AZURE_MONGO_CONNECTION"]);
+            _database = client.GetDatabase(_config["MONGO_DATABASE"]);
         }
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {

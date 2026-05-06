@@ -18,9 +18,9 @@ namespace Accounts.API.Services
         {
             _config = config;
             string? environment = _config["ASPNETCORE_ENVIRONMENT"];
-            var client = environment == "Development" ? new MongoClient(_config["MongoSettings__MongoLocalConnection"]) : new MongoClient(_config["MongoSettings__AZURE_MONGO_CONNECTION"]);
-            var database = client.GetDatabase(_config["MongoSettings__Database"]);
-            _accounts = database.GetCollection<Account>(_config["MongoSettings__AccountCollection"]);
+            var client = environment == "Development" ? new MongoClient(_config["LOCAL_MONGO_CONNECTION"]) : new MongoClient(_config["AZURE_MONGO_CONNECTION"]);
+            var database = client.GetDatabase(_config["MONGO_DATABASE"]);
+            _accounts = database.GetCollection<Account>(_config["MONGO_ACCOUNT_COLLECTION"]);
             _mapper = mapper;
             _logger = logger;
         }

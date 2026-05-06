@@ -29,8 +29,8 @@ namespace Accounts.API.Crypto
 
             string publicKey = _rsaKeyContainerManager.GetPublicKeyForContainerWithName(keyContainerName);
             // Return encrypted public key by using aes encryption
-            string? aesKey = _config["IntAcctsAesSymEncryption__Key"];   // _config["IntAcctsAesSymEncryption:Key"];
-            string? iv = _config["IntAcctsAesSymEncryption__IV"];        // _config["IntAcctsAesSymEncryption:IV"];
+            string? aesKey = _config["IntAcctsAesSymEncryption_Key"];   // _config["IntAcctsAesSymEncryption:Key"];
+            string? iv = _config["IntAcctsAesSymEncryption_IV"];        // _config["IntAcctsAesSymEncryption:IV"];
             string encryptedPublicKey = _aesEncryptor.EncryptSymmetric(publicKey, aesKey!, iv!);
 
             KeyContainerResponseDTO keyContainerResponseDTO = new KeyContainerResponseDTO() { EncryptedPublicKey = encryptedPublicKey, KeyContainerName = keyContainerName };
