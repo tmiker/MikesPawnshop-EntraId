@@ -17,15 +17,34 @@ namespace Products.Read.API
 {
     public static class CompositionRoot
     {
-        public static IServiceCollection ComposeApplication(this IServiceCollection services)
+        public static IServiceCollection ComposeApplication(this IServiceCollection services, IWebHostEnvironment env)
         {
             var configuration = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
-            services.AddDbContext<ProductsReadDbContext>(options =>
+            // Add database context and cache
+            if (env.IsDevelopment())
             {
-                options.UseSqlServer(configuration.GetConnectionString("LocalDevelopmentConnectionString"));
-                // options.UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll);
-            });
+                services.AddDbContext<ProductsReadDbContext>(options =>
+                    options.UseSqlServer(configuration["LOCAL_SQL_CONNECTIONSTRING"]));
+                // services.AddDistributedMemoryCache();
+            }
+            else
+            {
+                services.AddDbContext<ProductsReadDbContext>(options =>
+                    options.UseSqlServer(configuration["AZURE_SQL_CONNECTIONSTRING"]));
+                //services.AddStackExchangeRedisCache(options =>
+                //{
+                //    options.Configuration = builder.Configuration["AZURE_REDIS_CONNECTIONSTRING"];
+                //    options.InstanceName = "ProductsReadInstance";
+                //});
+            }
+
+            /// Previous before configure for Azure deployment
+            //services.AddDbContext<ProductsReadDbContext>(options =>
+            //{
+            //    // options.UseSqlServer(configuration.GetConnectionString("LocalDevelopmentConnectionString"));
+            //    // options.UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll);
+            //});
 
             // Register FluentValidation validators
             services.AddValidatorsFromAssemblyContaining<ThrowExceptionDtoValidator>();

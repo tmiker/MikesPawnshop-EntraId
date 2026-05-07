@@ -143,7 +143,8 @@ try
     //});
 
     // Register services from Composition Root
-    builder.Services.ComposeApplication();
+    IWebHostEnvironment env = builder.Environment;
+    builder.Services.ComposeApplication(env);
 
     builder.Services.AddControllers();
     // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -180,7 +181,7 @@ try
 
     app.MapControllers();
 
-    app.MapGet("/", () => "Hello, his is the Products.Read API.");
+    app.MapGet("/", () => "Hello, this is the Products.Read API.");
 
     // YARP healthcheck endpoint
     app.MapHealthChecks("/api/products/healthYarp", new HealthCheckOptions
