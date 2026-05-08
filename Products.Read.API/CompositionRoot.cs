@@ -60,10 +60,13 @@ namespace Products.Read.API
                 config.GetSection(nameof(CloudAMQPSettings)).Bind(options);
             });
 
-            // Register CloudAMQP related services
-            string amqpUrl = configuration.GetSection("CloudAMQPSettings:Url").Value ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
-            string amqpUsername = configuration.GetSection("CloudAMQPSetting:UserVhost").Value ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
-            string amqpPassword = configuration.GetSection("CloudAMQPSettings:Password").Value ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
+            //// Register CloudAMQP related services
+            //string amqpUrl = configuration.GetSection("CloudAMQPSettings:Url").Value ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
+            //string amqpUsername = configuration.GetSection("CloudAMQPSetting:UserVhost").Value ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
+            //string amqpPassword = configuration.GetSection("CloudAMQPSettings:Password").Value ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
+            string amqpUrl = env.IsDevelopment() ? configuration.GetSection("CloudAMQPSettings:Url").Value! : configuration["CloudAMQPSettings:Url"]! ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
+            string amqpUsername = env.IsDevelopment() ? configuration.GetSection("CloudAMQPSetting:UserVhost").Value! : configuration["CloudAMQPSetting:UserVhost"]! ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
+            string amqpPassword = env.IsDevelopment() ? configuration.GetSection("CloudAMQPSettings:Password").Value! : configuration["CloudAMQPSettings:Password"]! ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
 
             services.AddMassTransit(x =>
             {
