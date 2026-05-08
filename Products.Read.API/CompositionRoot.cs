@@ -89,9 +89,7 @@ namespace Products.Read.API
                 configuration.GetSection("CloudAMQPSettings:Password").Value! :     // local dev
                 configuration["CloudAMQPSettings:Password"]! ??                     // GitHub actions
                 configuration.GetValue<string>("CloudAMQPSettings__Password")! ??   // Azure App Service
-                throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
-
-
+                throw new ArgumentNullException("Invalid Cloud AMQP Password configuration.");
 
             //// THE BELOW WORKS IN DEV BUT VALUES ARE NULL IN GIT WORKFLOW
             //string amqpUrl = configuration["CLOUD_AMQP_SETTINGS_URL"] ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
