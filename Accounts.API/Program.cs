@@ -33,9 +33,9 @@ try
 
     var builder = WebApplication.CreateBuilder(args);
 
-    // Example: Log startup details
-    Log.Information("Environment: {Environment}", builder.Environment.EnvironmentName);
-    Log.Information("Content Root: {ContentRoot}", builder.Environment.ContentRootPath);
+    //// Example: Log startup details
+    //Log.Information("Environment: {Environment}", builder.Environment.EnvironmentName);
+    //Log.Information("Content Root: {ContentRoot}", builder.Environment.ContentRootPath);
 
     // Add services to the container.
 
@@ -48,7 +48,7 @@ try
            // .WriteTo.Console());  // causes double logging if also configured in appsettings with args
 
     builder.Services.AddHealthChecks()
-    .AddCheck<MongoDbHealthCheck>(name: "MongoLocalConnectionHealthCheck");
+    .AddCheck<MongoDbHealthCheck>(name: "MongoHealthCheck"); // was MongoLocalConnectionHealthCheck
 
     builder.Services.AddCors(setup =>
     {
