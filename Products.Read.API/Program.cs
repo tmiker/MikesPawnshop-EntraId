@@ -31,9 +31,9 @@ try
 
     var builder = WebApplication.CreateBuilder(args);
 
-    // Example: Log startup details
-    Log.Information("Environment: {Environment}", builder.Environment.EnvironmentName);
-    Log.Information("Content Root: {ContentRoot}", builder.Environment.ContentRootPath);
+    //// Example: Log startup details
+    //Log.Information("Environment: {Environment}", builder.Environment.EnvironmentName);
+    //Log.Information("Content Root: {ContentRoot}", builder.Environment.ContentRootPath);
 
     // Configure Serilog
     builder.Logging.ClearProviders();
@@ -46,7 +46,7 @@ try
     // Add HealthChecks with SQL Server check
     builder.Services.AddHealthChecks()
     .AddSqlServer(
-        connectionString: builder.Configuration.GetConnectionString("LocalDevelopmentConnectionString")!,
+        connectionString: builder.Environment.IsDevelopment() ? builder.Configuration["LOCAL_SQL_CONNECTIONSTRING"]! : builder.Configuration["AZURE_SQL_READ_CONNECTIONSTRING"]!,
         name: "sqlserver",
         failureStatus: HealthStatus.Unhealthy,
         timeout: TimeSpan.FromSeconds(5),

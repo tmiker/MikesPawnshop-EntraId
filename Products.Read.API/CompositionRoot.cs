@@ -31,10 +31,10 @@ namespace Products.Read.API
             else
             {
                 services.AddDbContext<ProductsReadDbContext>(options =>
-                    options.UseSqlServer(configuration["AZURE_SQL_CONNECTIONSTRING"]));
+                    options.UseSqlServer(configuration["AZURE_SQL_READ_CONNECTIONSTRING"]));
                 //services.AddStackExchangeRedisCache(options =>
                 //{
-                //    options.Configuration = builder.Configuration["AZURE_REDIS_CONNECTIONSTRING"];
+                //    options.Configuration = builder.Configuration["AZURE_REDIS_READ_CONNECTIONSTRING"];
                 //    options.InstanceName = "ProductsReadInstance";
                 //});
             }
