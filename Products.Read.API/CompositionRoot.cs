@@ -55,10 +55,10 @@ namespace Products.Read.API
             services.AddScoped<IProductQueryService, ProductQueryService>();
             services.AddScoped<ITokenDecoder, TokenDecoder>();
 
-            services.AddOptions<CloudAMQPSettings>().Configure<IConfiguration>((options, config) =>
-            {
-                config.GetSection(nameof(CloudAMQPSettings)).Bind(options);
-            });
+            //services.AddOptions<CloudAMQPSettings>().Configure<IConfiguration>((options, config) =>
+            //{
+            //    config.GetSection(nameof(CloudAMQPSettings)).Bind(options);
+            //});
 
             //// Register CloudAMQP related services
             //string amqpUrl = configuration.GetValue<string>("CloudAMQPSettings:Url") ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
@@ -69,13 +69,20 @@ namespace Products.Read.API
             //string amqpUsername = configuration.GetSection("CloudAMQPSetting:UserVhost").Value ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
             //string amqpPassword = configuration.GetSection("CloudAMQPSettings:Password").Value ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
 
+            //// THE BELOW WORKS IN DEV AND GIT WORKFLOW BUT VALUES ARE NULL IN AZURE
             //string amqpUrl = env.IsDevelopment() ? configuration.GetSection("CloudAMQPSettings:Url").Value! : configuration["CloudAMQPSettings:Url"]! ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
             //string amqpUsername = env.IsDevelopment() ? configuration.GetSection("CloudAMQPSetting:UserVhost").Value! : configuration["CloudAMQPSetting:UserVhost"]! ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
             //string amqpPassword = env.IsDevelopment() ? configuration.GetSection("CloudAMQPSettings:Password").Value! : configuration["CloudAMQPSettings:Password"]! ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
 
-            string amqpUrl = configuration["CLOUD_AMQP_SETTINGS_URL"]! ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
-            string amqpUsername = configuration["CLOUD_AMQP_SETTINGS_USERVHOST"]! ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
-            string amqpPassword = configuration["CLOUD_AMQP_SETTINGS_PASSWORD"]! ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
+            //// THE BELOW WORKS IN DEV BUT VALUES ARE NULL IN GIT WORKFLOW
+            //string amqpUrl = configuration["CLOUD_AMQP_SETTINGS_URL"] ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
+            //string amqpUsername = configuration["CLOUD_AMQP_SETTINGS_USERVHOST"] ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
+            //string amqpPassword = configuration["CLOUD_AMQP_SETTINGS_PASSWORD"] ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
+
+            //// THE BELOW 
+            string amqpUrl = configuration.GetValue<string>("CLOUD_AMQP_SETTINGS_URL") ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
+            string amqpUsername = configuration.GetValue<string>("CLOUD_AMQP_SETTINGS_USERVHOST") ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
+            string amqpPassword = configuration.GetValue<string>("CLOUD_AMQP_SETTINGS_PASSWORD") ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
 
             services.AddMassTransit(x =>
             {
