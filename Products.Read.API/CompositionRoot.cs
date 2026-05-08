@@ -61,9 +61,9 @@ namespace Products.Read.API
             });
 
             // Register CloudAMQP related services
-            string amqpUrl = configuration.GetSection("CloudAMQPSettings:Url").Value ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
-            string amqpUsername = configuration.GetSection("CloudAMQPSettings:UserVhost").Value ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
-            string amqpPassword = configuration.GetSection("CloudAMQPSettings:Password").Value ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
+            string amqpUrl = configuration.GetSection("CloudAMQPSettings__Url").Value ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
+            string amqpUsername = configuration.GetSection("CloudAMQPSetting__UserVhost").Value ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
+            string amqpPassword = configuration.GetSection("CloudAMQPSettings__Password").Value ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
 
             services.AddMassTransit(x =>
             {
