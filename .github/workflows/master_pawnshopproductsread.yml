@@ -38,8 +38,8 @@ jobs:
       - name: craete migrations bundle v2
         run: >
           dotnet ef migrations bundle --runtime linux-x64 
-          --project ./Products.Read.API/Products.Read.API.csproj 
-          --startup-project ./Products.Read.API 
+          # --project ./Products.Read.API/Products.Read.API.csproj 
+          # --startup-project ./Products.Read.API 
           --output 'C:/Program Files/dotnet/myapp/migrate.exe'
 
       - name: Upload artifact for deployment job
