@@ -79,10 +79,15 @@ namespace Products.Read.API
             //string amqpUsername = configuration["CLOUD_AMQP_SETTINGS_USERVHOST"] ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
             //string amqpPassword = configuration["CLOUD_AMQP_SETTINGS_PASSWORD"] ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
 
-            //// THE BELOW 
-            string amqpUrl = configuration.GetValue<string>("CLOUD_AMQP_SETTINGS_URL") ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
-            string amqpUsername = configuration.GetValue<string>("CLOUD_AMQP_SETTINGS_USERVHOST") ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
-            string amqpPassword = configuration.GetValue<string>("CLOUD_AMQP_SETTINGS_PASSWORD") ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
+            //// THE BELOW WORKS IN DEV BUT VALUES ARE NULL IN GIT WORKFLOW
+            //string amqpUrl = configuration.GetValue<string>("CLOUD_AMQP_SETTINGS_URL") ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
+            //string amqpUsername = configuration.GetValue<string>("CLOUD_AMQP_SETTINGS_USERVHOST") ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
+            //string amqpPassword = configuration.GetValue<string>("CLOUD_AMQP_SETTINGS_PASSWORD") ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
+
+            //// THE BELOW IS A HYBRID KEY APPROACH
+            string amqpUrl = configuration.GetValue<string>("CLOUD_AMQP_SETTINGS_URL") ?? configuration["CloudAMQPSettings:Url"]! ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
+            string amqpUsername = configuration.GetValue<string>("CLOUD_AMQP_SETTINGS_USERVHOST") ?? configuration["CloudAMQPSetting:UserVhost"]! ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
+            string amqpPassword = configuration.GetValue<string>("CLOUD_AMQP_SETTINGS_PASSWORD") ?? configuration["CloudAMQPSettings:Password"]! ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
 
             services.AddMassTransit(x =>
             {
