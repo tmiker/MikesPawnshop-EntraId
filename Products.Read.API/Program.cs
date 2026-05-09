@@ -1,6 +1,8 @@
 using HealthChecks.UI.Client;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
@@ -8,10 +10,13 @@ using Products.Read.API;
 using Products.Read.API.DTOs;
 using Products.Read.API.Extensions;
 using Products.Read.API.Health;
+using Products.Read.API.Infrastructure.Data;
+using Products.Read.API.MessageConsumers;
 using Products.Read.API.Middleware;
 using Scalar.AspNetCore;
 using Serilog;
 using Serilog.Events;
+using System.Security.Authentication;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
@@ -142,9 +147,68 @@ try
     //    });
     //});
 
-    // Register services from Composition Root
-    IWebHostEnvironment env = builder.Environment;
-    builder.Services.ComposeApplication(env);
+    // Add database context and cache
+    if (builder.Environment.IsDevelopment())
+    {
+        builder.Services.AddDbContext<ProductsReadDbContext>(options =>
+            options.UseSqlServer(builder.Configuration["LOCAL_SQL_CONNECTIONSTRING"]));
+    }
+    else
+    {
+        builder.Services.AddDbContext<ProductsReadDbContext>(options =>
+            options.UseSqlServer(builder.Configuration["AZURE_SQL_READ_CONNECTIONSTRING"]));
+    }
+
+    //// THE BELOW WORKS IN DEV BUT VALUES ARE NULL IN GIT WORKFLOW
+    string amqpUrl = builder.Configuration["CLOUD_AMQP_SETTINGS_URL"] ?? throw new ArgumentNullException("Invalid Cloud AMQP URL configuration.");
+    string amqpUsername = builder.Configuration["CLOUD_AMQP_SETTINGS_USERVHOST"] ?? throw new ArgumentNullException("Invalid Cloud AMQP User VHost configuration.");
+    string amqpPassword = builder.Configuration["CLOUD_AMQP_SETTINGS_PASSWORD"] ?? throw new ArgumentNullException("Invalid Cloud AMQP Password configuration.");
+
+    builder.Services.AddMassTransit(x =>
+    {
+        x.AddConsumer<ProductAddedConsumer>();
+        x.AddConsumer<StatusUpdateConsumer>();
+        x.AddConsumer<DocumentAddedConsumer>();
+        x.AddConsumer<ImageAddedConsumer>();
+        x.AddConsumer<DocumentDeletedConsumer>();
+        x.AddConsumer<ImageDeletedConsumer>();
+        x.AddConsumer<DataPurgedConsumer>();
+
+        x.UsingRabbitMq((context, cfg) =>
+        {
+            cfg.Host(new Uri(amqpUrl), h =>
+            {
+                h.Username(amqpUsername);
+                h.Password(amqpPassword);
+
+                h.UseSsl(s =>
+                {
+                    s.Protocol = SslProtocols.Tls12;
+                });
+            });
+            cfg.ReceiveEndpoint("ProductsReadApi1Queue", e =>
+            {
+                e.ConfigureConsumeTopology = false; // explicit is safer for versioning
+
+                e.ConfigureConsumer<ProductAddedConsumer>(context);
+                e.ConfigureConsumer<StatusUpdateConsumer>(context);
+                e.ConfigureConsumer<DocumentAddedConsumer>(context);
+                e.ConfigureConsumer<ImageAddedConsumer>(context);
+                e.ConfigureConsumer<DocumentDeletedConsumer>(context);
+                e.ConfigureConsumer<ImageDeletedConsumer>(context);
+                e.ConfigureConsumer<DataPurgedConsumer>(context);
+
+                // Robustness: retry with jitter + immediate faults to _error queue if exhausted
+                e.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));
+                e.PrefetchCount = 4;    // 16;    // 16;
+                e.ConcurrentMessageLimit = 1;   // 8;  // 8;
+            });
+        });
+    });
+
+    //// Register services from Composition Root
+    // IWebHostEnvironment env = builder.Environment;
+    builder.Services.ComposeApplication();
 
     builder.Services.AddControllers();
     // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

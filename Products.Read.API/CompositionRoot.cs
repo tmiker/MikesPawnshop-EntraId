@@ -17,27 +17,27 @@ namespace Products.Read.API
 {
     public static class CompositionRoot
     {
-        public static IServiceCollection ComposeApplication(this IServiceCollection services, IWebHostEnvironment env)
+        public static IServiceCollection ComposeApplication(this IServiceCollection services)
         {
-            var configuration = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+            //var configuration = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
-            // Add database context and cache
-            if (env.IsDevelopment())
-            {
-                services.AddDbContext<ProductsReadDbContext>(options =>
-                    options.UseSqlServer(configuration["LOCAL_SQL_CONNECTIONSTRING"]));
-                // services.AddDistributedMemoryCache();
-            }
-            else
-            {
-                services.AddDbContext<ProductsReadDbContext>(options =>
-                    options.UseSqlServer(configuration["AZURE_SQL_READ_CONNECTIONSTRING"]));
-                //services.AddStackExchangeRedisCache(options =>
-                //{
-                //    options.Configuration = builder.Configuration["AZURE_REDIS_READ_CONNECTIONSTRING"];
-                //    options.InstanceName = "ProductsReadInstance";
-                //});
-            }
+            //// Add database context and cache
+            //if (env.IsDevelopment())
+            //{
+            //    services.AddDbContext<ProductsReadDbContext>(options =>
+            //        options.UseSqlServer(configuration["LOCAL_SQL_CONNECTIONSTRING"]));
+            //    // services.AddDistributedMemoryCache();
+            //}
+            //else
+            //{
+            //    services.AddDbContext<ProductsReadDbContext>(options =>
+            //        options.UseSqlServer(configuration["AZURE_SQL_READ_CONNECTIONSTRING"]));
+            //    //services.AddStackExchangeRedisCache(options =>
+            //    //{
+            //    //    options.Configuration = builder.Configuration["AZURE_REDIS_READ_CONNECTIONSTRING"];
+            //    //    options.InstanceName = "ProductsReadInstance";
+            //    //});
+            //}
 
             /// Previous before configure for Azure deployment
             //services.AddDbContext<ProductsReadDbContext>(options =>
@@ -91,10 +91,10 @@ namespace Products.Read.API
             //    configuration.GetValue<string>("CloudAMQPSettings__Password")! ??   // Azure App Service
             //    throw new ArgumentNullException("Invalid Cloud AMQP Password configuration.");
 
-            //// THE BELOW WORKS IN DEV BUT VALUES ARE NULL IN GIT WORKFLOW
-            string amqpUrl = configuration["CLOUD_AMQP_SETTINGS_URL"] ?? throw new ArgumentNullException("Invalid Cloud AMQP URL configuration.");
-            string amqpUsername = configuration["CLOUD_AMQP_SETTINGS_USERVHOST"] ?? throw new ArgumentNullException("Invalid Cloud AMQP User VHost configuration.");
-            string amqpPassword = configuration["CLOUD_AMQP_SETTINGS_PASSWORD"] ?? throw new ArgumentNullException("Invalid Cloud AMQP Password configuration.");
+            ////// THE BELOW WORKS IN DEV BUT VALUES ARE NULL IN GIT WORKFLOW
+            //string amqpUrl = configuration["CLOUD_AMQP_SETTINGS_URL"] ?? throw new ArgumentNullException("Invalid Cloud AMQP URL configuration.");
+            //string amqpUsername = configuration["CLOUD_AMQP_SETTINGS_USERVHOST"] ?? throw new ArgumentNullException("Invalid Cloud AMQP User VHost configuration.");
+            //string amqpPassword = configuration["CLOUD_AMQP_SETTINGS_PASSWORD"] ?? throw new ArgumentNullException("Invalid Cloud AMQP Password configuration.");
 
             //// THE BELOW WORKS IN DEV BUT VALUES ARE NULL IN GIT WORKFLOW
             //string amqpUrl = configuration.GetValue<string>("CLOUD_AMQP_SETTINGS_URL") ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
@@ -106,47 +106,47 @@ namespace Products.Read.API
             //string amqpUsername = configuration.GetValue<string>("CLOUD_AMQP_SETTINGS_USERVHOST") ?? configuration["CloudAMQPSetting:UserVhost"]! ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
             //string amqpPassword = configuration.GetValue<string>("CLOUD_AMQP_SETTINGS_PASSWORD") ?? configuration["CloudAMQPSettings:Password"]! ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
 
-            services.AddMassTransit(x =>
-            {
-                x.AddConsumer<ProductAddedConsumer>();
-                x.AddConsumer<StatusUpdateConsumer>();
-                x.AddConsumer<DocumentAddedConsumer>();
-                x.AddConsumer<ImageAddedConsumer>();
-                x.AddConsumer<DocumentDeletedConsumer>();
-                x.AddConsumer<ImageDeletedConsumer>();
-                x.AddConsumer<DataPurgedConsumer>();
+            //services.AddMassTransit(x =>
+            //{
+            //    x.AddConsumer<ProductAddedConsumer>();
+            //    x.AddConsumer<StatusUpdateConsumer>();
+            //    x.AddConsumer<DocumentAddedConsumer>();
+            //    x.AddConsumer<ImageAddedConsumer>();
+            //    x.AddConsumer<DocumentDeletedConsumer>();
+            //    x.AddConsumer<ImageDeletedConsumer>();
+            //    x.AddConsumer<DataPurgedConsumer>();
 
-                x.UsingRabbitMq((context, cfg) =>
-                {
-                    cfg.Host(new Uri(amqpUrl), h =>
-                    {
-                        h.Username(amqpUsername);
-                        h.Password(amqpPassword);
+            //    x.UsingRabbitMq((context, cfg) =>
+            //    {
+            //        cfg.Host(new Uri(amqpUrl), h =>
+            //        {
+            //            h.Username(amqpUsername);
+            //            h.Password(amqpPassword);
 
-                        h.UseSsl(s =>
-                        {
-                            s.Protocol = SslProtocols.Tls12;
-                        });
-                    });
-                    cfg.ReceiveEndpoint("ProductsReadApi1Queue", e =>
-                    {
-                        e.ConfigureConsumeTopology = false; // explicit is safer for versioning
+            //            h.UseSsl(s =>
+            //            {
+            //                s.Protocol = SslProtocols.Tls12;
+            //            });
+            //        });
+            //        cfg.ReceiveEndpoint("ProductsReadApi1Queue", e =>
+            //        {
+            //            e.ConfigureConsumeTopology = false; // explicit is safer for versioning
 
-                        e.ConfigureConsumer<ProductAddedConsumer>(context);
-                        e.ConfigureConsumer<StatusUpdateConsumer>(context);
-                        e.ConfigureConsumer<DocumentAddedConsumer>(context);
-                        e.ConfigureConsumer<ImageAddedConsumer>(context);
-                        e.ConfigureConsumer<DocumentDeletedConsumer>(context);
-                        e.ConfigureConsumer<ImageDeletedConsumer>(context);
-                        e.ConfigureConsumer<DataPurgedConsumer>(context);
+            //            e.ConfigureConsumer<ProductAddedConsumer>(context);
+            //            e.ConfigureConsumer<StatusUpdateConsumer>(context);
+            //            e.ConfigureConsumer<DocumentAddedConsumer>(context);
+            //            e.ConfigureConsumer<ImageAddedConsumer>(context);
+            //            e.ConfigureConsumer<DocumentDeletedConsumer>(context);
+            //            e.ConfigureConsumer<ImageDeletedConsumer>(context);
+            //            e.ConfigureConsumer<DataPurgedConsumer>(context);
 
-                        // Robustness: retry with jitter + immediate faults to _error queue if exhausted
-                        e.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));
-                        e.PrefetchCount = 4;    // 16;    // 16;
-                        e.ConcurrentMessageLimit = 1;   // 8;  // 8;
-                    });
-                });
-            });
+            //            // Robustness: retry with jitter + immediate faults to _error queue if exhausted
+            //            e.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));
+            //            e.PrefetchCount = 4;    // 16;    // 16;
+            //            e.ConcurrentMessageLimit = 1;   // 8;  // 8;
+            //        });
+            //    });
+            //});
 
             return services;
         }
