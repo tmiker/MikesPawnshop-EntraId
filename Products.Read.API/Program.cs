@@ -163,6 +163,22 @@ try
     string amqpUrl = builder.Configuration["CLOUD_AMQP_SETTINGS_URL"] ?? throw new ArgumentNullException("Invalid Cloud AMQP URL configuration.");
     string amqpUsername = builder.Configuration["CLOUD_AMQP_SETTINGS_USERVHOST"] ?? throw new ArgumentNullException("Invalid Cloud AMQP User VHost configuration.");
     string amqpPassword = builder.Configuration["CLOUD_AMQP_SETTINGS_PASSWORD"] ?? throw new ArgumentNullException("Invalid Cloud AMQP Password configuration.");
+    //// TRY UNIQUE APPROACH FOR EACH ENVIRONMENT
+    //string amqpUrl = env.IsDevelopment() ?
+    //    configuration.GetSection("CloudAMQPSettings:Url").Value! :          // local dev
+    //    configuration["CloudAMQPSettings:Url"]! ??                          // GitHub actions
+    //    configuration.GetValue<string>("CloudAMQPSettings__Url") ??         // Azure App Service 
+    //    throw new ArgumentNullException("Invalid Cloud AMQP URL configuration.");
+    //string amqpUsername = env.IsDevelopment() ? 
+    //    configuration.GetSection("CloudAMQPSetting:UserVhost").Value! :     // local dev
+    //    configuration["CloudAMQPSetting:UserVhost"]! ??                     // GitHub actions
+    //    configuration.GetValue<string>("CloudAMQPSetting__UserVhost") ??    // Azure App Service
+    //    throw new ArgumentNullException("Invalid Cloud AMQP User VHost configuration.");
+    //string amqpPassword = env.IsDevelopment() ? 
+    //    configuration.GetSection("CloudAMQPSettings:Password").Value! :     // local dev
+    //    configuration["CloudAMQPSettings:Password"]! ??                     // GitHub actions
+    //    configuration.GetValue<string>("CloudAMQPSettings__Password")! ??   // Azure App Service
+    //    throw new ArgumentNullException("Invalid Cloud AMQP Password configuration.");
 
     builder.Services.AddMassTransit(x =>
     {
