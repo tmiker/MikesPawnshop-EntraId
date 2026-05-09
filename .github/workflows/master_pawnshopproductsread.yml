@@ -9,6 +9,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+          CLOUD_AMQP_SETTINGS_URL: ${{secrets.CLOUD_AMQP_SETTINGS_URL }}	
+          CLOUD_AMQP_SETTINGS_USERVHOST: ${{secrets.CLOUD_AMQP_SETTINGS_USERVHOST }}
+          CLOUD_AMQP_SETTINGS_PASSWORD: ${{secrets.CLOUD_AMQP_SETTINGS_PASSWORD }}
+          AZURE_SQL_READ_CONNECTIONSTRING: ${{ secrets.AZURE_SQL_READ_CONNECTIONSTRING }}
     permissions:
       contents: read #This is required for actions/checkout
 
@@ -27,11 +32,6 @@ jobs:
         run: dotnet restore
 
       - name: Build with dotnet
-        env:
-          CLOUD_AMQP_SETTINGS_URL: ${{secrets.CLOUD_AMQP_SETTINGS_URL }}	
-          CLOUD_AMQP_SETTINGS_USERVHOST: ${{secrets.CLOUD_AMQP_SETTINGS_USERVHOST }}
-          CLOUD_AMQP_SETTINGS_PASSWORD: ${{secrets.CLOUD_AMQP_SETTINGS_PASSWORD }}
-          AZURE_SQL_READ_CONNECTIONSTRING: ${{ secrets.AZURE_SQL_READ_CONNECTIONSTRING }}
         run: dotnet build ./Products.Read.API/Products.Read.API.csproj --configuration Release
 
       - name: dotnet publish
