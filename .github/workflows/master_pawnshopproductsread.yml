@@ -11,6 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read #This is required for actions/checkout
+    env:
+      CLOUD_AMQP_SETTINGS_URL: ${{secrets.CLOUD_AMQP_SETTINGS_URL }}	
+      CLOUD_AMQP_SETTINGS_USERVHOST: ${{secrets.CLOUD_AMQP_SETTINGS_USERVHOST }}
+      CLOUD_AMQP_SETTINGS_PASSWORD: ${{secrets.CLOUD_AMQP_SETTINGS_PASSWORD }}
+      AZURE_SQL_READ_CONNECTIONSTRING: ${{ secrets.AZURE_SQL_READ_CONNECTIONSTRING }}
 
     steps:
       - uses: actions/checkout@v4
