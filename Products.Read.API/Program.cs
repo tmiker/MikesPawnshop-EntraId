@@ -159,7 +159,7 @@ try
             options.UseSqlServer(builder.Configuration["AZURE_SQL_READ_CONNECTIONSTRING"]));
     }
 
-    //// THE BELOW WORKS IN DEV BUT VALUES ARE NULL IN GIT WORKFLOW
+    //// THE BELOW WORKS IN DEV AND GIT WORKFLOW (WITH ENV VARIABLES ADDED) 
     string amqpUrl = builder.Configuration["CLOUD_AMQP_SETTINGS_URL"] ?? throw new ArgumentNullException("Invalid Cloud AMQP URL configuration.");
     string amqpUsername = builder.Configuration["CLOUD_AMQP_SETTINGS_USERVHOST"] ?? throw new ArgumentNullException("Invalid Cloud AMQP User VHost configuration.");
     string amqpPassword = builder.Configuration["CLOUD_AMQP_SETTINGS_PASSWORD"] ?? throw new ArgumentNullException("Invalid Cloud AMQP Password configuration.");
