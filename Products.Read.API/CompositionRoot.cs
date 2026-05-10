@@ -46,6 +46,11 @@ namespace Products.Read.API
             //    // options.UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll);
             //});
 
+            services.AddOptions<CloudAMQPSettings>().Configure<IConfiguration>((options, config) =>
+            {
+                config.GetSection(nameof(CloudAMQPSettings)).Bind(options);
+            });
+
             // Register FluentValidation validators
             services.AddValidatorsFromAssemblyContaining<ThrowExceptionDtoValidator>();
 
@@ -54,11 +59,6 @@ namespace Products.Read.API
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IProductQueryService, ProductQueryService>();
             services.AddScoped<ITokenDecoder, TokenDecoder>();
-
-            //services.AddOptions<CloudAMQPSettings>().Configure<IConfiguration>((options, config) =>
-            //{
-            //    config.GetSection(nameof(CloudAMQPSettings)).Bind(options);
-            //});
 
             //// Register CloudAMQP related services
             //string amqpUrl = configuration.GetValue<string>("CloudAMQPSettings:Url") ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
