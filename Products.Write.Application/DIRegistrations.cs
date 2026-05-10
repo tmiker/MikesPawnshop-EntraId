@@ -30,6 +30,8 @@ namespace Products.Write.Application
             // Register messaging services
             services.AddMassTransit(x =>
             {
+                string licenseKey = "";
+
                 x.UsingRabbitMq((context, cfg) =>
                 {
                     cfg.Host(new Uri(amqpUrl), h =>

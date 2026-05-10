@@ -182,6 +182,8 @@ try
 
     builder.Services.AddMassTransit(x =>
     {
+        string licenseKey = "";
+
         x.AddConsumer<ProductAddedConsumer>();
         x.AddConsumer<StatusUpdateConsumer>();
         x.AddConsumer<DocumentAddedConsumer>();
