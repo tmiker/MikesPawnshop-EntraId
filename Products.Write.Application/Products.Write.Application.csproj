@@ -22,8 +22,8 @@
     <PackageReference Include="FluentValidation" Version="12.1.1" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
     <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.13.0" />
-    <PackageReference Include="MassTransit.AspNetCore" Version="9.2.0-develop.135" />
-    <PackageReference Include="MassTransit.RabbitMQ" Version="9.2.0-develop.135" />
+    <PackageReference Include="MassTransit.AspNetCore" Version="7.3.1" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.9" />
     <PackageReference Include="MediatR" Version="14.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.9" />
   </ItemGroup>
