@@ -7,12 +7,17 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
+var environment = builder.HostEnvironment.Environment;
+var baseAddress = environment == "Development"
+    ? StaticData.WasmClient_LocalApiBaseAddress ?? throw new Exception("LocalAdminWasmClient BaseAddress is missing.")
+    : StaticData.WasmClient_AzureApiBaseAddress ?? throw new Exception("AzureAdminWasmClient BaseAddress is missing.");
+
 builder.Services.AddKeyedScoped<HttpClient>("LocalAdminWasmClient",
     (sp, key) =>
        new HttpClient
        {
-           BaseAddress = new Uri(StaticData.WasmClient_LocalApiBaseAddress ??                    // new Uri(builder.Configuration["LocalConsumerWasmClientBaseAddress"] ??
-                throw new Exception("LocalConsumerWasmClient BaseAddress is missing."))
+           BaseAddress = new Uri(baseAddress ??                    
+                throw new Exception("LocalAdminWasmClient BaseAddress is missing."))
        });
 
 builder.Services.AddScoped<IToastrService, ToastrService>();

@@ -6,6 +6,7 @@
 
         /// WASM API Base Address
         public const string WasmClient_LocalApiBaseAddress = "https://localhost:7088";
+        public const string WasmClient_AzureApiBaseAddress = "https://pawnshopadmin-cfd2asdcc2eceeac.centralus-01.azurewebsites.net";
 
         // DownstreamApi Services
         public const string ProductsWriteApiService_ServiceName = "MikesPawnshopProductsWriteAPI";
