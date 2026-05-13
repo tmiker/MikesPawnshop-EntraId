@@ -29,12 +29,12 @@ namespace Orders.API.Crypto
 
             string publicKey = _rsaKeyContainerManager.GetPublicKeyForContainerWithName(keyContainerName);
             // Return encrypted public key by using aes encryption
-            string? aesKey = _config["IntAcctsAesSymEncryption:Key"];
-            string? iv = _config["IntAcctsAesSymEncryption:IV"];
+            string? aesKey = _config["IntAcctsAesSymEncryption_Key"];
+            string? iv = _config["IntAcctsAesSymEncryption_IV"];
             string encryptedPublicKey = _aesEncryptor.EncryptSymmetric(publicKey, aesKey!, iv!);
 
             KeyContainerResponseDTO keyContainerResponseDTO = new KeyContainerResponseDTO() { EncryptedPublicKey = encryptedPublicKey, KeyContainerName = keyContainerName };
-            _logger.LogInformation("{this}: KeyContainerResponseDTO generated to return to public api. Encrypted Public Key: {key}", this.GetType().Name, encryptedPublicKey);  // *** REMOVE ****
+            // _logger.LogInformation("{this}: KeyContainerResponseDTO generated to return to public api. Encrypted Public Key: {key}", this.GetType().Name, encryptedPublicKey);  // *** REMOVE ****
             return (true, keyContainerResponseDTO, null);
         }
     }

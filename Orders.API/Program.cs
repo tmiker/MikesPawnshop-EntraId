@@ -105,8 +105,9 @@ try
 
     builder.Services.AddScoped<ITokenDecoder, TokenDecoder>();
 
-    builder.Services.Configure<MongoSettings>(builder.Configuration.GetRequiredSection(nameof(MongoSettings)));
-    builder.Services.AddSingleton<IMongoSettings>(sp => sp.GetRequiredService<IOptions<MongoSettings>>().Value);
+    //// Moved Mongo configuration to direct access thru IConfiguration in using services
+    //builder.Services.Configure<MongoSettings>(builder.Configuration.GetRequiredSection(nameof(MongoSettings)));
+    //builder.Services.AddSingleton<IMongoSettings>(sp => sp.GetRequiredService<IOptions<MongoSettings>>().Value);
 
     builder.Services.AddScoped<IOrderService, OrderService>();
 
@@ -159,7 +160,7 @@ try
 
     app.MapControllers();
 
-    app.MapGet("/", () => "Hello, his is the Orders API.");
+    app.MapGet("/", () => "Hello, this is the Orders API.");
 
     //// YARP healthcheck endpoint - uncomment if configure YARP HealthChecks for Orders - use this URL in YARP
     //app.MapHealthChecks("/api/orders/healthYarp", new HealthCheckOptions

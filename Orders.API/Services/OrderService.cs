@@ -10,32 +10,31 @@ namespace Orders.API.Services
 {
     public class OrderService : IOrderService
     {
+        private readonly IConfiguration _config;
         private readonly IMongoCollection<Order> _orders;
         private readonly IInternalAccountsHttpService _internalAccountsHttpService;
         private readonly IAesSymmetricEncryptionManager _aesSymmetricEncryptor;
         private readonly IRsaAsymmetricEncryptionManager _rsaAsymmetricEncryptor;
-        private readonly IConfiguration _config;
         private readonly ILogger<OrderService> _logger;
 
         public OrderService(
-            IMongoSettings mongoSettings, 
-            IInternalAccountsHttpService internalAccountsHttpService, 
-            IAesSymmetricEncryptionManager aesSymmetricEncryptor, 
-            IRsaAsymmetricEncryptionManager rsaAsymmetricEncryptor, 
             IConfiguration config,
+            IInternalAccountsHttpService internalAccountsHttpService,
+            IAesSymmetricEncryptionManager aesSymmetricEncryptor,
+            IRsaAsymmetricEncryptionManager rsaAsymmetricEncryptor,
             ILogger<OrderService> logger)
         {
-            var client = new MongoClient(mongoSettings.MongoLocalConnection);
-            var database = client.GetDatabase(mongoSettings.Database);
-            _orders = database.GetCollection<Order>(mongoSettings.OrderCollection);
+            _config = config;
+            string? environment = _config["ASPNETCORE_ENVIRONMENT"];
+            var client = environment == "Development" ? new MongoClient(_config["LOCAL_MONGO_CONNECTION"]) :
+                new MongoClient(_config["AZURE_MONGO_CONNECTION"]);
+            var database = client.GetDatabase(_config["MONGO_DATABASE"]);
+            _orders = database.GetCollection<Order>(_config["MONGO_ORDER_COLLECTION"]);
             _internalAccountsHttpService = internalAccountsHttpService;
             _aesSymmetricEncryptor = aesSymmetricEncryptor;
             _rsaAsymmetricEncryptor = rsaAsymmetricEncryptor;
-            _config = config;
             _logger = logger;
         }
-
-        
 
         //public async Task<(bool IsSuccess, ReviewOrderResultDTO? ReviewDTO, string? ErrorMessage)> ReviewOrderAsync(string ownerId, CancellationToken cancellationToken)
         //{
@@ -115,8 +114,8 @@ namespace Orders.API.Services
                 else
                 {
                     // DELETE AES PUBLIC KEY
-                    string? aesKey = _config["IntAcctsAesSymEncryption:Key"];
-                    string? iv = _config["IntAcctsAesSymEncryption:IV"];
+                    string? aesKey = _config["IntAcctsAesSymEncryption_Key"];
+                    string? iv = _config["IntAcctsAesSymEncryption_IV"];
                     string publicKey = _aesSymmetricEncryptor.DecryptSymmetric(accountKeyResult.KeyContainerResponse.EncryptedPublicKey, aesKey!, iv!);
 
                     // ASYM ENCRYPT OWNER ID USING RSA PUBLIC KEY AND SET PROPERTY IN REQUEST

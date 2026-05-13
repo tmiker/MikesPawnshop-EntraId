@@ -9,6 +9,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Infrastructure\Sql\**" />
+    <Compile Remove="Temp\**" />
+    <Content Remove="Infrastructure\Sql\**" />
+    <Content Remove="Temp\**" />
+    <EmbeddedResource Remove="Infrastructure\Sql\**" />
+    <EmbeddedResource Remove="Temp\**" />
+    <None Remove="Infrastructure\Sql\**" />
+    <None Remove="Temp\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.MongoDb" Version="9.0.0" />
     <PackageReference Include="AspNetCore.HealthChecks.UI" Version="9.0.0" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
@@ -31,11 +42,6 @@
     <PackageReference Include="Serilog.Sinks.Seq" Version="9.0.0" />
     <PackageReference Include="Yarp.ReverseProxy" Version="2.3.0" />
     <PackageReference Include="Yarp.Telemetry.Consumption" Version="2.3.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Infrastructure\Sql\" />
-    <Folder Include="Temp\" />
   </ItemGroup>
 
 </Project>
