@@ -53,30 +53,14 @@ try
         });
     });
 
-    builder.Services.Configure<MongoSettings>(builder.Configuration.GetRequiredSection(nameof(MongoSettings)));
-    builder.Services.AddSingleton<IMongoSettings>(sp => sp.GetRequiredService<IOptions<MongoSettings>>().Value);
+    //// Replaced with direct retrieval from configuration
+    //builder.Services.Configure<MongoSettings>(builder.Configuration.GetRequiredSection(nameof(MongoSettings)));
+    //builder.Services.AddSingleton<IMongoSettings>(sp => sp.GetRequiredService<IOptions<MongoSettings>>().Value);
 
     // Best Practice:
     // Always explicitly set NameClaimType and RoleClaimType in TokenValidationParameters so your code is not dependent on defaults that may change.
 
     // Configure Auth
-    //// DUENDE AUTH CONFIG
-    //JsonWebTokenHandler.DefaultInboundClaimTypeMap.Clear(); // Note: As configured, Roles are not populated by HttpContext.User.Claims without this
-    //builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    //    .AddJwtBearer(options =>
-    //    {
-    //        options.Authority = "https://localhost:5001";   // IDP
-    //        options.Audience = "cartsapi";            // this api, middleware checks value is in token  
-    //        options.TokenValidationParameters = new TokenValidationParameters()
-    //        {
-    //            NameClaimType = "given_name",       // should have the same mapping as in client app
-    //            RoleClaimType = "role",             // should have the same mapping as in our client mvc app
-    //            ValidTypes = new[] { "at+jwt" }     // says the only valid token type is 'at + jwt'
-    //        };
-
-    //        //// Optional: Keep claim names as in token
-    //        //options.MapInboundClaims = false;
-    //    });
     // MS ENTRA ID AUTH CONFIG
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -142,7 +126,7 @@ try
 
     app.MapControllers();
 
-    app.MapGet("/", () => "Hello, his is the Carts API.");
+    app.MapGet("/", () => "Hello, this is the Carts API.");
 
     //// YARP healthcheck endpoint - uncomment if configure YARP HealthChecks for Carts - use this URL in YARP
     //app.MapHealthChecks("/api/carts/healthYarp", new HealthCheckOptions

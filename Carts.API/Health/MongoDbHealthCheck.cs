@@ -7,13 +7,19 @@ namespace Carts.API.Health
 {
     public class MongoDbHealthCheck : IHealthCheck
     {
+        private readonly IConfiguration _config;
         private readonly IMongoDatabase _database;
 
-        public MongoDbHealthCheck(IMongoSettings mongoSettings)
+        public MongoDbHealthCheck(IConfiguration config)
         {
-            var client = new MongoClient(mongoSettings.MongoLocalConnection);
-            _database = client.GetDatabase(mongoSettings.Database);
+            _config = config;
+            string? environment = _config["ASPNETCORE_ENVIRONMENT"];
+            var client = environment == "Development" ? new MongoClient(_config["LOCAL_MONGO_CONNECTION"]) :
+                new MongoClient(_config["AZURE_MONGO_CONNECTION"]);
+            _database = client.GetDatabase(_config["MONGO_DATABASE"]);
+
         }
+
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
             try

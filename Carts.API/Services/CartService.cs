@@ -7,15 +7,19 @@ namespace Carts.API.Services
 {
     public class CartService : ICartService
     {
+        private readonly IConfiguration _config;
         private readonly IMongoCollection<ShoppingCart> _carts;
         private readonly ILogger<CartService> _logger;
         private readonly int _baseCreditLimit = 5000;
 
-        public CartService(IMongoSettings mongoSettings, ILogger<CartService> logger)
+        public CartService(IConfiguration config, ILogger<CartService> logger)
         {
-            var mongoClient = new MongoClient(mongoSettings.MongoLocalConnection);
-            var database = mongoClient.GetDatabase(mongoSettings.Database);
-            _carts = database.GetCollection<ShoppingCart>(mongoSettings.ShoppingCartCollection);
+            _config = config;
+            string? environment = _config["ASPNETCORE_ENVIRONMENT"];
+            var client = environment == "Development" ? new MongoClient(_config["LOCAL_MONGO_CONNECTION"]) :
+                new MongoClient(_config["AZURE_MONGO_CONNECTION"]);
+            var database = client.GetDatabase(_config["MONGO_DATABASE"]);
+            _carts = database.GetCollection<ShoppingCart>(_config["MONGO_CART_COLLECTION"]);
             _logger = logger;
         }
 
