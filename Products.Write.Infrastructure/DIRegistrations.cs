@@ -14,8 +14,6 @@ namespace Products.Write.Infrastructure
             // Register Product Repository
             services.AddScoped<IProductRepository, ProductRepository>();
 
-            
-
             return services;
         }
     }

@@ -7,7 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="DataAccess\Configurations\" />
+    <Compile Remove="DataAccess\Configurations\**" />
+    <EmbeddedResource Remove="DataAccess\Configurations\**" />
+    <None Remove="DataAccess\Configurations\**" />
   </ItemGroup>
 
   <ItemGroup>

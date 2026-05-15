@@ -47,7 +47,7 @@ try
     // Add HealthChecks with SQL Server check
     builder.Services.AddHealthChecks()
     .AddSqlServer(
-        connectionString: builder.Configuration.GetConnectionString("LocalDevelopmentConnectionString")!,
+        connectionString: builder.Environment.IsDevelopment() ? builder.Configuration["LOCAL_SQL_CONNECTIONSTRING"]! : builder.Configuration["AZURE_SQL_WRITE_CONNECTIONSTRING"]!,
         name: "sqlserver",
         failureStatus: HealthStatus.Unhealthy,
         timeout: TimeSpan.FromSeconds(5),
@@ -117,7 +117,7 @@ try
     // CONFIGURE MEDIATR AND PIPELINE BEHAVIORS
     builder.Services.AddMediatR(cfg =>
     {
-        cfg.LicenseKey = builder.Configuration.GetValue<string>("MediatRSettings:LicenseKey");
+        cfg.LicenseKey = builder.Configuration.GetValue<string>("MEDIATR_LICENSE_KEY");
         cfg.RegisterServicesFromAssembly(typeof(Products.Write.Application.DIRegistrations).Assembly);
         // Register pipeline behaviors in order
         // 1. Logging - use Serilog
@@ -128,7 +128,8 @@ try
     });
 
     // Register services from Composition Root
-    builder.Services.ComposeApplication();
+    string? environmentName = builder.Environment.EnvironmentName;
+    builder.Services.ComposeApplication(environmentName);
 
     builder.Services.AddControllers();
     // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -168,7 +169,7 @@ try
 
     app.MapControllers();
 
-    app.MapGet("/", () => "Hello, his is the Products.Write API.");
+    app.MapGet("/", () => "Hello, this is the Products.Write API.");
 
     // YARP healthcheck endpoint
     app.MapHealthChecks("/api/productsManagement/healthYarp", new HealthCheckOptions

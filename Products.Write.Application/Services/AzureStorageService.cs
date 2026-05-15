@@ -27,7 +27,8 @@ namespace Products.Write.Application.Services
 
         public async Task<(string? ImageUrl, string? ThumbUrl)> UploadImageToAzureAsync(IFormFile file, string containerName, string desiredFileName, CancellationToken cancellationToken)
         {
-            string? azureConnectionString = _azureSettings.Value.BlobStorageConnectionString ?? throw new ArgumentNullException("Azure Connection String");
+            string? azureConnectionString = _configuration["AZURE_BLOB_STORAGE_CONNECTION"] ?? throw new ArgumentNullException("Azure Connection String");
+            // string ? azureConnectionString = _azureSettings.Value.BlobStorageConnectionString ?? throw new ArgumentNullException("Azure Connection String");
 
             // Note: BlobServiceClient.CreateBlobContainerAsync THROWS if the container exists
             // Note: Don't assign reture of BlobContainerInfo result to BlobContainerClient.CreateIfNotExistsAsync as it throws if already exists (returns null)
@@ -77,7 +78,8 @@ namespace Products.Write.Application.Services
 
         public async Task<string> UploadDocumentToAzureAsync(IFormFile file, string containerName, string desiredFileName, CancellationToken cancellationToken)
         {
-            string? azureConnectionString = _azureSettings.Value.BlobStorageConnectionString ?? throw new ArgumentNullException("Azure Connection String");
+            string? azureConnectionString = _configuration["AZURE_BLOB_STORAGE_CONNECTION"] ?? throw new ArgumentNullException("Azure Connection String");
+            // string? azureConnectionString = _azureSettings.Value.BlobStorageConnectionString ?? throw new ArgumentNullException("Azure Connection String");
 
             // Note: BlobServiceClient.CreateBlobContainerAsync THROWS if the container exists
             // Note: Don't assign reture of BlobContainerInfo result to BlobContainerClient.CreateIfNotExistsAsync as it throws if already exists (returns null)
@@ -128,7 +130,9 @@ namespace Products.Write.Application.Services
         {
             string imageFileName = $"imgs/{fileName}";
             string thumbFileName = $"thumbs/{fileName}";
-            string? azureConnectionString = _azureSettings.Value.BlobStorageConnectionString ?? throw new ArgumentNullException("Azure Connection String");
+
+            string? azureConnectionString = _configuration["AZURE_BLOB_STORAGE_CONNECTION"] ?? throw new ArgumentNullException("Azure Connection String");
+            // string? azureConnectionString = _azureSettings.Value.BlobStorageConnectionString ?? throw new ArgumentNullException("Azure Connection String");
 
             BlobContainerClient blobContainerClient = new BlobContainerClient(azureConnectionString, containerName);
             bool imgSuccess = await blobContainerClient.DeleteBlobIfExistsAsync(imageFileName, DeleteSnapshotsOption.IncludeSnapshots, null, cancellationToken);
@@ -145,7 +149,8 @@ namespace Products.Write.Application.Services
         public async Task<(bool IsSuccess, string? ErrorMessage)> DeleteProductDocumentFromAzureAsync(string containerName, string fileName, CancellationToken cancellationToken)
         {
             string docFileName = $"docs/{fileName}";
-            string? azureConnectionString = _azureSettings.Value.BlobStorageConnectionString ?? throw new ArgumentNullException("Azure Connection String");
+            string? azureConnectionString = _configuration["AZURE_BLOB_STORAGE_CONNECTION"] ?? throw new ArgumentNullException("Azure Connection String");
+            // string? azureConnectionString = _azureSettings.Value.BlobStorageConnectionString ?? throw new ArgumentNullException("Azure Connection String");
 
             BlobContainerClient blobContainerClient = new BlobContainerClient(azureConnectionString, containerName);
             // below is throwing

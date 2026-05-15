@@ -19,14 +19,13 @@ namespace Products.Write.API.Controllers
     public class ProductsManagementController : ControllerBase
     {
         private readonly ISender _sender;
-        private readonly IOptions<AzureSettings> _azureSettings;
+        // private readonly IOptions<AzureSettings> _azureSettings;
         private readonly ILogger<ProductsManagementController> _logger;
         private readonly IConfiguration _config;
 
-        public ProductsManagementController(ISender sender, IOptions<AzureSettings> azureSettings, ILogger<ProductsManagementController> logger, IConfiguration config)
+        public ProductsManagementController(ISender sender, ILogger<ProductsManagementController> logger, IConfiguration config)
         {
             _sender = sender;
-            _azureSettings = azureSettings;
             _logger = logger;
             _config = config;
         }
@@ -125,7 +124,7 @@ namespace Products.Write.API.Controllers
         // [Authorize(Policy = "IsAdminOrManager")]
         public async Task<IActionResult> AzureBlobStoragePingTest()
         {
-            string? pingTestUri = _azureSettings.Value.AzurePingTestUri;
+            string? pingTestUri = _config.GetValue<string>("AZURE_BLOB_STORAGE_PING_TEST_URI");
             if (string.IsNullOrWhiteSpace(pingTestUri)) return BadRequest("The Azure Storage ping test URI could not be found.");
             AzurePingTest pingTest = new AzurePingTest(pingTestUri);
             AzurePingTestResult pingResult = await _sender.Send(pingTest);

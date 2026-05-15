@@ -213,7 +213,7 @@ namespace Products.Write.API.Controllers
         {
             string? value = _cloudAmqpSettings.Value.TestingDummyValue;
             if (!string.IsNullOrWhiteSpace(value)) return Ok(value);
-            return BadRequest("Unable to find the CloudAMQPSettings TestingDummyValue.");
+            return BadRequest("Unable to find the CloudAMQPSettings TestingDummyValue from CloudAMQPSettings.");
         }
 
         [HttpPost("purgeData")]

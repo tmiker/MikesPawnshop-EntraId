@@ -23,9 +23,9 @@ namespace Products.Write.Application
             // Register configurations
             var configuration = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
-            string amqpUrl = configuration.GetSection("CloudAMQPSettings:Url").Value ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
-            string amqpUsername = configuration.GetSection("CloudAMQPSettings:UserVhost").Value ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
-            string amqpPassword = configuration.GetSection("CloudAMQPSettings:Password").Value ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
+            string amqpUrl = configuration.GetSection("CLOUD_AMQP_SETTINGS_URL").Value ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
+            string amqpUsername = configuration.GetSection("CLOUD_AMQP_SETTINGS_USERVHOST").Value ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
+            string amqpPassword = configuration.GetSection("CLOUD_AMQP_SETTINGS_PASSWORD").Value ?? throw new ArgumentNullException("Invalid Cloud AMQP configuration.");
 
             // Register messaging services
             services.AddMassTransit(x =>

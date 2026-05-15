@@ -10,28 +10,39 @@ namespace Products.Write.API
 {
     public static class CompositionRoot
     {
-        public static IServiceCollection ComposeApplication(this IServiceCollection services)
+        public static IServiceCollection ComposeApplication(this IServiceCollection services, string? environmentName)
         {
             var configuration = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
-            services.AddDbContext<EventStoreDbContext>(options =>
+
+            if (environmentName == "Development")
             {
-                options.UseSqlServer(configuration.GetConnectionString("LocalDevelopmentConnectionString"));
-            });
+                services.AddDbContext<EventStoreDbContext>(options =>
+                    options.UseSqlServer(configuration["LOCAL_SQL_CONNECTIONSTRING"]));
+            }
+            else
+            {
+                services.AddDbContext<EventStoreDbContext>(options =>
+                    options.UseSqlServer(configuration["AZURE_SQL_WRITE_CONNECTIONSTRING"]));
+            }
+            //services.AddDbContext<EventStoreDbContext>(options =>
+            //{
+            //    options.UseSqlServer(configuration.GetConnectionString("LocalDevelopmentConnectionString"));
+            //});
 
             services.AddOptions<CloudAMQPSettings>().Configure<IConfiguration>((options, config) =>
             {
                 config.GetSection(nameof(CloudAMQPSettings)).Bind(options);
             });
 
-            services.AddOptions<MediatRSettings>().Configure<IConfiguration>((options, config) =>
-            {
-                config.GetSection(nameof(MediatRSettings)).Bind(options);
-            });
+            //services.AddOptions<MediatRSettings>().Configure<IConfiguration>((options, config) =>
+            //{
+            //    config.GetSection(nameof(MediatRSettings)).Bind(options);
+            //});
 
-            services.AddOptions<AzureSettings>().Configure<IConfiguration>((options, config) =>
-            {
-                config.GetSection(nameof(AzureSettings)).Bind(options);
-            });
+            //services.AddOptions<AzureSettings>().Configure<IConfiguration>((options, config) =>
+            //{
+            //    config.GetSection(nameof(AzureSettings)).Bind(options);
+            //});
 
             
 
