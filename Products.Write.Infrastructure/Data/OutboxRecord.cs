@@ -15,7 +15,7 @@ namespace Products.Write.Infrastructure.Data
         public string EventType { get; set; }
         public string EventJson { get; set; }
         public DateTime OccurredAt { get; set; }
-        public string CorrelationId { get; set; }
+        public string? CorrelationId { get; set; }
         public bool IsPublished { get; set; } 
 
         public OutboxRecord(EventRecord eventRecord)

@@ -17,7 +17,7 @@ namespace Products.Write.API
             if (environmentName == "Development")
             {
                 services.AddDbContext<EventStoreDbContext>(options =>
-                    options.UseSqlServer(configuration["LOCAL_SQL_CONNECTIONSTRING"]));
+                    options.UseSqlServer(configuration["AZURE_SQL_WRITE_CONNECTIONSTRING"]));
             }
             else
             {
