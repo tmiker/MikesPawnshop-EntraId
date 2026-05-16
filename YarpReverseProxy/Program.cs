@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading.RateLimiting;
+using Yarp.ReverseProxy.Configuration;
 using Yarp.ReverseProxy.Transforms;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,14 +40,14 @@ JwtSecurityTokenHandler.DefaultMapInboundClaims = false;  // Prevent automatic m
 /// OPTION 1: Use Microsoft.Identity.Web's built-in extension method for adding JWT Bearer authentication, 
 /// which simplifies configuration by automatically binding settings from configuration (e.g. appsettings.json) 
 /// and provides additional features like automatic token validation and integration with Azure AD.
-builder.Services.AddMicrosoftIdentityWebApiAuthentication(builder.Configuration, "AzureAd", subscribeToJwtBearerMiddlewareDiagnosticsEvents: true);
+builder.Services.AddMicrosoftIdentityWebApiAuthentication(builder.Configuration, "YarpAzureAd", subscribeToJwtBearerMiddlewareDiagnosticsEvents: true);
 /// If use Option 1, configure a custom validator to prevent audience validation if have multiple downstream APIs with different audiences 
 builder.Services.Configure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateAudience = false, // Skip audience validation
-        ValidIssuer = builder.Configuration["AZURE_CREDENTIALS_AUTHORITY"],  
+        ValidIssuer = builder.Configuration["YARP_AZURE_CREDENTIALS_AUTHORITY"],  
         ValidateIssuer = true
         /// configure other settings as desired ...
         // ValidateIssuerSigningKey = true,
@@ -65,32 +66,203 @@ builder.Services.Configure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationSch
 //    options.TokenValidationParameters.ValidateAudience = false;
 //});
 
-builder.Services.AddReverseProxy()
-    .LoadFromConfig(builder.Configuration.GetRequiredSection("YarpProxySettings"));
-//.AddTransforms(transforms =>
-//{
-//    transforms.AddRequestTransform(async context =>
-//    {
-//        if (context.HttpContext.User.Identity is not null && context.HttpContext.User.Identity.IsAuthenticated)
-//        {
-//            // Extract the JWT token from the incoming request
-//            var token = await context.HttpContext.GetTokenAsync("access_token");
+//// ADD YARP REVERSE PROXY
+/// OPTION 1: Configure in appsettings and/or secrets
+//builder.Services.AddReverseProxy()
+//    .LoadFromConfig(builder.Configuration.GetRequiredSection("YarpProxySettings"));
+////.AddTransforms(transforms =>
+////{
+////    transforms.AddRequestTransform(async context =>
+////    {
+////        if (context.HttpContext.User.Identity is not null && context.HttpContext.User.Identity.IsAuthenticated)
+////        {
+////            // Extract the JWT token from the incoming request
+////            var token = await context.HttpContext.GetTokenAsync("access_token");
 
-//            // Add the token to the outgoing request headers
-//            if (!string.IsNullOrEmpty(token))
-//            {
-//                context.ProxyRequest.Headers.Authorization =
-//                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-//            }
-//        }
-//    });
-//});
+////            // Add the token to the outgoing request headers
+////            if (!string.IsNullOrEmpty(token))
+////            {
+////                context.ProxyRequest.Headers.Authorization =
+////                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+////            }
+////        }
+////    });
+////});
+/// OPTION 2: Configure in code
+string productsReadServiceUrl = builder.Environment.IsDevelopment() ? "https://localhost:7101" : builder.Configuration["YARP_PRODUCTS_READ_SERVICE_URL"] ?? throw new InvalidOperationException("Products Read Service URL is not configured.");
+string productsWriteServiceUrl = builder.Environment.IsDevelopment() ? "https://localhost:7213" : builder.Configuration["YARP_PRODUCTS_WRITE_SERVICE_URL"] ?? throw new InvalidOperationException("Products Write Service URL is not configured.");
+string accountsServiceUrl = builder.Environment.IsDevelopment() ? "https://localhost:7033" : builder.Configuration["YARP_ACCOUNTS_SERVICE_URL"] ?? throw new InvalidOperationException("Accounts Service URL is not configured.");
+string cartsServiceUrl = builder.Environment.IsDevelopment() ? "https://localhost:7184" : builder.Configuration["YARP_CARTS_SERVICE_URL"] ?? throw new InvalidOperationException("Carts Service URL is not configured.");
+string ordersServiceUrl = builder.Environment.IsDevelopment() ? "https://localhost:7019" : builder.Configuration["YARP_ORDERS_SERVICE_URL"] ?? throw new InvalidOperationException("Orders Service URL is not configured.");
+
+builder.Services.AddReverseProxy()
+    .LoadFromMemory(GetRoutes(), GetClusters(productsReadServiceUrl, productsWriteServiceUrl, accountsServiceUrl, cartsServiceUrl, ordersServiceUrl));
+
+static RouteConfig[] GetRoutes()
+{
+    return new[]
+    {
+        new RouteConfig
+        {
+            RouteId = "productsRoute",
+            ClusterId = "products",
+            CorsPolicy = "PawnshopCorsPolicy",
+            Match = new RouteMatch
+            {
+                Path = "/api/products/{**catch-all}"
+            },
+            RateLimiterPolicy = "BasicRateLimitingPolicy" //,
+            // TimeoutPolicy = "Default"
+        },
+        new RouteConfig
+        {
+            RouteId = "productsManagementRoute",
+            ClusterId = "productsManagement",
+            CorsPolicy = "PawnshopCorsPolicy",
+            Match = new RouteMatch
+            {
+                Path = "/api/productsManagement/{**catch-all}"
+            },
+            RateLimiterPolicy = "BasicRateLimitingPolicy" //,
+            // TimeoutPolicy = "Default"
+        },
+        new RouteConfig
+        {
+            RouteId = "accountsRoute",
+            ClusterId = "accounts",
+            CorsPolicy = "PawnshopCorsPolicy",
+            Match = new RouteMatch
+            {
+                Path = "/api/accounts/{**catch-all}"
+            },
+            RateLimiterPolicy = "BasicRateLimitingPolicy" //,
+            // TimeoutPolicy = "Default"
+        },
+        new RouteConfig
+        {
+            RouteId = "cartsRoute",
+            ClusterId = "carts",
+            CorsPolicy = "PawnshopCorsPolicy",
+            Match = new RouteMatch
+            {
+                Path = "/api/carts/{**catch-all}"
+            },
+            RateLimiterPolicy = "BasicRateLimitingPolicy" //,
+            // TimeoutPolicy = "Default"
+        },
+        new RouteConfig
+        {
+            RouteId = "ordersRoute",
+            ClusterId = "orders",
+            CorsPolicy = "PawnshopCorsPolicy",
+            Match = new RouteMatch
+            {
+                Path = "/api/orders/{**catch-all}"
+            },
+            RateLimiterPolicy = "BasicRateLimitingPolicy" //,
+            // TimeoutPolicy = "Default"
+        }
+    };
+}
+
+static ClusterConfig[] GetClusters(
+    string productsReadServiceUrl, string productsWriteServiceUrl, string accountsServiceUrl, string cartsServiceUrl, string ordersServiceUrl)
+{
+    return new[]
+    {
+        new ClusterConfig
+        {
+            ClusterId = "products",
+            HealthCheck = new HealthCheckConfig
+            {
+                Active = new ActiveHealthCheckConfig
+                {
+                    Enabled = true,
+                    Interval = TimeSpan.FromSeconds(30),
+                    Timeout = TimeSpan.FromSeconds(10),
+                    Policy = "ConsecutiveFailures",
+                    Path = "/api/products/healthYarp"
+                }
+            },
+            Metadata = new Dictionary<string, string>
+            {
+                ["ConsecutiveFailuresHealthPolicy.Threshold"] = "3"
+            },
+            Destinations = new Dictionary<string, DestinationConfig>
+            {
+                ["productsReadService"] = new DestinationConfig
+                {
+                    Address = productsReadServiceUrl
+                }
+            }
+        },
+        new ClusterConfig
+        {
+            ClusterId = "productsManagement",
+            HealthCheck = new HealthCheckConfig
+            {
+                Active = new ActiveHealthCheckConfig
+                {
+                    Enabled = true,
+                    Interval = TimeSpan.FromSeconds(30),
+                    Timeout = TimeSpan.FromSeconds(10),
+                    Policy = "ConsecutiveFailures",
+                    Path = "/api/productsManagement/healthYarp"
+                }
+            },
+            Metadata = new Dictionary<string, string>
+            {
+                ["ConsecutiveFailuresHealthPolicy.Threshold"] = "3"
+            },
+            Destinations = new Dictionary<string, DestinationConfig>
+            {
+                ["productsWriteService"] = new DestinationConfig
+                {
+                    Address = productsWriteServiceUrl
+                }
+            }
+        },
+        new ClusterConfig
+        {
+            ClusterId = "accounts",
+            Destinations = new Dictionary<string, DestinationConfig>
+            {
+                ["accountsService"] = new DestinationConfig
+                {
+                    Address = accountsServiceUrl
+                }
+            }
+        },
+        new ClusterConfig
+        {
+            ClusterId = "carts",
+            Destinations = new Dictionary<string, DestinationConfig>
+            {
+                ["cartsService"] = new DestinationConfig
+                {
+                    Address = cartsServiceUrl
+                }
+            }
+        },
+        new ClusterConfig
+        {
+            ClusterId = "orders",
+            Destinations = new Dictionary<string, DestinationConfig>
+            {
+                ["ordersService"] = new DestinationConfig
+                {
+                    Address = ordersServiceUrl
+                }
+            }
+        }
+    };
+}
 
 builder.Services.AddAuthorization();
 
 //// ADD RATE LIMITING POLICIES 
 /// Rate Limiting Policies can be global or named - named are specified by endpoint or page
-//// 1. Global Rate Limiting Policy that permits 10 requests per minute by user (identity) or globally:
+//// OPTION 1. Global Rate Limiting Policy that permits 10 requests per minute by user (identity) or globally:
 //builder.Services.AddRateLimiter(options =>
 //{
 //    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
@@ -104,7 +276,7 @@ builder.Services.AddAuthorization();
 //                Window = TimeSpan.FromMinutes(1)
 //            }));
 //});
-// 2. Named Rate Limiting Policy to be added to specific endpoints or globally (see yarp_notes.txt):
+// OPTION2. Named Rate Limiting Policy to be added to specific endpoints or globally (see yarp_notes.txt):
 builder.Services.AddRateLimiter(options =>
 {
     options.AddFixedWindowLimiter("BasicRateLimitingPolicy", opt =>
