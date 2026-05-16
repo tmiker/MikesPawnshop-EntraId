@@ -15,6 +15,22 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.AddCors(options =>
+{
+    // add origins for Consumer and Admin Blazor clients
+    options.AddPolicy("PawnshopCorsPolicy", policy =>
+    {
+        if (builder.Environment.IsDevelopment()) policy.WithOrigins(["https://localhost:7088", "https://localhost:7217"]);
+        else policy.WithOrigins(
+            ["https://pawnshopconsumer-dtaugcdmfrfvbygz.centralus-01.azurewebsites.net",
+             "https://pawnshopadmin-cfd2asdcc2eceeac.centralus-01.azurewebsites.net"]);
+
+        policy.AllowAnyMethod()
+              .AllowAnyHeader()
+              .WithExposedHeaders("X-Pagination");
+    });
+});
+
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 IdentityModelEventSource.ShowPII = true;  // Enable detailed error messages for token validation issues (useful for debugging, but should be disabled in production)
 JwtSecurityTokenHandler.DefaultMapInboundClaims = false;  // Prevent automatic mapping of standard JWT claims to Microsoft-specific claim types (e.g. "sub" to "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
@@ -115,10 +131,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseRouting();
+
+app.UseCors("PawnshopCorsPolicy");      // After routing, before auth
+
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.UseRouting();
 
 //// GLOBAL RATE LIMITING MIDDLEWARE
 //app.UseEndpoints(endpoints =>
