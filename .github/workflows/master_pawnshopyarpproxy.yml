@@ -4,9 +4,6 @@
 name: Build and deploy ASP.Net Core app to Azure Web App - PawnshopYarpProxy
 
 on:
-  push:
-    branches:
-      - master
   workflow_dispatch:
 
 jobs:
@@ -23,11 +20,17 @@ jobs:
         with:
           dotnet-version: '10.x'
 
+      - name: clean
+        run: dotnet clean
+
+      - name: Restore 
+        run: dotnet restore
+
       - name: Build with dotnet
-        run: dotnet build --configuration Release
+        run: dotnet build ./YarpReverseProxy/YarpReverseProxy.csproj --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish ./YarpReverseProxy/YarpReverseProxy.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
