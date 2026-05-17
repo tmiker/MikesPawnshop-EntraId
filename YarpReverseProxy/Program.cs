@@ -1,16 +1,13 @@
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.TokenCacheProviders.Distributed;
-using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading.RateLimiting;
 using Yarp.ReverseProxy.Configuration;
-using Yarp.ReverseProxy.Transforms;
+using Yarp.ReverseProxy.Forwarder;
+using YarpReverseProxy.CustomHttpHandlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,11 +34,8 @@ IdentityModelEventSource.ShowPII = true;  // Enable detailed error messages for 
 JwtSecurityTokenHandler.DefaultMapInboundClaims = false;  // Prevent automatic mapping of standard JWT claims to Microsoft-specific claim types (e.g. "sub" to "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
 
 /// ADD JWT BEARER AUTHENTICATION WITH MICROSOFT IDENTITY WEB API
-/// OPTION 1: Use Microsoft.Identity.Web's built-in extension method for adding JWT Bearer authentication, 
-/// which simplifies configuration by automatically binding settings from configuration (e.g. appsettings.json) 
-/// and provides additional features like automatic token validation and integration with Azure AD.
 builder.Services.AddMicrosoftIdentityWebApiAuthentication(builder.Configuration, "YarpAzureAd", subscribeToJwtBearerMiddlewareDiagnosticsEvents: true);
-/// If use Option 1, configure a custom validator to prevent audience validation if have multiple downstream APIs with different audiences 
+/// Configure a custom validator to prevent audience validation if have multiple downstream APIs with different audiences 
 builder.Services.Configure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
@@ -54,49 +48,24 @@ builder.Services.Configure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationSch
         // ValidateLifetime = true
     };
 });
-/// OPTION 2: Manually configure JWT Bearer authentication, which provides more control over the configuration but 
-/// requires more code and careful handling of token validation parameters.
-/// If use this option, make sure to set TokenValidationParameters.ValidateAudience to false and ADD TRANSFORM TO PASS THE TOKEN in AddReverseProxy() below
-//builder.Services.AddAuthentication("Bearer")
-//.AddJwtBearer("Bearer", options =>
-//{
-//    options.Authority = builder.Configuration["AZURE_CREDENTIALS_AUTHORITY"];       //  "https://login.microsoftonline.com/{tenantId}/v2.0";
-//    // options.Audience = builder.Configuration["AZURE_CREDENTIALS_CLIENT_ID"];        // "{clientId}";
-//    // options.Audience = "https://localhost:7245";
-//    options.TokenValidationParameters.ValidateAudience = false;
-//});
 
-//// ADD YARP REVERSE PROXY
-/// OPTION 1: Configure in appsettings and/or secrets
-//builder.Services.AddReverseProxy()
-//    .LoadFromConfig(builder.Configuration.GetRequiredSection("YarpProxySettings"));
-////.AddTransforms(transforms =>
-////{
-////    transforms.AddRequestTransform(async context =>
-////    {
-////        if (context.HttpContext.User.Identity is not null && context.HttpContext.User.Identity.IsAuthenticated)
-////        {
-////            // Extract the JWT token from the incoming request
-////            var token = await context.HttpContext.GetTokenAsync("access_token");
+/// Register an IForwarderHttpClientFactory implementation to replace the default factory in order to inject a custom delegating handler
+/// that applies Polly policies for resiliency (retry and circuit breaker) to outgoing requests from the reverse proxy to downstream services.
+/// NOTE: Moved into the AddReverseProxy() call to ensure the custom factory is used by the reverse proxy HttpMessageInvoker instances. 
+// builder.Services.AddSingleton<IForwarderHttpClientFactory, CustomHttpClientFactory>();
 
-////            // Add the token to the outgoing request headers
-////            if (!string.IsNullOrEmpty(token))
-////            {
-////                context.ProxyRequest.Headers.Authorization =
-////                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-////            }
-////        }
-////    });
-////});
-/// OPTION 2: Configure in code
+/// Get the downstream service URLs from configuration
 string productsReadServiceUrl = builder.Environment.IsDevelopment() ? "https://localhost:7101" : builder.Configuration["YARP_PRODUCTS_READ_SERVICE_URL"] ?? throw new InvalidOperationException("Products Read Service URL is not configured.");
 string productsWriteServiceUrl = builder.Environment.IsDevelopment() ? "https://localhost:7213" : builder.Configuration["YARP_PRODUCTS_WRITE_SERVICE_URL"] ?? throw new InvalidOperationException("Products Write Service URL is not configured.");
 string accountsServiceUrl = builder.Environment.IsDevelopment() ? "https://localhost:7033" : builder.Configuration["YARP_ACCOUNTS_SERVICE_URL"] ?? throw new InvalidOperationException("Accounts Service URL is not configured.");
 string cartsServiceUrl = builder.Environment.IsDevelopment() ? "https://localhost:7184" : builder.Configuration["YARP_CARTS_SERVICE_URL"] ?? throw new InvalidOperationException("Carts Service URL is not configured.");
 string ordersServiceUrl = builder.Environment.IsDevelopment() ? "https://localhost:7019" : builder.Configuration["YARP_ORDERS_SERVICE_URL"] ?? throw new InvalidOperationException("Orders Service URL is not configured.");
 
+/// Add Reverse Proxy
+/// Retry attempts = 5 at Math.Pow(2) seconds. Circuit breaker open after 5 consecutive failures, break for 30 seconds. 
 builder.Services.AddReverseProxy()
-    .LoadFromMemory(GetRoutes(), GetClusters(productsReadServiceUrl, productsWriteServiceUrl, accountsServiceUrl, cartsServiceUrl, ordersServiceUrl));
+    .LoadFromMemory(GetRoutes(), GetClusters(productsReadServiceUrl, productsWriteServiceUrl, accountsServiceUrl, cartsServiceUrl, ordersServiceUrl))
+    .Services.AddSingleton<IForwarderHttpClientFactory, CustomHttpClientFactory>();
 
 static RouteConfig[] GetRoutes()
 {
@@ -112,7 +81,7 @@ static RouteConfig[] GetRoutes()
                 Path = "/api/products/{**catch-all}"
             },
             RateLimiterPolicy = "BasicRateLimitingPolicy" //,
-            // TimeoutPolicy = "Default"
+            // TimeoutPolicy = TimeSpan.FromSeconds(30)
         },
         new RouteConfig
         {
@@ -124,7 +93,7 @@ static RouteConfig[] GetRoutes()
                 Path = "/api/productsManagement/{**catch-all}"
             },
             RateLimiterPolicy = "BasicRateLimitingPolicy" //,
-            // TimeoutPolicy = "Default"
+            // TimeoutPolicy = TimeSpan.FromSeconds(30)
         },
         new RouteConfig
         {
@@ -136,7 +105,7 @@ static RouteConfig[] GetRoutes()
                 Path = "/api/accounts/{**catch-all}"
             },
             RateLimiterPolicy = "BasicRateLimitingPolicy" //,
-            // TimeoutPolicy = "Default"
+            // TimeoutPolicy = TimeSpan.FromSeconds(30)
         },
         new RouteConfig
         {
@@ -147,8 +116,8 @@ static RouteConfig[] GetRoutes()
             {
                 Path = "/api/carts/{**catch-all}"
             },
-            RateLimiterPolicy = "BasicRateLimitingPolicy" //,
-            // TimeoutPolicy = "Default"
+            RateLimiterPolicy = "BasicRateLimitingPolicy", //,            
+            // TimeoutPolicy = TimeSpan.FromSeconds(30)
         },
         new RouteConfig
         {
@@ -160,7 +129,7 @@ static RouteConfig[] GetRoutes()
                 Path = "/api/orders/{**catch-all}"
             },
             RateLimiterPolicy = "BasicRateLimitingPolicy" //,
-            // TimeoutPolicy = "Default"
+            // TimeoutPolicy = TimeSpan.FromSeconds(30)
         }
     };
 }
@@ -260,23 +229,7 @@ static ClusterConfig[] GetClusters(
 
 builder.Services.AddAuthorization();
 
-//// ADD RATE LIMITING POLICIES 
-/// Rate Limiting Policies can be global or named - named are specified by endpoint or page
-//// OPTION 1. Global Rate Limiting Policy that permits 10 requests per minute by user (identity) or globally:
-//builder.Services.AddRateLimiter(options =>
-//{
-//    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
-//        RateLimitPartition.GetFixedWindowLimiter(
-//            partitionKey: httpContext.User.Identity?.Name ?? httpContext.Request.Headers.Host.ToString(),
-//            factory: partition => new FixedWindowRateLimiterOptions
-//            {
-//                AutoReplenishment = true,
-//                PermitLimit = 10,
-//                QueueLimit = 0,
-//                Window = TimeSpan.FromMinutes(1)
-//            }));
-//});
-// OPTION2. Named Rate Limiting Policy to be added to specific endpoints or globally (see yarp_notes.txt):
+//// DEFINE RATE LIMITING POLICIES 
 builder.Services.AddRateLimiter(options =>
 {
     options.AddFixedWindowLimiter("BasicRateLimitingPolicy", opt =>
@@ -288,7 +241,7 @@ builder.Services.AddRateLimiter(options =>
     });
 });
 
-builder.Services.AddControllers();
+// builder.Services.AddControllers();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -310,19 +263,10 @@ app.UseCors("PawnshopCorsPolicy");      // After routing, before auth
 app.UseAuthentication();
 app.UseAuthorization();
 
-//// GLOBAL RATE LIMITING MIDDLEWARE
-//app.UseEndpoints(endpoints =>
-//{
-//    endpoints.MapControllers().RequireRateLimiting("BasicRateLimitingPolicy");
-//});
+// app.MapControllers();
 
-app.MapControllers();
+app.MapGet("/", () => "YARP Reverse Proxy is up and running!");
 
-app.MapReverseProxy();  // .RequireAuthorization();  // this would require authentication for all proxied requests, which is not desired - need to add authentication to specific endpoints 
-
-//app.UseEndpoints(endpoints =>
-//{
-//    endpoints.MapReverseProxy();
-//});
+app.MapReverseProxy();  // .RequireAuthorization(); would require authentication for all proxied requests
 
 app.Run();
