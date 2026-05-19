@@ -32,6 +32,11 @@ builder.Services.AddScoped<AuthenticationStateProvider, PersistingAuthentication
 // Configure authentication to use Microsoft Entra ID
 // JsonWebTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
+string yarpProxyBaseUrl = builder.Environment.IsDevelopment() ?
+    StaticData.ProductsApiServices_LocalYarpProxyBaseURL :
+    builder.Configuration["AZURE_YARP_PROXY_BASE_URL"] ??
+    throw new ArgumentNullException("YARP Proxy Base URL is not configured.");
+
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApp(msIdentityOptions =>
     {
@@ -65,23 +70,27 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .EnableTokenAcquisitionToCallDownstreamApi()
     .AddDownstreamApi(StaticData.AccountsApiService_ServiceName, configOptions =>              // api name
     {
-        configOptions.BaseUrl = StaticData.AccountsApiService_LocalBaseURL;                    // api base url
+        configOptions.BaseUrl = yarpProxyBaseUrl;
+        // configOptions.BaseUrl = StaticData.AccountsApiService_LocalBaseURL;                    // api base url
         // configOptions.BaseUrl = StaticData.AccountsApiService_AzureBaseURL;
         configOptions.Scopes = [builder.Configuration["ACCOUNTS_API_SCOPE"]!];                 // Note: scope shows in api access token, not client identity token
     })
     .AddDownstreamApi(StaticData.CartsApiService_ServiceName, configOptions =>
     {
-        configOptions.BaseUrl = StaticData.CartsApiService_LocalBaseURL;
+        configOptions.BaseUrl = yarpProxyBaseUrl;
+        // configOptions.BaseUrl = StaticData.CartsApiService_LocalBaseURL;
         configOptions.Scopes = [builder.Configuration["CARTS_API_SCOPE"]!];
     })
     .AddDownstreamApi(StaticData.OrdersApiService_ServiceName, configOptions =>
     {
-         configOptions.BaseUrl = StaticData.OrdersApiService_LocalBaseURL;
-         configOptions.Scopes = [builder.Configuration["ORDERS_API_SCOPE"]!];
+        configOptions.BaseUrl = yarpProxyBaseUrl;
+        // configOptions.BaseUrl = StaticData.OrdersApiService_LocalBaseURL;
+        configOptions.Scopes = [builder.Configuration["ORDERS_API_SCOPE"]!];
     })
     .AddDownstreamApi(StaticData.ProductsReadApiService_ServiceName, configOptions =>
     {
-        configOptions.BaseUrl = StaticData.ProductsReadApiService_LocalBaseURL;
+        configOptions.BaseUrl = yarpProxyBaseUrl;
+        // configOptions.BaseUrl = StaticData.ProductsReadApiService_LocalBaseURL;
         configOptions.Scopes = [builder.Configuration["PRODUCTS_READ_API_SCOPE"]!];
     })
     .AddDistributedTokenCaches();
@@ -119,7 +128,8 @@ builder.Services.AddScoped<IClaimsHttpService, ClaimsApiService>();
 //// HTTP Clients
 builder.Services.AddHttpClient(name: StaticData.ProductsReadHttpClient_ClientName, configureClient: config =>
 {
-    config.BaseAddress = new Uri(StaticData.ProductsReadHttpClient_BaseURL);
+    config.BaseAddress = new Uri(yarpProxyBaseUrl);
+    // config.BaseAddress = new Uri(StaticData.ProductsReadHttpClient_BaseURL);
     config.DefaultRequestHeaders.Clear();
     config.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 });     // NO TOKEN HANDLER REQUIRED - INTENDED FOR PUBLIC ENDPOINTS    // .AddUserAccessTokenHandler();

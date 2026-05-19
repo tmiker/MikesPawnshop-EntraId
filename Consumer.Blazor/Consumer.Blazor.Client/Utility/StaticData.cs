@@ -7,6 +7,9 @@
         public const string WasmClient_AzureApiBaseAddress = "https://pawnshopconsumer-dtaugcdmfrfvbygz.centralus-01.azurewebsites.net";
 
         /// NOTE: This webclient accesses API Resources through the YARP Reverse Proxy.
+        
+        // YARP Reverse Proxy
+        public const string ProductsApiServices_LocalYarpProxyBaseURL = "https://localhost:7245";
 
         /// DOWNSTREAM API SERVICES
         public const string ProductsReadApiService_ServiceName = "MikesPawnshopProductsReadAPI";

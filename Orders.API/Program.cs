@@ -111,10 +111,16 @@ try
 
     builder.Services.AddScoped<IOrderService, OrderService>();
 
+    string internalAccountsBaseUrl = builder.Environment.IsDevelopment() ?
+    StaticData.InternalAccounts_HttpClient_Local_BaseUrl :
+    builder.Configuration["AZURE_INTERNAL_ACCOUNTS_API_BASE_URL"] ??
+    throw new ArgumentNullException("Accounts API Internal Base URL is not configured.");
+
     builder.Services.AddHttpClient(name: StaticData.InternalAccounts_HttpClient_Name, configureClient: config =>
     {
         // uses API Key auth for intermal api to api communication
-        config.BaseAddress = new Uri(StaticData.InternalAccounts_HttpClient_BaseUrl);
+        config.BaseAddress = new Uri(internalAccountsBaseUrl);
+        // config.BaseAddress = new Uri(StaticData.InternalAccounts_HttpClient_Local_BaseUrl);
         config.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json", 1.0));
     });
     builder.Services.AddSingleton<IInternalAccountsHttpService, InternalAccountsHttpService>();

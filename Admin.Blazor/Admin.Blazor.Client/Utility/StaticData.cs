@@ -8,6 +8,9 @@
         public const string WasmClient_LocalApiBaseAddress = "https://localhost:7088";
         public const string WasmClient_AzureApiBaseAddress = "https://pawnshopadmin-cfd2asdcc2eceeac.centralus-01.azurewebsites.net";
 
+        // YARP Reverse Proxy
+        public const string ProductsApiServices_LocalYarpProxyBaseURL = "https://localhost:7245";
+
         // DownstreamApi Services
         public const string ProductsWriteApiService_ServiceName = "MikesPawnshopProductsWriteAPI";
         // public const string ProductsWriteApiService_LocalBaseURL = "https://localhost:7213";          // without YARP

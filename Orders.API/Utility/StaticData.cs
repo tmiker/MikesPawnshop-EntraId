@@ -9,7 +9,7 @@
 
         // INTERNAL ACCOUNT HTTP CLIENT (API KEY AUTH)
         public const string InternalAccounts_HttpClient_Name = "InternalAccountsHttpClient";
-        public const string InternalAccounts_HttpClient_BaseUrl = "https://localhost:7033";
+        public const string InternalAccounts_HttpClient_Local_BaseUrl = "https://localhost:7033";
         public const string InternalAccounts_HttpClient_AccountsPath = "/api/internalAccounts";
 
         // API KEY AUTH
