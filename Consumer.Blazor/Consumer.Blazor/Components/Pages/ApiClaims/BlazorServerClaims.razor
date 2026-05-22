@@ -30,7 +30,14 @@
                             <h6>Type: @claim.Type</h6>
                         </div>
                         <div class="col-6">
-                            <h6>Value: @claim.Value</h6>
+                            @if (claim.Value.Length > 50)
+                            {
+                                <h6>Value: @claim.Value.Substring(0, 50)</h6>
+                            }
+                            else
+                            {
+                                <h6>Value: @claim.Value</h6>
+                            }
                         </div>
                     </div>
                 }
