@@ -44,7 +44,7 @@ try
         .ReadFrom.Configuration(context.Configuration));
 
     builder.Services.AddHealthChecks()
-        .AddCheck<MongoDbHealthCheck>(name: "MongoLocalConnectionHealthCheck");
+        .AddCheck<MongoDbHealthCheck>(name: "MongoHealthCheck");
 
     builder.Services.AddCors(setup =>
     {
