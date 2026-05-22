@@ -12,69 +12,11 @@
         </button>
         <div class="collapse navbar-collapse @NavBarCssClass" id="navbarCollapse" @onclick="ToggleNavMenu">
             <ul class="navbar-nav me-auto mb-2 mb-md-0">
-                <li class="nav-item px-3"> 
+                <li class="nav-item px-3">
                     <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                         <i class="bi-house-door"></i> Home
                         <span class="visually-hidden">(current)</span>
                     </NavLink>
-                </li>
-                <li class="nav-item px-3 dropdown">
-                    <NavLink class="nav-link dropdown-toggle" href="dev" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                        <i class="bi-lightning"></i> &nbsp; Development
-                    </NavLink>
-                    <div class="dropdown-menu dropdown-menu-dark">
-                        <NavLink class="dropdown-item" href="dev/toastr-demo-server" Match="NavLinkMatch.All">
-                            <i class="bi-house-door"></i> &nbsp; Toastr Server
-                        </NavLink>
-                        <div class="dropdown-divider"></div>
-                        <NavLink class="dropdown-item" href="dev/toastr-demo-client" Match="NavLinkMatch.All">
-                            <i class="bi-info-circle"></i> &nbsp; Toastr Client
-                        </NavLink>
-                    </div>
-                </li>
-                <li class="nav-item px-3 dropdown">
-                    <NavLink class="nav-link dropdown-toggle" href="claims" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                        <i class="bi-person-fill"></i> &nbsp; Claims
-                    </NavLink>
-                    <div class="dropdown-menu dropdown-menu-dark">
-                        <NavLink class="dropdown-item" href="claims/accountsApiClaims" Match="NavLinkMatch.All">
-                            <i class="bi-person-fill"></i> &nbsp; Accounts API Claims
-                        </NavLink>
-                        <NavLink class="dropdown-item" href="claims/cartsApiClaims" Match="NavLinkMatch.All">
-                            <i class="bi-person-fill"></i> &nbsp; Carts API Claims
-                        </NavLink>
-                        <NavLink class="dropdown-item" href="claims/ordersApiClaims" Match="NavLinkMatch.All">
-                            <i class="bi-person-fill"></i> &nbsp; Orders API Claims
-                        </NavLink>
-                        <NavLink class="dropdown-item" href="claims/productsReadApiClaims" Match="NavLinkMatch.All">
-                            <i class="bi-person-fill"></i> &nbsp; Products API Claims
-                        </NavLink>
-                        <div class="dropdown-divider"></div>
-                        <NavLink class="dropdown-item" href="claims/blazorServerClaims" Match="NavLinkMatch.All">
-                            <i class="bi-person-fill"></i> &nbsp; Blazor Server Claims
-                        </NavLink>
-                        <div class="dropdown-divider"></div>
-                        <NavLink class="dropdown-item" href="claims/testAccessDeniedRouting" Match="NavLinkMatch.All">
-                            <i class="bi-emoji-astonished-fill"></i> &nbsp; Test Access Denied Routing
-                        </NavLink>
-                    </div>
-                </li>
-
-
-
-                <li class="nav-item px-3 dropdown">
-                    <NavLink class="nav-link dropdown-toggle" href="products" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                        <i class="bi-tornado"></i> &nbsp; Products
-                    </NavLink>
-                    <div class="dropdown-menu dropdown-menu-dark">
-                        <NavLink class="dropdown-item" href="products/productsRead" Match="NavLinkMatch.All">
-                            <i class="bi bi-list-nested-nav-menu"></i> &nbsp; Products Read
-                        </NavLink>
-                        <div class="dropdown-divider"></div>
-                        <NavLink class="dropdown-item" href="products/devTesting" Match="NavLinkMatch.All">
-                            <i class="bi bi-list-nested-nav-menu"></i> &nbsp; Dev Testing
-                        </NavLink>
-                    </div>
                 </li>
 
                 <li class="nav-item px-3 dropdown">
@@ -85,36 +27,94 @@
                         <NavLink class="dropdown-item" href="store/storefront" Match="NavLinkMatch.All">
                             <i class="bi bi-list-nested-nav-menu"></i> &nbsp; Storefront
                         </NavLink>
-
-                        @* <div class="dropdown-divider"></div> *@
                     </div>
                 </li>
 
-                <li class="nav-item px-3 dropdown">
-                    <NavLink class="nav-link dropdown-toggle" href="orders" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                        <i class="bi-tornado"></i> &nbsp; Orders
-                    </NavLink>
-                    <div class="dropdown-menu dropdown-menu-dark">
-                        <NavLink class="dropdown-item" href="orders/myOrders" Match="NavLinkMatch.All">
-                            <i class="bi bi-list-nested-nav-menu"></i> &nbsp; My Orders
-                        </NavLink>
+                <AuthorizeView>
+                    <Authorized>
+                        <li class="nav-item px-3 dropdown">
+                            <NavLink class="nav-link dropdown-toggle" href="orders" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <i class="bi-tornado"></i> &nbsp; Orders
+                            </NavLink>
+                            <div class="dropdown-menu dropdown-menu-dark">
+                                <NavLink class="dropdown-item" href="orders/myOrders" Match="NavLinkMatch.All">
+                                    <i class="bi bi-list-nested-nav-menu"></i> &nbsp; My Orders
+                                </NavLink>
+                            </div>
+                        </li>
+                        <li class="nav-item px-3 dropdown">
+                            <NavLink class="nav-link dropdown-toggle" href="account" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <i class="bi-tornado"></i> &nbsp; Account
+                            </NavLink>
+                            <div class="dropdown-menu dropdown-menu-dark">
+                                <NavLink class="dropdown-item" href="account/myAccount" Match="NavLinkMatch.All">
+                                    <i class="bi bi-list-nested-nav-menu"></i> &nbsp; My Account
+                                </NavLink>
+                            </div>
+                        </li>
 
-                        @* <div class="dropdown-divider"></div> *@
-                    </div>
-                </li>
+                        <li class="nav-item px-3 dropdown">
+                            <NavLink class="nav-link dropdown-toggle" href="claims" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <i class="bi-person-fill"></i> &nbsp; Claims
+                            </NavLink>
+                            <div class="dropdown-menu dropdown-menu-dark">
+                                <NavLink class="dropdown-item" href="claims/accountsApiClaims" Match="NavLinkMatch.All">
+                                    <i class="bi-person-fill"></i> &nbsp; Accounts API Claims
+                                </NavLink>
+                                <NavLink class="dropdown-item" href="claims/cartsApiClaims" Match="NavLinkMatch.All">
+                                    <i class="bi-person-fill"></i> &nbsp; Carts API Claims
+                                </NavLink>
+                                <NavLink class="dropdown-item" href="claims/ordersApiClaims" Match="NavLinkMatch.All">
+                                    <i class="bi-person-fill"></i> &nbsp; Orders API Claims
+                                </NavLink>
+                                <NavLink class="dropdown-item" href="claims/productsReadApiClaims" Match="NavLinkMatch.All">
+                                    <i class="bi-person-fill"></i> &nbsp; Products API Claims
+                                </NavLink>
+                                <div class="dropdown-divider"></div>
+                                <NavLink class="dropdown-item" href="claims/blazorServerClaims" Match="NavLinkMatch.All">
+                                    <i class="bi-person-fill"></i> &nbsp; Blazor Server Claims
+                                </NavLink>
+                                <div class="dropdown-divider"></div>
+                                <NavLink class="dropdown-item" href="claims/testAccessDeniedRouting" Match="NavLinkMatch.All">
+                                    <i class="bi-emoji-astonished-fill"></i> &nbsp; Test Access Denied Routing
+                                </NavLink>
+                            </div>
+                        </li>
+                    </Authorized>
+                </AuthorizeView>
 
-                <li class="nav-item px-3 dropdown">
-                    <NavLink class="nav-link dropdown-toggle" href="account" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                        <i class="bi-tornado"></i> &nbsp; Account
-                    </NavLink>
-                    <div class="dropdown-menu dropdown-menu-dark">
-                        <NavLink class="dropdown-item" href="account/myAccount" Match="NavLinkMatch.All">
-                            <i class="bi bi-list-nested-nav-menu"></i> &nbsp; My Account
-                        </NavLink>
-
-                        @* <div class="dropdown-divider"></div> *@
-                    </div>
-                </li>
+                <AuthorizeView Policy="IsAdminOrManager">
+                    <Authorized>
+                        <li class="nav-item px-3 dropdown">
+                            <NavLink class="nav-link dropdown-toggle" href="products" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <i class="bi-tornado"></i> &nbsp; Products
+                            </NavLink>
+                            <div class="dropdown-menu dropdown-menu-dark">
+                                <NavLink class="dropdown-item" href="products/productsRead" Match="NavLinkMatch.All">
+                                    <i class="bi bi-list-nested-nav-menu"></i> &nbsp; Products Read
+                                </NavLink>
+                                <div class="dropdown-divider"></div>
+                                <NavLink class="dropdown-item" href="products/devTesting" Match="NavLinkMatch.All">
+                                    <i class="bi bi-list-nested-nav-menu"></i> &nbsp; Dev Testing
+                                </NavLink>
+                            </div>
+                        </li>
+                        <li class="nav-item px-3 dropdown">
+                            <NavLink class="nav-link dropdown-toggle" href="dev" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <i class="bi-lightning"></i> &nbsp; Development
+                            </NavLink>
+                            <div class="dropdown-menu dropdown-menu-dark">
+                                <NavLink class="dropdown-item" href="dev/toastr-demo-server" Match="NavLinkMatch.All">
+                                    <i class="bi-house-door"></i> &nbsp; Toastr Server
+                                </NavLink>
+                                <div class="dropdown-divider"></div>
+                                <NavLink class="dropdown-item" href="dev/toastr-demo-client" Match="NavLinkMatch.All">
+                                    <i class="bi-info-circle"></i> &nbsp; Toastr Client
+                                </NavLink>
+                            </div>
+                        </li>
+                    </Authorized>
+                </AuthorizeView>
             </ul>
             <div>
                 <div class="d-flex">
@@ -136,36 +136,3 @@
         collapseNavMenu = !collapseNavMenu;
     }
 }
-
-
-
-@* <div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">Consumer.Blazor</a>
-    </div>
-</div>
-
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
-
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="nav flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
-    </nav>
-</div> *@
-

@@ -2,6 +2,7 @@
 @using Consumer.Blazor.Client.DTOs.Claims
 @rendermode InteractiveServer
 @inject IClaimsHttpService _claimsService
+@attribute [Authorize]
 
 <PageTitle>Products Read API Claims</PageTitle>
 
