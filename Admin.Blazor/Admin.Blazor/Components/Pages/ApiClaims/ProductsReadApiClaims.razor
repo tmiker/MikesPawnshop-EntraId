@@ -54,7 +54,15 @@
                             {
                                 <div class="row">
                                     <div class="col-12">
-                                        <p>@item</p>
+                                        @if (item.Length > 50)
+                                        {
+                                            <p>Value: @item.Substring(0, 50)...</p>
+                                        }
+                                        else
+                                        {
+                                            <p>Value: @item</p>
+                                        }
+                                        @* <p>@item</p> *@
                                     </div>
                                 </div>
                             }
@@ -125,7 +133,15 @@
                             {
                                 <div class="row">
                                     <div class="col-12">
-                                        <p>@item</p>
+                                        @if (item.Length > 50)
+                                        {
+                                            <p>Value: @item.Substring(0, 50)...</p>
+                                        }
+                                        else
+                                        {
+                                            <p>Value: @item</p>
+                                        }
+                                        @* <p>@item</p> *@
                                     </div>
                                 </div>
                             }
