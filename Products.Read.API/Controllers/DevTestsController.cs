@@ -76,7 +76,7 @@ namespace Products.Read.API.Controllers
         }
 
         [HttpPost("throwExceptionForTesting")]
-        // [Authorize(Policy = "IsAdmin")]
+        [Authorize]
         public IActionResult ThrowExceptionForTesting([FromBody] ThrowExceptionDTO throwExceptionDTO, CancellationToken cancellationToken)
         {
             // Note passing Correlation ID from the request headers to the command as Microsoft recommends
@@ -111,7 +111,7 @@ namespace Products.Read.API.Controllers
         }
 
         [HttpGet("getCloudAmqpSettingsTestingDummyValue")]
-        // [Authorize(Policy = "IsAdmin")]
+        [Authorize]
         public IActionResult GetCloudAmqpTestingDummyValue(CancellationToken cancellationToken)
         {
             string? value = _cloudAmqpSettings.Value.TestingDummyValue;
