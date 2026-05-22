@@ -53,7 +53,15 @@
                             {
                                 <div class="row">
                                     <div class="col-12">
-                                        <p>@item</p>
+                                        @if (item.Length > 50)
+                                        {
+                                            <p>Value: @item.Substring(0, 50)...</p>
+                                        }
+                                        else
+                                        {
+                                            <p>Value: @item</p>
+                                        }
+                                        @* <p>@item</p> *@
                                     </div>
                                 </div>
                             }
@@ -105,7 +113,7 @@
                 </div>
                 <div class="row mt-2">
                     <div class="col-12">
-                        <h6><b>Parsed from Authorization Header Value passed in API Request by IDP as a Bearer Token</b></h6>
+                        <h6><b>Parsed from Request Authorization Header Value</b></h6>
                     </div>
                 </div>
             </div>
@@ -124,7 +132,15 @@
                             {
                                 <div class="row">
                                     <div class="col-12">
-                                        <p>@item</p>
+                                        @if (item.Length > 50)
+                                        {
+                                            <p>Value: @item.Substring(0, 50)...</p>
+                                        }
+                                        else
+                                        {
+                                            <p>Value: @item</p>
+                                        }
+                                        @* <p>@item</p> *@
                                     </div>
                                 </div>
                             }
