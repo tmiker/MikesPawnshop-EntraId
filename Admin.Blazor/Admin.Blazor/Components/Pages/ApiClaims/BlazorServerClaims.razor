@@ -8,19 +8,19 @@
 
 <h4 class="mt-4">This Blazor App Authentication State Task Data</h4>
 
-<div class="row mt-2">
+@* <div class="row mt-2">
     <div class="col-4">
         <a class="btn btn-primary form-control" @onclick="LoadAuthenticationStateAsync">Load Authentication State</a>
     </div>
     <div class="col-4">
         <a class="btn btn-warning form-control" @onclick="ToggleShowBlazorAuthData">Toggle Show Blazor Auth Data</a>
     </div>
-</div>
+</div> *@
 
 @if (_showBlazorAuthData)
 {
     <div class="row mt-2">
-        <div class="col-7">
+        <div class="col-12">
             <h5> Loaded OnAfterRender</h5>
             @if (_claims is not null && _claims.Any())
             {
@@ -32,20 +32,13 @@
                             <h6>Type: @claim.Type</h6>
                         </div>
                         <div class="col-6">
-                            @if (claim.Value.Length > 50)
-                            {
-                                <h6>Value: @claim.Value.Substring(0, 50)</h6>
-                            }
-                            else
-                            {
-                                <h6>Value: @claim.Value</h6>
-                            }
+                            <h6>Value: @claim.Value</h6>
                         </div>
                     </div>
                 }
             }
         </div>
-        <div class="col-5">
+        @* <div class="col-5">
             <h5>Button Driven Data</h5>
             <div class="row mt-2">
                 <div class="col-12">
@@ -53,7 +46,7 @@
                     <textarea rows="16" type="text" class="bg-dark text-light form-control" @bind="_authMessage" />
                 </div>
             </div>
-        </div>
+        </div> *@
     </div>
 }
 
