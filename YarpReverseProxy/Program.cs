@@ -137,26 +137,27 @@ static RouteConfig[] GetRoutes()
 static ClusterConfig[] GetClusters(
     string productsReadServiceUrl, string productsWriteServiceUrl, string accountsServiceUrl, string cartsServiceUrl, string ordersServiceUrl)
 {
+    // Note: Active HealthChecks are currently disabled avoid Azure charges for a continuously running database
     return new[]
     {
         new ClusterConfig
         {
             ClusterId = "products",
-            HealthCheck = new HealthCheckConfig
-            {
-                Active = new ActiveHealthCheckConfig
-                {
-                    Enabled = true,
-                    Interval = TimeSpan.FromSeconds(30),
-                    Timeout = TimeSpan.FromSeconds(10),
-                    Policy = "ConsecutiveFailures",
-                    Path = "/api/products/healthYarp"
-                }
-            },
-            Metadata = new Dictionary<string, string>
-            {
-                ["ConsecutiveFailuresHealthPolicy.Threshold"] = "3"
-            },
+            //HealthCheck = new HealthCheckConfig
+            //{
+            //    Active = new ActiveHealthCheckConfig
+            //    {
+            //        Enabled = true,
+            //        Interval = TimeSpan.FromSeconds(30),
+            //        Timeout = TimeSpan.FromSeconds(10),
+            //        Policy = "ConsecutiveFailures",
+            //        Path = "/api/products/healthYarp"
+            //    }
+            //},
+            //Metadata = new Dictionary<string, string>
+            //{
+            //    ["ConsecutiveFailuresHealthPolicy.Threshold"] = "3"
+            //},
             Destinations = new Dictionary<string, DestinationConfig>
             {
                 ["productsReadService"] = new DestinationConfig
@@ -168,21 +169,21 @@ static ClusterConfig[] GetClusters(
         new ClusterConfig
         {
             ClusterId = "productsManagement",
-            HealthCheck = new HealthCheckConfig
-            {
-                Active = new ActiveHealthCheckConfig
-                {
-                    Enabled = true,
-                    Interval = TimeSpan.FromSeconds(30),
-                    Timeout = TimeSpan.FromSeconds(10),
-                    Policy = "ConsecutiveFailures",
-                    Path = "/api/productsManagement/healthYarp"
-                }
-            },
-            Metadata = new Dictionary<string, string>
-            {
-                ["ConsecutiveFailuresHealthPolicy.Threshold"] = "3"
-            },
+            //HealthCheck = new HealthCheckConfig
+            //{
+            //    Active = new ActiveHealthCheckConfig
+            //    {
+            //        Enabled = true,
+            //        Interval = TimeSpan.FromSeconds(30),
+            //        Timeout = TimeSpan.FromSeconds(10),
+            //        Policy = "ConsecutiveFailures",
+            //        Path = "/api/productsManagement/healthYarp"
+            //    }
+            //},
+            //Metadata = new Dictionary<string, string>
+            //{
+            //    ["ConsecutiveFailuresHealthPolicy.Threshold"] = "3"
+            //},
             Destinations = new Dictionary<string, DestinationConfig>
             {
                 ["productsWriteService"] = new DestinationConfig
@@ -265,7 +266,7 @@ app.UseAuthorization();
 
 // app.MapControllers();
 
-app.MapGet("/", () => "YARP Reverse Proxy is up and running!");
+app.MapGet("/", () => "YARP Reverse Proxy is up and running! 22 May @1330");
 
 app.MapReverseProxy();  // .RequireAuthorization(); would require authentication for all proxied requests
 
