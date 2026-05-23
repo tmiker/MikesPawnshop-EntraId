@@ -58,11 +58,11 @@ try
 
     builder.Services.AddCors(setup =>
     {
-        setup.AddPolicy("AllowGetPolicy", policy =>
+        setup.AddPolicy("AllowAnyPolicy", policy =>
         {
             policy.AllowAnyOrigin();
             policy.AllowAnyHeader();
-            policy.WithMethods("GET");
+            policy.AllowAnyMethod();
             policy.WithExposedHeaders("X-Pagination");
         });
     });
@@ -162,7 +162,7 @@ try
 
     app.UseHttpsRedirection();
 
-    app.UseCors("AllowGetPolicy");
+    app.UseCors("AllowAnyPolicy");
 
     app.UseAuthentication();
     app.UseAuthorization();
