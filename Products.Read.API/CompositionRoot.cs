@@ -17,27 +17,20 @@ namespace Products.Read.API
 {
     public static class CompositionRoot
     {
-        public static IServiceCollection ComposeApplication(this IServiceCollection services)
+        public static IServiceCollection ComposeApplication(this IServiceCollection services, string? environmentName)
         {
-            //var configuration = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+            var configuration = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
-            //// Add database context and cache
-            //if (env.IsDevelopment())
-            //{
-            //    services.AddDbContext<ProductsReadDbContext>(options =>
-            //        options.UseSqlServer(configuration["LOCAL_SQL_CONNECTIONSTRING"]));
-            //    // services.AddDistributedMemoryCache();
-            //}
-            //else
-            //{
-            //    services.AddDbContext<ProductsReadDbContext>(options =>
-            //        options.UseSqlServer(configuration["AZURE_SQL_READ_CONNECTIONSTRING"]));
-            //    //services.AddStackExchangeRedisCache(options =>
-            //    //{
-            //    //    options.Configuration = builder.Configuration["AZURE_REDIS_READ_CONNECTIONSTRING"];
-            //    //    options.InstanceName = "ProductsReadInstance";
-            //    //});
-            //}
+            if (environmentName == "Development")
+            {
+                services.AddDbContext<ProductsReadDbContext>(options =>
+                    options.UseSqlServer(configuration["LOCAL_SQL_CONNECTIONSTRING"]));
+            }
+            else
+            {
+                services.AddDbContext<ProductsReadDbContext>(options =>
+                    options.UseSqlServer(configuration["AZURE_SQL_READ_CONNECTIONSTRING"]));
+            }
 
             /// Previous before configure for Azure deployment
             //services.AddDbContext<ProductsReadDbContext>(options =>

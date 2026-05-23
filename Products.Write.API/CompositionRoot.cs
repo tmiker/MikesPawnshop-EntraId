@@ -2,7 +2,6 @@
 using Products.Write.API.Auth;
 using Products.Write.API.Configuration;
 using Products.Write.Application;
-using Products.Write.Application.Configuration;
 using Products.Write.Infrastructure;
 using Products.Write.Infrastructure.DataAccess;
 
@@ -24,10 +23,6 @@ namespace Products.Write.API
                 services.AddDbContext<EventStoreDbContext>(options =>
                     options.UseSqlServer(configuration["AZURE_SQL_WRITE_CONNECTIONSTRING"]));
             }
-            //services.AddDbContext<EventStoreDbContext>(options =>
-            //{
-            //    options.UseSqlServer(configuration.GetConnectionString("LocalDevelopmentConnectionString"));
-            //});
 
             services.AddOptions<CloudAMQPSettings>().Configure<IConfiguration>((options, config) =>
             {

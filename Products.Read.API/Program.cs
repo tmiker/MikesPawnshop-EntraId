@@ -126,9 +126,9 @@ try
         options.AddPolicy("DomesticDogs", policy => policy.RequireClaim("Genus", "Canis").RequireClaim("Species", "Familiaris"));
     });
 
-    /// RESPONSE CACHING
+    /// CACHE OPTION 1: RESPONSE CACHING
     builder.Services.AddResponseCaching();
-    /// OUTPUT CACHING
+    /// CACHE OPTION 2: OUTPUT CACHING
     //builder.Services.AddOutputCache(options =>
     //{
     //    //options.AddBasePolicy(builder =>
@@ -147,38 +147,22 @@ try
     //    });
     //});
 
-    // Add database context and cache
-    if (builder.Environment.IsDevelopment())
-    {
-        builder.Services.AddDbContext<ProductsReadDbContext>(options =>
-            options.UseSqlServer(builder.Configuration["LOCAL_SQL_CONNECTIONSTRING"]));
-    }
-    else
-    {
-        builder.Services.AddDbContext<ProductsReadDbContext>(options =>
-            options.UseSqlServer(builder.Configuration["AZURE_SQL_READ_CONNECTIONSTRING"]));
-    }
+    //// Add database context and cache - moved to CompositionRoot.cs
+    //if (builder.Environment.IsDevelopment())
+    //{
+    //    builder.Services.AddDbContext<ProductsReadDbContext>(options =>
+    //        options.UseSqlServer(builder.Configuration["LOCAL_SQL_CONNECTIONSTRING"]));
+    //}
+    //else
+    //{
+    //    builder.Services.AddDbContext<ProductsReadDbContext>(options =>
+    //        options.UseSqlServer(builder.Configuration["AZURE_SQL_READ_CONNECTIONSTRING"]));
+    //}
 
-    //// THE BELOW WORKS IN DEV AND GIT WORKFLOW (WITH ENV VARIABLES ADDED) 
+    //// CONFIGURE AMQP / MASS TRANSIT 
     string amqpUrl = builder.Configuration["CLOUD_AMQP_SETTINGS_URL"] ?? throw new ArgumentNullException("Invalid Cloud AMQP URL configuration.");
     string amqpUsername = builder.Configuration["CLOUD_AMQP_SETTINGS_USERVHOST"] ?? throw new ArgumentNullException("Invalid Cloud AMQP User VHost configuration.");
     string amqpPassword = builder.Configuration["CLOUD_AMQP_SETTINGS_PASSWORD"] ?? throw new ArgumentNullException("Invalid Cloud AMQP Password configuration.");
-    //// TRY UNIQUE APPROACH FOR EACH ENVIRONMENT
-    //string amqpUrl = env.IsDevelopment() ?
-    //    configuration.GetSection("CloudAMQPSettings:Url").Value! :          // local dev
-    //    configuration["CloudAMQPSettings:Url"]! ??                          // GitHub actions
-    //    configuration.GetValue<string>("CloudAMQPSettings__Url") ??         // Azure App Service 
-    //    throw new ArgumentNullException("Invalid Cloud AMQP URL configuration.");
-    //string amqpUsername = env.IsDevelopment() ? 
-    //    configuration.GetSection("CloudAMQPSetting:UserVhost").Value! :     // local dev
-    //    configuration["CloudAMQPSetting:UserVhost"]! ??                     // GitHub actions
-    //    configuration.GetValue<string>("CloudAMQPSetting__UserVhost") ??    // Azure App Service
-    //    throw new ArgumentNullException("Invalid Cloud AMQP User VHost configuration.");
-    //string amqpPassword = env.IsDevelopment() ? 
-    //    configuration.GetSection("CloudAMQPSettings:Password").Value! :     // local dev
-    //    configuration["CloudAMQPSettings:Password"]! ??                     // GitHub actions
-    //    configuration.GetValue<string>("CloudAMQPSettings__Password")! ??   // Azure App Service
-    //    throw new ArgumentNullException("Invalid Cloud AMQP Password configuration.");
 
     builder.Services.AddMassTransit(x =>
     {
@@ -225,8 +209,8 @@ try
     });
 
     //// Register services from Composition Root
-    // IWebHostEnvironment env = builder.Environment;
-    builder.Services.ComposeApplication();
+    string? environmentName = builder.Environment.EnvironmentName;
+    builder.Services.ComposeApplication(environmentName);
 
     builder.Services.AddControllers();
     // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -263,7 +247,7 @@ try
 
     app.MapControllers();
 
-    app.MapGet("/", () => "Hello, this is the Products.Read API.");
+    app.MapGet("/", () => "Products.Read API is up and running. 22 May 2026 @ 21:12");
 
     // YARP healthcheck endpoint
     app.MapHealthChecks("/api/products/healthYarp", new HealthCheckOptions
