@@ -247,7 +247,7 @@ try
 
     app.MapControllers();
 
-    app.MapGet("/", () => "Products.Read API is up and running. 22 May 2026 @ 21:12");
+    app.MapGet("/", () => "Products.Read API is up and running. 23 May 2026 @ 16:18");
 
     // YARP healthcheck endpoint
     app.MapHealthChecks("/api/products/healthYarp", new HealthCheckOptions
