@@ -6,6 +6,7 @@ using Admin.Blazor.Client.Utility;
 using Admin.Blazor.Components;
 using Admin.Blazor.DownstreamApiServices;
 using Admin.Blazor.HttpServices;
+using Duende.AccessTokenManagement.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -45,7 +46,7 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
         /// NOTE: If configure 'Authority' when using Microsoft.Identity.Web, the 'Instance', 'TenantId', and 'Domain' options are ignored. 
         /// So, to use those options, do not configure 'Authority' and instead configure 'Instance', 'TenantId', and 'Domain' as shown below.
 
-        // msIdentityOptions.Authority = "https://login.microsoftonline.com/2fd80906-88f0-4874-8d94-1d87e82053f7/v2.0";
+        // msIdentityOptions.Authority = "http s://login.microsoftonline.com/2fd80906-88f0-4874-8d94-1d87e82053f7/v2.0";
         msIdentityOptions.Instance = "https://login.microsoftonline.com/";
         msIdentityOptions.TenantId = builder.Configuration["AZURE_CREDENTIALS_TENANT_ID"];                // for azure deploy
         msIdentityOptions.Domain = builder.Configuration["AZURE_CREDENTIALS_DOMAIN"];                    // for azure deploy
@@ -135,13 +136,14 @@ builder.Services.AddScoped<IAccountsHttpService, AccountsApiService>();
 builder.Services.AddScoped<IOrdersHttpService, OrdersApiService>();
 builder.Services.AddScoped<IClaimsHttpService, ClaimsApiService>();
 
-// HTTP Clients
+// HTTP Clients - for using HttpClientFactory to create HttpClients to call downstream APIs
+// without the user being logged in
 builder.Services.AddHttpClient(name: StaticData.ProductsReadHttpClient_ClientName, configureClient: config =>
 {
     config.BaseAddress = new Uri(yarpProxyBaseUrl);
     config.DefaultRequestHeaders.Clear();
     config.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-}); // FOR PUBLIC ENDPOINTS ONLY    // .AddUserAccessTokenHandler();
+});  // PUBLIC HTTP CLIENT - NOT CONFIGURED TO PASS TOKENS  // .AddUserAccessTokenHandler(); 
 builder.Services.AddSingleton<IPublicProductsReadHttpService, ProductsReadHttpService>();
 //builder.Services.AddHttpClient(name: StaticData.ProductsWriteHttpClient_ClientName, configureClient: config =>
 //{

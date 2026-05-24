@@ -1,4 +1,5 @@
-﻿using Admin.Blazor.Client.DTOs.Health;
+﻿using Admin.Blazor.Client.DTOs.Claims;
+using Admin.Blazor.Client.DTOs.Health;
 using Admin.Blazor.Client.DTOs.Products;
 using Admin.Blazor.Client.DTOs.Products.Test;
 using Admin.Blazor.Client.Paging;
@@ -19,5 +20,8 @@ namespace Admin.Blazor.Client.Abstractions
         // Dev Tests
         Task<(bool IsSuccess, string? ErrorMessage)> ThrowExceptionForTestingAsync(ThrowExceptionDTO throwExceptionDTO, CancellationToken cancellationToken);
         Task<(bool IsSuccess, string? Value, string? ErrorMessage)> GetCloudAmqpSettingsTestingDummyValueAsync(CancellationToken cancellationToken);
+
+        // No claims for Products Read API as it is a public service
+        // Task<(bool IsSuccess, ApiUserInfoDTO? ApiUserInfo, string? ErrorMessage)> GetProductsReadApiUserInfoAsync();
     }
 }

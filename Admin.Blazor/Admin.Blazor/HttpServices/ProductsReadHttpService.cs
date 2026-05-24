@@ -1,4 +1,5 @@
 ﻿using Admin.Blazor.Client.Abstractions;
+using Admin.Blazor.Client.DTOs.Claims;
 using Admin.Blazor.Client.DTOs.Health;
 using Admin.Blazor.Client.DTOs.Products;
 using Admin.Blazor.Client.DTOs.Products.Test;
@@ -289,10 +290,10 @@ namespace Admin.Blazor.HttpServices
             }
         }
 
-        // Dev Tests
+        // FOR DEVELOPMENT AND DEMONSTRATION PURPOSES ONLY
         public async Task<(bool IsSuccess, string? ErrorMessage)> ThrowExceptionForTestingAsync(ThrowExceptionDTO throwExceptionDTO, CancellationToken cancellationToken)
         {
-            string uri = $"{StaticData.ProductsReadHttpClient_DevTestsPath}/throwExceptionForTesting";
+            string uri = $"{StaticData.ProductsReadHttpClient_ProductsPath}/throwExceptionForTesting";
             var client = _httpClientFactory.CreateClient(StaticData.ProductsReadHttpClient_ClientName);
 
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, uri);
@@ -320,7 +321,7 @@ namespace Admin.Blazor.HttpServices
 
         public async Task<(bool IsSuccess, string? Value, string? ErrorMessage)> GetCloudAmqpSettingsTestingDummyValueAsync(CancellationToken cancellationToken)
         {
-            string uri = $"{StaticData.ProductsReadHttpClient_DevTestsPath}/getCloudAmqpSettingsTestingDummyValue";
+            string uri = $"{StaticData.ProductsReadHttpClient_ProductsPath}/getCloudAmqpSettingsTestingDummyValue";
             var client = _httpClientFactory.CreateClient(StaticData.ProductsReadHttpClient_ClientName);
 
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
@@ -343,6 +344,27 @@ namespace Admin.Blazor.HttpServices
                 }
             }
         }
+
+        //// This method requires a bearer token attached to the request, so need to add '.AddUserAccessTokenHandler() ' in HttpClient configuration in Program.cs
+        //public async Task<(bool IsSuccess, ApiUserInfoDTO? ApiUserInfo, string? ErrorMessage)> GetProductsReadApiUserInfoAsync()
+        //{
+        //    string uri = $"{StaticData.ProductsReadHttpClient_ProductsPath}{StaticData.ProductsReadHttpClient_GetApiUserInfoSubpath}";
+        //    var client = _httpClientFactory.CreateClient(StaticData.ProductsReadHttpClient_ClientName);
+
+        //    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
+        //    HttpResponseMessage response = await client.SendAsync(request);
+
+        //    if (response.IsSuccessStatusCode)
+        //    {
+        //        ApiUserInfoDTO? apiUserInfoDTO = await response.Content.ReadFromJsonAsync<ApiUserInfoDTO>();
+        //        return (true, apiUserInfoDTO, null);
+        //    }
+        //    else
+        //    {
+        //        string errorMessage = await GetErrorMessageAsync(response);
+        //        return (false, new ApiUserInfoDTO() { ErrorMessage = errorMessage }, errorMessage);
+        //    }
+        //}
 
         private async Task<string> GetErrorMessageAsync(HttpResponseMessage response)
         {

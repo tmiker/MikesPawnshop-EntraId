@@ -53,7 +53,7 @@ namespace Products.Write.Application.CQRS.DevTests
                     "argumentnullexception" => throw new ArgumentNullException("This is a test ArgumentNullException thrown from ThrowExceptionHandler."),
                     "invalidoperationexception" => throw new InvalidOperationException("This is a test InvalidOperationException thrown from ThrowExceptionHandler."),
                     "taskcanceledException" => throw new TaskCanceledException("This is a test TaskCanceledException thrown from ThrowExceptionHandler."),
-                    _ => throw new Exception("This is a test general Exception thrown from ThrowExceptionHandler.")
+                    _ => throw new ArgumentException("This is an ArgumentException thrown for an unsupported test exception type.")
                 };
 
                 return new ThrowExceptionResult(false, "An exception should have been thrown, so something went wrong.");

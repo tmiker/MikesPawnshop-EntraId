@@ -318,7 +318,7 @@ namespace Admin.Blazor.DownstreamApiServices
 
         public async Task<(bool IsSuccess, string? Value, string? ErrorMessage)> GetCloudAmqpSettingsTestingDummyValueAsync(CancellationToken cancellationToken)
         {
-            string uri = $"{StaticData.ProductsReadApiService_DevTestsPath}/getCloudAmqpSettingsTestingDummyValue";
+            string uri = $"{StaticData.ProductsReadApiService_ProductsPath}/getCloudAmqpSettingsTestingDummyValue";
 
             var response = await _downstreamApi.CallApiForUserAsync(
                 serviceName: StaticData.ProductsReadApiService_ServiceName,

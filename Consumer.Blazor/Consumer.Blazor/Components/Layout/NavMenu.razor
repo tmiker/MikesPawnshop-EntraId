@@ -85,7 +85,7 @@
 
                 <AuthorizeView Policy="IsAdminOrManager">
                     <Authorized>
-                        <li class="nav-item px-3 dropdown">
+                        @* <li class="nav-item px-3 dropdown">
                             <NavLink class="nav-link dropdown-toggle" href="products" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                 <i class="bi-tornado"></i> &nbsp; Products
                             </NavLink>
@@ -93,17 +93,19 @@
                                 <NavLink class="dropdown-item" href="products/productsRead" Match="NavLinkMatch.All">
                                     <i class="bi bi-list-nested-nav-menu"></i> &nbsp; Products Read
                                 </NavLink>
-                                <div class="dropdown-divider"></div>
-                                <NavLink class="dropdown-item" href="products/devTesting" Match="NavLinkMatch.All">
-                                    <i class="bi bi-list-nested-nav-menu"></i> &nbsp; Dev Testing
-                                </NavLink>
+                               
+                                
                             </div>
-                        </li>
+                        </li> *@
                         <li class="nav-item px-3 dropdown">
                             <NavLink class="nav-link dropdown-toggle" href="dev" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                 <i class="bi-lightning"></i> &nbsp; Development
                             </NavLink>
                             <div class="dropdown-menu dropdown-menu-dark">
+                                <NavLink class="dropdown-item" href="dev/testProductsReadApi" Match="NavLinkMatch.All">
+                                    <i class="bi bi-list-nested-nav-menu"></i> &nbsp; Products Read API Testing
+                                </NavLink>
+                                <div class="dropdown-divider"></div>
                                 <NavLink class="dropdown-item" href="dev/toastr-demo-server" Match="NavLinkMatch.All">
                                     <i class="bi-house-door"></i> &nbsp; Toastr Server
                                 </NavLink>

@@ -1,0 +1,103 @@
+﻿@page "/dev/testProductsReadApi"
+@rendermode InteractiveServer
+@inject IProductsReadHttpService _readSideHttpClient
+@inject IConfiguration _configuration
+@attribute [Authorize(Policy = "IsAdminOrManager")]
+
+<PageTitle>Dev Testing</PageTitle>
+
+<h3>Products Read Side API Exception Handling Testing</h3>
+
+<div class="row mt-2">
+    <div class="col-3">
+        <label for="exceptionType" class="form-label">Exception Type:</label>
+        <select id="exceptionType" class="bg-dark text-light form-select" @bind="_exceptionType">
+            <option value="">-- Select Exception Type --</option>
+            @foreach (var exceptionType in _exceptionTypeList)
+            {
+                <option value="@exceptionType">@exceptionType</option>
+            }
+        </select>
+    </div>
+</div>
+
+<div class="row mt-2">
+    <div class="col-3">
+        <a class="btn button-custom-warning" @onclick="TestThrowExceptionAsync">Throw Exception</a>
+    </div>
+</div>
+
+<div class="row mt-2">
+    <div class="col-12">
+        <textarea class="bg-dark text-light form-control" rows="12" readonly>@_errorMessage</textarea>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <h5 class="text-info-alt">
+            Notes:
+        </h5>
+    </div>
+</div>
+<div class="row mt-2">
+    <div class="col-12">
+        <p class="text-info-alt">
+            Ensure API uses IProblemDetailsService to write the response so that response has content type of `application/problem+json`.
+        </p>
+    </div>
+</div>
+<div class="row mt-2">
+    <div class="col-12">
+        <p class="text-info-alt">
+            Client HTTP Service checks for content type of `application/problem+json` and if present can parse or deserialize the response accordingly.
+        </p>
+    </div>
+</div>
+<div class="row mt-2">
+    <div class="col-12">
+        <p class="text-info-alt">
+            The Products Read Side API uses a global ExceptionHandler to handle returning ProblemDetails for all exception types.
+        </p>
+    </div>
+</div>
+
+@code {
+    private List<string> _exceptionTypeList { get; } = new()
+    {
+        "ProductEventStoreException",
+        "ValidationException",
+        "NotFoundException",
+        "RequestFailedException",
+        "ArgumentException",
+        // "UnauthorizedAccessException",       // not configured to throw an exception - handled by .net core middleware
+        // "ForbiddenException",                // not configured to throw an exception - handled by .net core middleware
+        "ConflictException",
+        "ArgumentNullException",
+        "InvalidOperationException",
+        "TaskCanceledException"
+    };
+    private string? _exceptionType;
+    private ThrowExceptionDTO? _throwExceptionDTO;
+    private CancellationTokenSource? _cts;
+
+    private string? _errorMessage;
+    private void ClearErrorMessage() => _errorMessage = string.Empty;
+
+    private async Task TestThrowExceptionAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_exceptionType))
+        {
+            _errorMessage = "Please select an exception type to throw.";
+            return;
+        }
+
+        _throwExceptionDTO = new ThrowExceptionDTO(_exceptionType.ToLower());
+        _cts = new CancellationTokenSource();
+        var result = await _readSideHttpClient.ThrowExceptionForTestingAsync(_throwExceptionDTO, _cts.Token);
+        if (!result.IsSuccess)
+        {
+            _errorMessage = result.ErrorMessage;
+        }
+    }
+}

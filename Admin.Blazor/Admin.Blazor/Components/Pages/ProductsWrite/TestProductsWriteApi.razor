@@ -1,13 +1,12 @@
-﻿@page "/products/devTesting"
-@using Consumer.Blazor.Client.DTOs.Products.Test
+﻿@page "/dev/testProductsWriteApi"
 @rendermode InteractiveServer
-@inject IProductsReadHttpService _readSideHttpClient
-@attribute [Authorize]
-@* @attribute [Authorize(Policy = "IsAdminOrManager")] *@
+@inject IProductsWriteHttpService _writeSideHttpClient
+@inject IConfiguration _configuration
+@attribute [Authorize(Policy = "IsAdminOrManager")]
 
 <PageTitle>Dev Testing</PageTitle>
 
-<h3>Dev Testing</h3>
+<h3>Products Write Side API Exception Handling Testing</h3>
 
 <div class="row mt-2">
     <div class="col-3">
@@ -58,30 +57,62 @@
 <div class="row mt-2">
     <div class="col-12">
         <p class="text-info-alt">
-            The Products Read Side API uses a global ExceptionHandler to handle returning ProblemDetails for all exception types.
+            The Products Write Side API has exception type specific ExceptionHandler for NotFoundException, ValidationException, and ProductEventStoreException, 
+            while other exceptions are handled by a global ExceptionHandler.
         </p>
     </div>
 </div>
 
+<hr />
+<div class="row mt-2">
+    <div class="col-4">
+        <a class="btn button-custom-primary" @onclick="GetCloudAMQPTestingDummyValue">Get Cloud AMQP Test Value</a>
+    </div>
+    <div class="col-8">
+        <p class="text-info-alt mt-2">Gets Value from API which uses Options pattern for CloudAMQPSettings (_cloudAmqpSettings.Value.TestingDummyValue)</p>
+    </div>
+</div>
+<div class="row mt-1">
+    <div class="col-8">
+        <p class="text-info-alt">Locally, the API configuration uses a nested entry (colon), while in Azure the configuraton uses a double underscore.</p>
+    </div>
+</div>
+@if (!string.IsNullOrWhiteSpace(_cloudAMQPTestValue))
+{
+    <div class="row mt-2">
+        <div class="col-12">
+            <input type="text" class="bg-dark text-light form-control" @bind-value="@_cloudAMQPTestValue" />
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col offset-5">
+            <a class="btn button-custom-warning" @onclick="ClearCloudAMQPTestValue">Clear</a>
+        </div>
+    </div>
+}
+
+
 @code {
+
     private List<string> _exceptionTypeList { get; } = new()
     {
         "ProductEventStoreException",
         "ValidationException",
         "NotFoundException",
-
         "RequestFailedException",
         "ArgumentException",
         // "UnauthorizedAccessException",       // not configured to throw an exception - handled by .net core middleware
         // "ForbiddenException",                // not configured to throw an exception - handled by .net core middleware
         "ConflictException",
-        "ArgumentNullException",
+        // "ArgumentNullException",
         "InvalidOperationException",
         "TaskCanceledException"
     };
     private string? _exceptionType;
     private ThrowExceptionDTO? _throwExceptionDTO;
     private CancellationTokenSource? _cts;
+    private string? _cloudAMQPTestValue;
+    private void ClearCloudAMQPTestValue() => _cloudAMQPTestValue = null;
 
     private string? _errorMessage;
     private void ClearErrorMessage() => _errorMessage = string.Empty;
@@ -94,12 +125,25 @@
             return;
         }
 
-        _throwExceptionDTO = new ThrowExceptionDTO(_exceptionType.ToLower());
+        _throwExceptionDTO = new ThrowExceptionDTO(_exceptionType);
         _cts = new CancellationTokenSource();
-        var result = await _readSideHttpClient.ThrowExceptionForTestingAsync(_throwExceptionDTO, _cts.Token);
+        var result = await _writeSideHttpClient.ThrowExceptionForTestingAsync(_throwExceptionDTO, _cts.Token);
         if (!result.IsSuccess)
         {
             _errorMessage = result.ErrorMessage;
         }
+    }
+
+    private async Task GetCloudAMQPTestingDummyValue()
+    {
+        _cts = new CancellationTokenSource();
+        var writeApiResult = await _writeSideHttpClient.GetCloudAmqpSettingsTestingDummyValueAsync(_cts.Token);
+        if (writeApiResult.IsSuccess) _cloudAMQPTestValue = writeApiResult.Value;
+        else _cloudAMQPTestValue = $"Error: {writeApiResult.ErrorMessage}";
+        
+        // string? value = _configuration.GetSection("CloudAMQPSettings:TestingDummyValue").Value;
+        // if (!string.IsNullOrWhiteSpace(value)) _cloudAMQPTestValue = value;
+        // else _cloudAMQPTestValue = "No value found in configuration.";
+        
     }
 }

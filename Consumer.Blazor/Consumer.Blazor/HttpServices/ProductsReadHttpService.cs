@@ -221,7 +221,7 @@ namespace Consumer.Blazor.HttpServices
 
         public async Task<(bool IsSuccess, string? ErrorMessage)> ThrowExceptionForTestingAsync(ThrowExceptionDTO throwExceptionDTO, CancellationToken cancellationToken)
         {
-            string uri = $"{StaticData.ProductsReadHttpClient_DevTestsPath}/throwExceptionForTesting";
+            string uri = $"{StaticData.ProductsReadHttpClient_ProductsPath}/throwExceptionForTesting";
             var client = _httpClientFactory.CreateClient(StaticData.ProductsReadHttpClient_ClientName);
 
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, uri);
