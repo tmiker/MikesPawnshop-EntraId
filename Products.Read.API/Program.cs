@@ -139,7 +139,6 @@ try
         options.AddPolicy("SixtySecondsCache", builder =>
         {
             builder.Expire(TimeSpan.FromSeconds(60));
-            builder.SetVaryByQuery("pageSize");
             builder.Tag("products");
         });
         options.AddPolicy("NoCache", builder =>
@@ -223,7 +222,6 @@ try
     app.UseMiddleware<SerilogMiddleware>();
     app.UseMiddleware<CorrelationIdMiddleware>();
 
-
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
     {
@@ -241,7 +239,7 @@ try
     app.UseCors("AllowGetPolicy");
 
     app.UseResponseCaching();
-    // app.UseOutputCache();   // must be called after UseCors and after UseRouting if called
+    app.UseOutputCache();   // must be called after UseCors and after UseRouting if called
 
     app.UseAuthentication();
     app.UseAuthorization();
