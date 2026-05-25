@@ -4,6 +4,8 @@
 @inject ICartsHttpService _cartsHttpClient
 @inject NavigationManager Nav
 
+<PageTitle>Storefront</PageTitle>
+
 <div class="row">
     <div class="col-4">
         <h4><b>STORE FRONT</b></h4>
@@ -95,7 +97,8 @@
                             <select class="bg-dark text-light form-select" id="sort" type="text" @bind="_sortColumn" @bind:after="RefreshData">
                                 <option value=""></option>
                                 <option value="Name">Name</option>
-                                <option value="Price">Price</option>
+                                <option value="Price desc">Price Desc</option>
+                                <option value="Price asc">Price Asc</option>
                             </select>
                         </div>
                         <div class="col-2">

@@ -213,7 +213,8 @@ namespace Products.Read.API.QueryServices
             return new GetProductSummariesResult(true, summaryDTOs, null);
         }
 
-        public async Task<GetPagedAndFilteredProductSummariesResult> GetPagedAndFilteredProductSummariesAsync(string? filter, string? category, string? sortColumn, int pageNumber = 1, int pageSize = 10)
+        public async Task<GetPagedAndFilteredProductSummariesResult> GetPagedAndFilteredProductSummariesAsync(
+            string? filter, string? category, string? sortColumn, int pageNumber = 1, int pageSize = 10)
         {
             var query = _db.Products.Include(p => p.Images).Include(p => p.Documents).AsSplitQuery().AsQueryable();
 
@@ -235,10 +236,10 @@ namespace Products.Read.API.QueryServices
                 case "category":
                     query = query.OrderBy(p => p.Category);
                     break;
-                case "price ascending":
+                case "price asc":
                     query = query.OrderBy(p => p.Price);
                     break;
-                case "price descending":
+                case "price desc":
                     query = query.OrderByDescending(p => p.Price);
                     break;
                 default:

@@ -91,12 +91,12 @@
             return;
         }
 
-        _throwExceptionDTO = new ThrowExceptionDTO(_exceptionType.ToLower());
-        _cts = new CancellationTokenSource();
-        var result = await _readSideHttpClient.ThrowExceptionForTestingAsync(_throwExceptionDTO, _cts.Token);
-        if (!result.IsSuccess)
-        {
-            _errorMessage = result.ErrorMessage;
-        }
+        // _throwExceptionDTO = new ThrowExceptionDTO(_exceptionType.ToLower());
+        // _cts = new CancellationTokenSource();
+        // var result = await _readSideHttpClient.ThrowExceptionForTestingAsync(_throwExceptionDTO, _cts.Token);
+        // if (!result.IsSuccess)
+        // {
+        //     _errorMessage = result.ErrorMessage;
+        // }
     }
 }

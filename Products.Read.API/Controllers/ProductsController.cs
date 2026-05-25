@@ -86,7 +86,8 @@ namespace Products.Read.API.Controllers
         [AllowAnonymous]
         // [ResponseCache(Duration = 60, VaryByQueryKeys = new string[] { "*" }, Location = ResponseCacheLocation.Any)]
         [OutputCache(PolicyName = "SixtySecondsCache")]
-        public async Task<ActionResult<PagedProductSummariesDTO>> GetPagedAndFilteredProductSummaries(string? filter, string? category, string? sortColumn, int pageNumber = 1, int pageSize = 10)
+        public async Task<ActionResult<PagedProductSummariesDTO>> GetPagedAndFilteredProductSummaries(
+            string? filter, string? category, string? sortColumn, int pageNumber = 1, int pageSize = 10)
         {
             GetPagedAndFilteredProductSummariesResult result = await _productQueryService.GetPagedAndFilteredProductSummariesAsync(filter, category, sortColumn, pageNumber, pageSize);
             if (result.IsSuccess) return Ok(new PagedProductSummariesDTO { ProductSummaries = result.ProductSummaries, PagingData = result.PaginationMetadata, FetchTime = DateTime.Now });
