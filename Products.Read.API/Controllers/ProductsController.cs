@@ -16,6 +16,7 @@ using System.Security.Claims;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace Products.Read.API.Controllers
 {
@@ -83,8 +84,8 @@ namespace Products.Read.API.Controllers
 
         [HttpGet("paged/summaries")]
         [AllowAnonymous]
-        [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Any)]
-        // [OutputCache(PolicyName = "SixtySecondsCache")]
+        // [ResponseCache(Duration = 60, VaryByQueryKeys = new string[] { "*" }, Location = ResponseCacheLocation.Any)]
+        [OutputCache(PolicyName = "SixtySecondsCache")]
         public async Task<ActionResult<PagedProductSummariesDTO>> GetPagedAndFilteredProductSummaries(string? filter, string? category, string? sortColumn, int pageNumber = 1, int pageSize = 10)
         {
             GetPagedAndFilteredProductSummariesResult result = await _productQueryService.GetPagedAndFilteredProductSummariesAsync(filter, category, sortColumn, pageNumber, pageSize);

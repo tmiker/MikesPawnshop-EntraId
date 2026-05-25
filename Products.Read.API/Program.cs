@@ -129,23 +129,24 @@ try
     /// CACHE OPTION 1: RESPONSE CACHING
     builder.Services.AddResponseCaching();
     /// CACHE OPTION 2: OUTPUT CACHING
-    //builder.Services.AddOutputCache(options =>
-    //{
-    //    //options.AddBasePolicy(builder =>
-    //    //{
-    //    //    builder.Expire(TimeSpan.FromSeconds(30));
-    //    //    builder.Tag("products");
-    //    //});
-    //    options.AddPolicy("SixtySecondsCache", builder =>
-    //    {
-    //        builder.Expire(TimeSpan.FromSeconds(60));
-    //        builder.Tag("products");
-    //    });
-    //    options.AddPolicy("NoCache", builder =>
-    //    {
-    //        builder.NoCache();
-    //    });
-    //});
+    builder.Services.AddOutputCache(options =>
+    {
+        //options.AddBasePolicy(builder =>
+        //{
+        //    builder.Expire(TimeSpan.FromSeconds(30));
+        //    builder.Tag("products");
+        //});
+        options.AddPolicy("SixtySecondsCache", builder =>
+        {
+            builder.Expire(TimeSpan.FromSeconds(60));
+            builder.SetVaryByQuery("pageSize");
+            builder.Tag("products");
+        });
+        options.AddPolicy("NoCache", builder =>
+        {
+            builder.NoCache();
+        });
+    });
 
     //// Add database context and cache - moved to CompositionRoot.cs
     //if (builder.Environment.IsDevelopment())
