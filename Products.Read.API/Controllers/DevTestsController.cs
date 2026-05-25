@@ -103,7 +103,7 @@ namespace Products.Read.API.Controllers
                 "argumentexception" => throw new ArgumentException("This is a test ArgumentException thrown from ThrowExceptionHandler."),
                 "argumentnullexception" => throw new ArgumentNullException("This is a test ArgumentNullException thrown from ThrowExceptionHandler."),
                 "invalidoperationexception" => throw new InvalidOperationException("This is a test InvalidOperationException thrown from ThrowExceptionHandler."),
-                "taskcanceledException" => throw new TaskCanceledException("This is a test TaskCanceledException thrown from ThrowExceptionHandler."),
+                "taskcanceledexception" => throw new TaskCanceledException("This is a test TaskCanceledException thrown from ThrowExceptionHandler."),
                 _ => throw new Exception("This is a test general Exception thrown from ThrowExceptionHandler.")
             };
 
