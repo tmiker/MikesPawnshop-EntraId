@@ -52,7 +52,21 @@
                                 </NavLink>
                             </div>
                         </li>
+                    </Authorized>
+                </AuthorizeView>
 
+                <AuthorizeView Policy="IsAdminOrManager">
+                    <Authorized>
+                        @* <li class="nav-item px-3 dropdown">
+                            <NavLink class="nav-link dropdown-toggle" href="products" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <i class="bi-tornado"></i> &nbsp; Products
+                            </NavLink>
+                            <div class="dropdown-menu dropdown-menu-dark">
+                                <NavLink class="dropdown-item" href="products/productsRead" Match="NavLinkMatch.All">
+                                    <i class="bi bi-list-nested-nav-menu"></i> &nbsp; Products Read
+                                </NavLink>
+                            </div>
+                        </li> *@
                         <li class="nav-item px-3 dropdown">
                             <NavLink class="nav-link dropdown-toggle" href="claims" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                 <i class="bi-person-fill"></i> &nbsp; Claims
@@ -74,24 +88,9 @@
                                 <NavLink class="dropdown-item" href="claims/blazorServerClaims" Match="NavLinkMatch.All">
                                     <i class="bi-person-fill"></i> &nbsp; Blazor Server Claims
                                 </NavLink>
-                                
+
                             </div>
                         </li>
-                    </Authorized>
-                </AuthorizeView>
-
-                <AuthorizeView Policy="IsAdminOrManager">
-                    <Authorized>
-                        @* <li class="nav-item px-3 dropdown">
-                            <NavLink class="nav-link dropdown-toggle" href="products" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                <i class="bi-tornado"></i> &nbsp; Products
-                            </NavLink>
-                            <div class="dropdown-menu dropdown-menu-dark">
-                                <NavLink class="dropdown-item" href="products/productsRead" Match="NavLinkMatch.All">
-                                    <i class="bi bi-list-nested-nav-menu"></i> &nbsp; Products Read
-                                </NavLink>
-                            </div>
-                        </li> *@
                         <li class="nav-item px-3 dropdown">
                             <NavLink class="nav-link dropdown-toggle" href="dev" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                 <i class="bi-lightning"></i> &nbsp; Development
