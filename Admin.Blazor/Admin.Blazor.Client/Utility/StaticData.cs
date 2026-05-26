@@ -16,7 +16,7 @@
         // public const string ProductsWriteApiService_LocalBaseURL = "https://localhost:7213";          // local direct 
         public const string ProductsWriteApiService_LocalBaseURL = "https://localhost:7245";             // with YARP
         public const string ProductsWriteApiService_ProductsPath = "/api/productsManagement";
-        public const string ProductsWriteApiService_DevTestsPath = "/api/productsManagement/devTests";
+        public const string ProductsWriteApiService_DevTestsPath = "/dev/productsManagement";
         public const string ProductsWriteApiService_GetApiUserInfoSubpath = "/getApiUserInfo";
 
         public const string ProductsReadApiService_ServiceName = "MikesPawnshopProductsReadAPI";
@@ -52,7 +52,7 @@
         // public const string ProductsWriteHttpClient_BaseURL = "https://localhost:7213";              // local direct
         public const string ProductsWriteHttpClient_BaseURL = "https://localhost:7245";                 // local YARP
         public const string ProductsWriteHttpClient_ProductsPath = "/api/productsManagement";
-        public const string ProductsWriteHttpClient_DevTestsPath = "/api/productsManagement/devTests";
+        public const string ProductsWriteHttpClient_DevTestsPath = "/dev/productsManagement";
         public const string ProductsWriteHttpClient_GetApiUserInfoSubpath = "/getApiUserInfo";
 
         public const string ProductsReadHttpClient_ClientName = "ProductsReadHttpClient";

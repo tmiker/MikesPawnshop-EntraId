@@ -106,6 +106,17 @@ static RouteConfig[] GetRoutes()
         },
         new RouteConfig
         {
+            RouteId = "productsManagementDevTestRoute",
+            ClusterId = "productsManagement",
+            CorsPolicy = "PawnshopCorsPolicy",
+            Match = new RouteMatch
+            {
+                Path = "/dev/productsManagement/{**catch-all}"
+            },
+            RateLimiterPolicy = "BasicRateLimitingPolicy"
+        },
+        new RouteConfig
+        {
             RouteId = "accountsRoute",
             ClusterId = "accounts",
             CorsPolicy = "PawnshopCorsPolicy",
