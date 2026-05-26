@@ -58,7 +58,7 @@ namespace Products.Read.API.Controllers
 
         [HttpGet("summaries")]
         [AllowAnonymous]
-        [OutputCache(PolicyName = "SixtySecondsCache")]
+        [OutputCache(PolicyName = "StorefrontProductsCachePolicy")]
         public async Task<ActionResult<IEnumerable<ProductSummaryDTO>>> GetProductSummaries()
         {
             GetProductSummariesResult result = await _productQueryService.GetAllProductSummariesAsync();
@@ -74,7 +74,7 @@ namespace Products.Read.API.Controllers
         [HttpGet("paged")]
         [AllowAnonymous]
         // [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Any)]
-        [OutputCache(PolicyName = "SixtySecondsCache")]
+        [OutputCache(PolicyName = "StorefrontProductsCachePolicy")]
         public async Task<ActionResult<PagedProductsDTO>> GetPagedAndFilteredProducts(string? filter, string? category, string? sortColumn, int pageNumber = 1, int pageSize = 10)
         {
             GetPagedAndFilteredProductsResult result = await _productQueryService.GetPagedAndFilteredProductsAsync(filter, category, sortColumn, pageNumber, pageSize);
@@ -85,7 +85,7 @@ namespace Products.Read.API.Controllers
         [HttpGet("paged/summaries")]
         [AllowAnonymous]
         // [ResponseCache(Duration = 60, VaryByQueryKeys = new string[] { "*" }, Location = ResponseCacheLocation.Any)]
-        [OutputCache(PolicyName = "SixtySecondsCache")]
+        [OutputCache(PolicyName = "StorefrontProductsCachePolicy")]
         public async Task<ActionResult<PagedProductSummariesDTO>> GetPagedAndFilteredProductSummaries(
             string? filter, string? category, string? sortColumn, int pageNumber = 1, int pageSize = 10)
         {
@@ -97,7 +97,7 @@ namespace Products.Read.API.Controllers
         [HttpGet("{id}")]
         [AllowAnonymous]
         // [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new string[] { "id" })]
-        [OutputCache(PolicyName = "SixtySecondsCache")]
+        [OutputCache(PolicyName = "StorefrontProductsCachePolicy")]
         public async Task<ActionResult<ProductDTO>> GetProductById(int id)
         {
             GetProductByIdResult result = await _productQueryService.GetProductByIdAsync(id);
@@ -112,7 +112,7 @@ namespace Products.Read.API.Controllers
         [HttpGet("summary/{id}")]
         [AllowAnonymous]
         // [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new string[] { "id" })]
-        [OutputCache(PolicyName = "SixtySecondsCache")]
+        [OutputCache(PolicyName = "StorefrontProductsCachePolicy")]
         public async Task<ActionResult<ProductSummaryDTO>> GetProductSummaryById(int id)
         {
             GetProductSummaryByIdResult result = await _productQueryService.GetProductSummaryByIdAsync(id);

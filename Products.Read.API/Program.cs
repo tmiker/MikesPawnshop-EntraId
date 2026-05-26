@@ -7,6 +7,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Products.Read.API;
+using Products.Read.API.CachePolicies;
 using Products.Read.API.DTOs;
 using Products.Read.API.Extensions;
 using Products.Read.API.Health;
@@ -127,23 +128,16 @@ try
     });
 
     /// CACHE OPTION 1: RESPONSE CACHING
-    builder.Services.AddResponseCaching();
+    // builder.Services.AddResponseCaching();
     /// CACHE OPTION 2: OUTPUT CACHING
+    // OUTPUT CACHE FOR STOREFRONT READ USING CUSTOM POLICY TO ALLOW CACHING WITH AUTHORIZATION HEADER
     builder.Services.AddOutputCache(options =>
     {
-        //options.AddBasePolicy(builder =>
-        //{
-        //    builder.Expire(TimeSpan.FromSeconds(30));
-        //    builder.Tag("products");
-        //});
+        options.AddPolicy("StorefrontProductsCachePolicy", CustomOutputCachePolicy.Instance);
         options.AddPolicy("SixtySecondsCache", builder =>
         {
             builder.Expire(TimeSpan.FromSeconds(60));
             builder.Tag("products");
-        });
-        options.AddPolicy("NoCache", builder =>
-        {
-            builder.NoCache();
         });
     });
 
@@ -238,7 +232,7 @@ try
 
     app.UseCors("AllowGetPolicy");
 
-    app.UseResponseCaching();
+    // app.UseResponseCaching();
     app.UseOutputCache();   // must be called after UseCors and after UseRouting if called
 
     app.UseAuthentication();
