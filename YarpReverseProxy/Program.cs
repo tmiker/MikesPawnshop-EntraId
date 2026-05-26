@@ -80,8 +80,18 @@ static RouteConfig[] GetRoutes()
             {
                 Path = "/api/products/{**catch-all}"
             },
-            RateLimiterPolicy = "BasicRateLimitingPolicy" //,
-            // TimeoutPolicy = TimeSpan.FromSeconds(30)
+            RateLimiterPolicy = "BasicRateLimitingPolicy"
+        },
+        new RouteConfig
+        {
+            RouteId = "productsDevTestRoute",
+            ClusterId = "products",
+            CorsPolicy = "PawnshopCorsPolicy",
+            Match = new RouteMatch
+            {
+                Path = "/dev/products/{**catch-all}"
+            },
+            RateLimiterPolicy = "BasicRateLimitingPolicy"
         },
         new RouteConfig
         {
@@ -92,8 +102,7 @@ static RouteConfig[] GetRoutes()
             {
                 Path = "/api/productsManagement/{**catch-all}"
             },
-            RateLimiterPolicy = "BasicRateLimitingPolicy" //,
-            // TimeoutPolicy = TimeSpan.FromSeconds(30)
+            RateLimiterPolicy = "BasicRateLimitingPolicy"
         },
         new RouteConfig
         {
@@ -104,8 +113,7 @@ static RouteConfig[] GetRoutes()
             {
                 Path = "/api/accounts/{**catch-all}"
             },
-            RateLimiterPolicy = "BasicRateLimitingPolicy" //,
-            // TimeoutPolicy = TimeSpan.FromSeconds(30)
+            RateLimiterPolicy = "BasicRateLimitingPolicy"
         },
         new RouteConfig
         {
@@ -116,8 +124,7 @@ static RouteConfig[] GetRoutes()
             {
                 Path = "/api/carts/{**catch-all}"
             },
-            RateLimiterPolicy = "BasicRateLimitingPolicy", //,            
-            // TimeoutPolicy = TimeSpan.FromSeconds(30)
+            RateLimiterPolicy = "BasicRateLimitingPolicy"
         },
         new RouteConfig
         {
@@ -128,8 +135,7 @@ static RouteConfig[] GetRoutes()
             {
                 Path = "/api/orders/{**catch-all}"
             },
-            RateLimiterPolicy = "BasicRateLimitingPolicy" //,
-            // TimeoutPolicy = TimeSpan.FromSeconds(30)
+            RateLimiterPolicy = "BasicRateLimitingPolicy"
         }
     };
 }
