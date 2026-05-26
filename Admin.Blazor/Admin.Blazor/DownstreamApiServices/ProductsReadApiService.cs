@@ -1,6 +1,8 @@
 ﻿using Admin.Blazor.Client.Abstractions;
+using Admin.Blazor.Client.DTOs.Claims;
 using Admin.Blazor.Client.DTOs.Health;
 using Admin.Blazor.Client.DTOs.Products;
+using Admin.Blazor.Client.DTOs.Products.Test;
 using Admin.Blazor.Client.ErrorHandling;
 using Admin.Blazor.Client.Paging;
 using Admin.Blazor.Client.Utility;
@@ -282,42 +284,47 @@ namespace Admin.Blazor.DownstreamApiServices
             }
         }
 
-        // Dev Tests
-        //public async Task<(bool IsSuccess, string? ErrorMessage)> ThrowExceptionForTestingAsync(ThrowExceptionDTO throwExceptionDTO, CancellationToken cancellationToken)
-        //{
-        //    string uri = $"{StaticData.ProductsReadApiService_ProductsPath}/throwExceptionForTesting";
-        //    var stringContent = new StringContent(JsonSerializer.Serialize(throwExceptionDTO), Encoding.UTF8, "application/json");
+        //// Use Dev Tests Path for the following methods
 
-        //    var response = await _downstreamApi.CallApiForUserAsync(
-        //        serviceName: StaticData.ProductsReadApiService_ServiceName,
-        //        downstreamApiOptionsOverride: options =>
-        //        {
-        //            options.HttpMethod = "POST";
-        //            options.ExtraHeaderParameters = new Dictionary<string, string>
-        //            {
-        //                { "X-Correlation-ID", Guid.NewGuid().ToString() }
-        //            };
-        //            options.RelativePath = uri;
-        //        },
-        //        user: null,
-        //        content: stringContent);
+        /// </summary>
+        /// <param name="throwExceptionDTO"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<(bool IsSuccess, string? ErrorMessage)> ThrowExceptionForTestingAsync(ThrowExceptionDTO throwExceptionDTO, CancellationToken cancellationToken)
+        {
+            string uri = $"{StaticData.ProductsReadApiService_DevTestsPath}/throwExceptionForTesting";
+            var stringContent = new StringContent(JsonSerializer.Serialize(throwExceptionDTO), Encoding.UTF8, "application/json");
 
-        //    if (response.IsSuccessStatusCode)
-        //    {
-        //        _logger.LogInformation("The action ThrowExceptionForTestingAsync(ThrowExceptionDTO throwExceptionDTO) returned " +
-        //            "HttptatusCode success. It should return Problem Details.");
-        //        return (true, null);
-        //    }
-        //    else
-        //    {
-        //        string errorMessage = await GetErrorMessageAsync(response);
-        //        return (false, errorMessage);
-        //    }
-        //}
+            var response = await _downstreamApi.CallApiForUserAsync(
+                serviceName: StaticData.ProductsReadApiService_ServiceName,
+                downstreamApiOptionsOverride: options =>
+                {
+                    options.HttpMethod = "POST";
+                    options.ExtraHeaderParameters = new Dictionary<string, string>
+                    {
+                        { "X-Correlation-ID", Guid.NewGuid().ToString() }
+                    };
+                    options.RelativePath = uri;
+                },
+                user: null,
+                content: stringContent);
+
+            if (response.IsSuccessStatusCode)
+            {
+                _logger.LogInformation("The action ThrowExceptionForTestingAsync(ThrowExceptionDTO throwExceptionDTO) returned " +
+                    "HttptatusCode success. It should return Problem Details.");
+                return (true, null);
+            }
+            else
+            {
+                string errorMessage = await GetErrorMessageAsync(response);
+                return (false, errorMessage);
+            }
+        }
 
         public async Task<(bool IsSuccess, string? Value, string? ErrorMessage)> GetCloudAmqpSettingsTestingDummyValueAsync(CancellationToken cancellationToken)
         {
-            string uri = $"{StaticData.ProductsReadApiService_ProductsPath}/getCloudAmqpSettingsTestingDummyValue";
+            string uri = $"{StaticData.ProductsReadApiService_DevTestsPath}/getCloudAmqpSettingsTestingDummyValue";
 
             var response = await _downstreamApi.CallApiForUserAsync(
                 serviceName: StaticData.ProductsReadApiService_ServiceName,

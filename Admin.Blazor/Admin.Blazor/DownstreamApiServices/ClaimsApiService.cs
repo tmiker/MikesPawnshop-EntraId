@@ -91,7 +91,7 @@ namespace Admin.Blazor.DownstreamApiServices
 
         public async Task<(bool IsSuccess, ApiUserInfoDTO? ApiUserInfo, string? ErrorMessage)> GetProductsReadApiUserInfoAsync()
         {
-            string uri = $"{StaticData.ProductsReadApiService_ProductsPath}{StaticData.ProductsReadApiService_GetApiUserInfoSubpath}";
+            string uri = $"{StaticData.ProductsReadApiService_DevTestsPath}{StaticData.ProductsReadApiService_GetApiUserInfoSubpath}";
 
             var response = await _downstreamApi.CallApiForUserAsync(
                 serviceName: StaticData.ProductsReadApiService_ServiceName,

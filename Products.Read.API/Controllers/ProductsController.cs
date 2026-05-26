@@ -132,11 +132,11 @@ namespace Products.Read.API.Controllers
         public async Task<ActionResult<ApiUserInfoDTO>> GetApiUserInfo()
         {
             var contextClaims = HttpContext.User.Claims;
-            _logger.LogInformation("Products Read API method GetApiUserInfo HTTPCONTEXT CLAIMS COUNT: {count}", contextClaims.Count());    // 20
+            _logger.LogInformation("Products Read API method GetApiUserInfo HTTPCONTEXT CLAIMS COUNT: {count}", contextClaims.Count());    
             var actionClaims = User.Claims;
-            _logger.LogInformation("Products Read API method GetApiUserInfo ACTION CLAIMS COUNT: {count}", actionClaims.Count());          // 20
+            _logger.LogInformation("Products Read API method GetApiUserInfo ACTION CLAIMS COUNT: {count}", actionClaims.Count());          
             var username = User.Identity?.Name; // Works if "sub" or "name" claim is mapped
-            _logger.LogInformation("Products Read API method GetApiUserInfo was called. USERNAME: {username}", username);                  // null
+            _logger.LogInformation("Products Read API method GetApiUserInfo was called. USERNAME: {username}", username);                  
             string? ownerId = User.Claims.FirstOrDefault(c => c.Type == "oid")?.Value;
             _logger.LogInformation("Products Read API method GetApiUserInfo Owner Id: {id}.", ownerId);
 

@@ -15,21 +15,19 @@ using System.Security.Claims;
 
 namespace Products.Read.API.Controllers
 {
-    [Route("api/products/[controller]")]
+    [Route("dev/products")]
     [ApiController]
     public class DevTestsController : ControllerBase
     {
         private readonly IOptions<CloudAMQPSettings> _cloudAmqpSettings;
         private readonly ITokenDecoder _tokenDecoder;
         private readonly ILogger<DevTestsController> _logger;
-        private readonly IProductMessageProcessor _productMessageProcessor;
 
-        public DevTestsController(IOptions<CloudAMQPSettings> cloudAmqpSettings, ITokenDecoder tokenDecoder, ILogger<DevTestsController> logger, IProductMessageProcessor productMessageProcessor)
+        public DevTestsController(IOptions<CloudAMQPSettings> cloudAmqpSettings, ITokenDecoder tokenDecoder, ILogger<DevTestsController> logger)
         {
             _cloudAmqpSettings = cloudAmqpSettings;
             _tokenDecoder = tokenDecoder;
             _logger = logger;
-            _productMessageProcessor = productMessageProcessor;
         }
 
         // Claims
@@ -118,13 +116,5 @@ namespace Products.Read.API.Controllers
             if (!string.IsNullOrWhiteSpace(value)) return Ok(value);
             return BadRequest("Unable to find the CloudAMQPSettings TestingDummyValue.");
         }
-
-        // OBSOLETE
-        //[HttpPost("processMessageRecordQueue")]
-        //public async Task<IActionResult> ProcessMessageRecordQueue(CancellationToken cancellationToken)
-        //{
-        //    await _productMessageProcessor.ProcessMessageRecordsFromQueue();
-        //    return Ok();
-        //}
     }
 }

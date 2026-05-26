@@ -28,16 +28,7 @@ namespace Admin.Blazor.HttpServices
             string uri = $"{StaticData.ProductsReadHttpClient_ProductsPath}/healthClient";
             var client = _httpClientFactory.CreateClient(StaticData.ProductsReadHttpClient_ClientName);
 
-            //HttpClient client = new HttpClient();
-            //string uri = $"https://localhost:7101/api/products/health"; // 7101
-
-            //string uri = $"{StaticData.AccountsHttpClient_AccountsPath}/health";
-            //var client = _httpClientFactory.CreateClient(StaticData.AccountsHttpClient_ClientName);
-
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
-
-            //string uriDirect = "https://localhost:7101/api/products/health";
-            //HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uriDirect);
 
             // Generate a new Correlation ID and add to headers
             string correlationId = Guid.NewGuid().ToString();
@@ -48,10 +39,6 @@ namespace Admin.Blazor.HttpServices
             try
             {
                 response.EnsureSuccessStatusCode();
-
-                //string json = await response.Content.ReadAsStringAsync();
-                //if (string.IsNullOrWhiteSpace(json)) return (false, null, $"The API returned no content.");
-                //_logger.LogInformation("JSON HEALTH CHECK: {json}", json);
 
                 var resultDTO = await response.Content.ReadFromJsonAsync<HealthCheckResultDTO>(_jsonSerializerOptions);
                 if (resultDTO is not null)
@@ -66,26 +53,6 @@ namespace Admin.Blazor.HttpServices
                 _logger.LogError($"ProductsReadHttpService CheckHealthAsync() at path '{request.RequestUri}' Exception: {ex.Message}");
                 return (false, null, $"Exception: {ex.Message}");
             }
-            //try
-            //{
-            //    response.EnsureSuccessStatusCode();
-
-            //    string resultString = await response.Content.ReadAsStringAsync();
-            //    if (resultString is null || resultString.Length == 0) return (false, null, "WTF! The result is null or empty.");
-
-            //    var resultDTO = await response.Content.ReadFromJsonAsync<HealthCheckResultDTO>(_jsonSerializerOptions);
-            //    if (resultDTO is not null)
-            //    {
-            //        _logger.LogInformation($"ProductsReadHttpService CheckHealthAsync() at path \'{request.RequestUri}\' Result: \n{JsonSerializer.Serialize(resultDTO)}");
-            //        return (true, resultDTO, null);
-            //    }
-            //    else return (false, null, "Health check result DTO is null.");
-            //}
-            //catch (Exception ex)
-            //{
-            //    _logger.LogError($"ProductsReadHttpService CheckHealthAsync() at path '{request.RequestUri}' Exception: {ex.Message}");
-            //    return (false, null, ex.Message);
-            //}
         }
 
         public async IAsyncEnumerable<ProductDTO> StreamProductsAsync()
@@ -290,82 +257,6 @@ namespace Admin.Blazor.HttpServices
             }
         }
 
-        // FOR DEVELOPMENT AND DEMONSTRATION PURPOSES ONLY
-        public async Task<(bool IsSuccess, string? ErrorMessage)> ThrowExceptionForTestingAsync(ThrowExceptionDTO throwExceptionDTO, CancellationToken cancellationToken)
-        {
-            string uri = $"{StaticData.ProductsReadHttpClient_ProductsPath}/throwExceptionForTesting";
-            var client = _httpClientFactory.CreateClient(StaticData.ProductsReadHttpClient_ClientName);
-
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, uri);
-            request.Content = new StringContent(JsonSerializer.Serialize(throwExceptionDTO), Encoding.UTF8, "application/json");
-
-            // Generate a new Correlation ID and add to headers
-            string correlationId = Guid.NewGuid().ToString();
-            request.Headers.Add("X-Correlation-ID", correlationId);
-
-            using (HttpResponseMessage response = await client.SendAsync(request))
-            {
-                if (response.IsSuccessStatusCode)
-                {
-                    _logger.LogInformation("The action ThrowExceptionForTestingAsync(ThrowExceptionDTO throwExceptionDTO) returned " +
-                        "HttptatusCode success. It should return Problem Details.");
-                    return (true, null);
-                }
-                else
-                {
-                    string errorMessage = await GetErrorMessageAsync(response);
-                    return (false, errorMessage);
-                }
-            }
-        }
-
-        public async Task<(bool IsSuccess, string? Value, string? ErrorMessage)> GetCloudAmqpSettingsTestingDummyValueAsync(CancellationToken cancellationToken)
-        {
-            string uri = $"{StaticData.ProductsReadHttpClient_ProductsPath}/getCloudAmqpSettingsTestingDummyValue";
-            var client = _httpClientFactory.CreateClient(StaticData.ProductsReadHttpClient_ClientName);
-
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
-
-            // Generate a new Correlation ID and add to headers
-            string correlationId = Guid.NewGuid().ToString();
-            request.Headers.Add("X-Correlation-ID", correlationId);
-
-            using (HttpResponseMessage response = await client.SendAsync(request))
-            {
-                if (response.IsSuccessStatusCode)
-                {
-                    string value = await response.Content.ReadAsStringAsync();
-                    return (true, value, null);
-                }
-                else
-                {
-                    string errorMessage = await GetErrorMessageAsync(response);
-                    return (false, null, errorMessage);
-                }
-            }
-        }
-
-        //// This method requires a bearer token attached to the request, so need to add '.AddUserAccessTokenHandler() ' in HttpClient configuration in Program.cs
-        //public async Task<(bool IsSuccess, ApiUserInfoDTO? ApiUserInfo, string? ErrorMessage)> GetProductsReadApiUserInfoAsync()
-        //{
-        //    string uri = $"{StaticData.ProductsReadHttpClient_ProductsPath}{StaticData.ProductsReadHttpClient_GetApiUserInfoSubpath}";
-        //    var client = _httpClientFactory.CreateClient(StaticData.ProductsReadHttpClient_ClientName);
-
-        //    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
-        //    HttpResponseMessage response = await client.SendAsync(request);
-
-        //    if (response.IsSuccessStatusCode)
-        //    {
-        //        ApiUserInfoDTO? apiUserInfoDTO = await response.Content.ReadFromJsonAsync<ApiUserInfoDTO>();
-        //        return (true, apiUserInfoDTO, null);
-        //    }
-        //    else
-        //    {
-        //        string errorMessage = await GetErrorMessageAsync(response);
-        //        return (false, new ApiUserInfoDTO() { ErrorMessage = errorMessage }, errorMessage);
-        //    }
-        //}
-
         private async Task<string> GetErrorMessageAsync(HttpResponseMessage response)
         {
             if (response.Content.Headers.ContentType?.MediaType == "application/problem+json")
@@ -389,5 +280,81 @@ namespace Admin.Blazor.HttpServices
                 return errorMessage;
             }
         }
+
+        //// FOR DEVELOPMENT AND DEMONSTRATION PURPOSES ONLY
+        //public async Task<(bool IsSuccess, string? ErrorMessage)> ThrowExceptionForTestingAsync(ThrowExceptionDTO throwExceptionDTO, CancellationToken cancellationToken)
+        //{
+        //    string uri = $"{StaticData.ProductsReadHttpClient_ProductsPath}/throwExceptionForTesting";
+        //    var client = _httpClientFactory.CreateClient(StaticData.ProductsReadHttpClient_ClientName);
+
+        //    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, uri);
+        //    request.Content = new StringContent(JsonSerializer.Serialize(throwExceptionDTO), Encoding.UTF8, "application/json");
+
+        //    // Generate a new Correlation ID and add to headers
+        //    string correlationId = Guid.NewGuid().ToString();
+        //    request.Headers.Add("X-Correlation-ID", correlationId);
+
+        //    using (HttpResponseMessage response = await client.SendAsync(request))
+        //    {
+        //        if (response.IsSuccessStatusCode)
+        //        {
+        //            _logger.LogInformation("The action ThrowExceptionForTestingAsync(ThrowExceptionDTO throwExceptionDTO) returned " +
+        //                "HttptatusCode success. It should return Problem Details.");
+        //            return (true, null);
+        //        }
+        //        else
+        //        {
+        //            string errorMessage = await GetErrorMessageAsync(response);
+        //            return (false, errorMessage);
+        //        }
+        //    }
+        //}
+
+        //public async Task<(bool IsSuccess, string? Value, string? ErrorMessage)> GetCloudAmqpSettingsTestingDummyValueAsync(CancellationToken cancellationToken)
+        //{
+        //    string uri = $"{StaticData.ProductsReadHttpClient_ProductsPath}/getCloudAmqpSettingsTestingDummyValue";
+        //    var client = _httpClientFactory.CreateClient(StaticData.ProductsReadHttpClient_ClientName);
+
+        //    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
+
+        //    // Generate a new Correlation ID and add to headers
+        //    string correlationId = Guid.NewGuid().ToString();
+        //    request.Headers.Add("X-Correlation-ID", correlationId);
+
+        //    using (HttpResponseMessage response = await client.SendAsync(request))
+        //    {
+        //        if (response.IsSuccessStatusCode)
+        //        {
+        //            string value = await response.Content.ReadAsStringAsync();
+        //            return (true, value, null);
+        //        }
+        //        else
+        //        {
+        //            string errorMessage = await GetErrorMessageAsync(response);
+        //            return (false, null, errorMessage);
+        //        }
+        //    }
+        //}
+
+        //// This method requires a bearer token attached to the request, so need to add '.AddUserAccessTokenHandler() ' in HttpClient configuration in Program.cs
+        //public async Task<(bool IsSuccess, ApiUserInfoDTO? ApiUserInfo, string? ErrorMessage)> GetProductsReadApiUserInfoAsync()
+        //{
+        //    string uri = $"{StaticData.ProductsReadHttpClient_ProductsPath}{StaticData.ProductsReadHttpClient_GetApiUserInfoSubpath}";
+        //    var client = _httpClientFactory.CreateClient(StaticData.ProductsReadHttpClient_ClientName);
+
+        //    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
+        //    HttpResponseMessage response = await client.SendAsync(request);
+
+        //    if (response.IsSuccessStatusCode)
+        //    {
+        //        ApiUserInfoDTO? apiUserInfoDTO = await response.Content.ReadFromJsonAsync<ApiUserInfoDTO>();
+        //        return (true, apiUserInfoDTO, null);
+        //    }
+        //    else
+        //    {
+        //        string errorMessage = await GetErrorMessageAsync(response);
+        //        return (false, new ApiUserInfoDTO() { ErrorMessage = errorMessage }, errorMessage);
+        //    }
+        //}
     }
 }
