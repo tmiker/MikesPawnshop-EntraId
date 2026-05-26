@@ -32,19 +32,22 @@
         <div class="col-3">
             @if (ProductsFetchTime.HasValue)
             {
-                <h6 class="text-secondary">Data Fetched: @ProductsFetchTime.Value</h6>
+                <h6 class="text-secondary"><i>Data Fetched: @ProductsFetchTime.Value</i></h6>
             }
         </div>
         <div class="col-3">
             @if (PageRenderTime.HasValue)
             {
-                <h6 class="text-secondary">Page Rendered: @PageRenderTime.Value</h6>
+                <h6 class="text-secondary"><i>Page Rendered: @PageRenderTime.Value</i></h6>
             }
+        </div>
+        <div class="col-3">
+            <h6 class="text-secondary"><i>Current Time: @DateTime.Now</i></h6>
         </div>
     }
     else
     {
-        <div class="col-6"></div>
+        <div class="col-9"></div>
     }
 </div>
 

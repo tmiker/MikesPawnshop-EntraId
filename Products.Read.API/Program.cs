@@ -130,7 +130,7 @@ try
     /// CACHE OPTION 1: RESPONSE CACHING
     // builder.Services.AddResponseCaching();
     /// CACHE OPTION 2: OUTPUT CACHING
-    // OUTPUT CACHE FOR STOREFRONT READ USING CUSTOM POLICY TO ALLOW CACHING WITH AUTHORIZATION HEADER
+    // OUTPUT CACHE FOR STOREFRONT READ USING CUSTOM POLICY TO ALLOW CACHING WITH AUTHORIZATION HEADER (ADMIN CLIENT)
     builder.Services.AddOutputCache(options =>
     {
         options.AddPolicy("StorefrontProductsCachePolicy", CustomOutputCachePolicy.Instance);

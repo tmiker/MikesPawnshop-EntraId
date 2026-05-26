@@ -4,7 +4,7 @@
 
 @* <div class="row mt-2">
     <div class="col-1">
-        <h5>DEV: </h5>
+        <h5>Dev Test: Message callback propagation</h5>
     </div>
     <div class="col-3">
         <a class="btn button-custom-success" @onclick="TestHandleSuccess">Test Handle Success</a>
@@ -35,11 +35,11 @@
                 <div class="col-6">
                     @if (ProductFetchTime.HasValue)
                     {
-                        <h6 class="text-secondary">Data Fetched: @ProductFetchTime.Value</h6>
+                        <h6 class="text-secondary"><i>Data Fetched: @ProductFetchTime.Value</i></h6>
                     }
                 </div>
                 <div class="col-6">
-                    <h6 class="text-secondary">Current Time: @DateTime.Now</h6>
+                    <h6 class="text-secondary"><i>Current Time: @DateTime.Now</i></h6>
                 </div>
             </div>
 

@@ -7,7 +7,7 @@
 <PageTitle>Storefront</PageTitle>
 
 <div class="row">
-    <div class="col-4">
+    <div class="col-3">
         <h4><b>STORE FRONT</b></h4>
     </div>
     @if (!_showCart && SelectedProductId == 0)
@@ -15,19 +15,22 @@
         <div class="col-3">
             @if (ProductsFetchTime.HasValue)
             {
-                <h6 class="text-secondary">Data Fetched: @ProductsFetchTime.Value</h6>
+                <h6 class="text-secondary"><i>Data Fetched: @ProductsFetchTime.Value</i></h6>
             }
         </div>
         <div class="col-3">
             @if (PageRenderTime.HasValue)
             {
-                <h6 class="text-secondary">Page Rendered: @PageRenderTime.Value</h6>
+                <h6 class="text-secondary"><i>Page Rendered: @PageRenderTime.Value</i></h6>
             }
+        </div>
+        <div class="col-3">
+            <h6 class="text-secondary"><i>Current Time: @DateTime.Now</i></h6>
         </div>
     }
     else
     {
-        <div class="col-6"></div>
+        <div class="col-9"></div>
     }
     <AuthorizeView>
         <Authorized>
@@ -40,7 +43,7 @@
 
 @* <div class="row mt-2">
     <div class="col-1">
-        <h5>DEV: </h5>
+        <h5>Dev Test: Message handling</h5>
     </div>
     <div class="col-3">
         <a class="btn button-custom-success" @onclick="TestHandleSuccess">Test Handle Success</a>
