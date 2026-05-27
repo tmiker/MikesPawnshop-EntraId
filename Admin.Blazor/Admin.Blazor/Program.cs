@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.TokenCacheProviders.Distributed;
 using Microsoft.IdentityModel.JsonWebTokens;
+using Serilog.Sinks.Console.LogThemes;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 
