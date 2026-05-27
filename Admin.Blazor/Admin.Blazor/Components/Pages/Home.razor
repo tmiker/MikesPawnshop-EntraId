@@ -2,13 +2,9 @@
 
 <PageTitle>Admin Client Home</PageTitle>
 
-<h1>ADMIN CLIENT 24 May 2026, 09:48 PM</h1>
+<h1>ADMIN CLIENT 27 May 2026, 06:34 PM</h1>
 
 <h2 class="mt-4">Mikes Pawnshop with Entra Id and APIs using Azure Cosmos Db</h2>
-
-<h3 class="text-warning-alt mt-4">NEED TO ADD CACHING TO PRODUCTS READ SIDE API FOR STOREFRONT WITH CUSTOM POLICY TO ALLOW CACHING WITH AUTH TOKEN</h3>
-<h4 class="text-warning-alt mt-2">--- Add OutputCachePolicy</h4>
-<h4 class="text-warning-alt mt-2">--- Add OutputCache with Base Policy of OutputCachePolicy</h4>
 
 <h3 class="text-warning-alt mt-4">REMOVE DEV TEST ENDPOINTS FROM PRODUCTS READ API ProductsController - SHOULD BE GOING TO DEV TESTS CONTROLLER.</h3>
 
@@ -18,4 +14,8 @@
 
 <h3 class="text-warning-alt mt-4">Storefront Product Detail page - Currency shows blank though has value in list view</h3>
 
-<h3 class="text-warning-alt mt-4">Register Button - should show page telling to email me for registering.</h3>
+<h3 class="text-warning-alt mt-4">Register Pages - dress up.</h3>
+
+<h3 class="mt-4">Cadching:</h3>
+<h4 class="mt-2">OutputCache used on Storefront requests for Products GET (Blazor Consumer and Blazor Admin).</h4>
+<h4 class="text-warning-alt mt-2">--- Products.Read.API has custom IOutputCachePolicy to allow caching with auth token</h4>
