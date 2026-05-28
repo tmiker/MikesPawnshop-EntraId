@@ -7,14 +7,28 @@
 <div class="row mt-2">
     <div class="col-4">
     </div>
-    <div class="col-4">
-        <h5 class="text-center"><b>My Shopping Cart Wrapper</b></h5>
-    </div>
-    <div class="col-2 offset-2">
-        <a class="btn btn-primary form-control" @onclick="Checkout"><i class="bi-lightning-charge"></i> &nbsp; Checkout</a>
-    </div>S
+    
+    @if (_addOrderDTO is null)
+    {
+        <div class="col-4">
+            <h5 class="text-center"><b>My Shopping Cart</b></h5>
+        </div>
+        <div class="col-2 offset-2">
+            <a class="btn btn-primary form-control" @onclick="Checkout"><i class="bi-lightning-charge"></i> &nbsp; Checkout</a>
+        </div>
+    }
+    else
+    {
+        <div class="col-4">
+            <h5 class="text-center"><b>Checkout</b></h5>
+        </div>
+        <div class="col-2 offset-2">
+            <a class="btn button-custom-primary form-control" @onclick="BackToCart"><i class="bi-lightning-charge"></i> &nbsp; Back to Cart</a>
+        </div>
+    }
 </div>
-<div class="row mt-2">
+
+@* <div class="row mt-2">
     <div class="col-2">
         <p class="text-danger-alt"><b><i>Count: @MyCart?.Items?.Count</i></b></p>
     </div>
@@ -24,7 +38,7 @@
     <div class="col-5">
         <p class="text-danger-alt"><b><i>ShoppingCart Id: @MyCart?.ShoppingCartId</i></b></p>
     </div>
-</div>
+</div> *@
 
 @if (_addOrderDTO is not null)
 {

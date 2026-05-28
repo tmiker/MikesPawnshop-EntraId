@@ -510,6 +510,257 @@ h1:focus {
         transform: scale(.95);
     }
 
+/* BUTTONS SIZE STANDARD START */
+
+.button-custom-primary-med {
+    padding: 10px 20px;
+    text-align: center;
+    color: #4c98d9;
+    border: 0;
+    font-weight: bold;
+    font-size: 12px;
+    transition: all 150ms ease-in-out;
+    box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px;
+    border-radius: 9px;
+    background-color: #111111;
+    background-image: radial-gradient(76% 151% at 52% -52%, rgba(255, 255, 255, 0.23) 0%, transparent 100%);
+    /*make responsive*/
+    min-width: 120px;
+    /*    max-width: 200px;*/
+}
+
+    .button-custom-primary-med:hover {
+        color: #8cd1f8; /* change to info */
+        transition: all 150ms ease-in-out;
+        box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px;
+        background-color: #111111;
+        background-image: radial-gradient(76% 151% at 52% -52%, rgba(255, 255, 255, 0.23) 0%, transparent 100%);
+        filter: brightness(1.1);
+    }
+
+    .button-custom-primary-med:active {
+        color: #8cd1f8; /* change to info */
+        transition: all 150ms ease-in-out;
+        box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px;
+        background-color: #111111;
+        background-image: radial-gradient(76% 151% at 52% -52%, rgba(255, 255, 255, 0.23) 0%, transparent 100%);
+        transform: scale(.95);
+    }
+
+.button-custom-secondary-med {
+    padding: 10px 20px;
+    text-align: center;
+    color: #919fad;
+    border: 0;
+    font-weight: bold;
+    font-size: 12px;
+    transition: all 150ms ease-in-out;
+    box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px;
+    border-radius: 9px;
+    background-color: #111111;
+    background-image: radial-gradient(76% 151% at 52% -52%, rgba(255, 255, 255, 0.23) 0%, transparent 100%);
+    /*make responsive*/
+    min-width: 120px;
+    /*    max-width: 200px;*/
+}
+
+    .button-custom-secondary-med:hover {
+        color: #4c98d9;
+        transition: all 150ms ease-in-out;
+        box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px;
+        background-color: #111111;
+        background-image: radial-gradient(76% 151% at 52% -52%, rgba(255, 255, 255, 0.23) 0%, transparent 100%);
+        filter: brightness(1.1);
+    }
+
+    .button-custom-secondary-med:active {
+        color: #4c98d9;
+        transition: all 150ms ease-in-out;
+        box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px;
+        background-color: #111111;
+        background-image: radial-gradient(76% 151% at 52% -52%, rgba(255, 255, 255, 0.23) 0%, transparent 100%);
+        transform: scale(.95);
+    }
+
+.button-custom-info-med {
+    padding: 10px 20px;
+    text-align: center;
+    color: #8cd1f8;
+    border: 0;
+    font-weight: bold;
+    font-size: 12px;
+    transition: all 150ms ease-in-out;
+    box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px;
+    border-radius: 9px;
+    background-color: #111111;
+    background-image: radial-gradient(76% 151% at 52% -52%, rgba(255, 255, 255, 0.23) 0%, transparent 100%);
+    /*make responsive*/
+    min-width: 120px;
+    /*    max-width: 200px;*/
+}
+
+    .button-custom-info-med:hover {
+        color: #8cd1f8;
+        transition: all 150ms ease-in-out;
+        box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px;
+        background-color: #111111;
+        background-image: radial-gradient(76% 151% at 52% -52%, rgba(255, 255, 255, 0.23) 0%, transparent 100%);
+        filter: brightness(1.1);
+    }
+
+    .button-custom-info-med:active {
+        color: #8cd1f8;
+        transition: all 150ms ease-in-out;
+        box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px;
+        background-color: #111111;
+        background-image: radial-gradient(76% 151% at 52% -52%, rgba(255, 255, 255, 0.23) 0%, transparent 100%);
+        transform: scale(.95);
+    }
+
+.button-custom-success-med {
+    padding: 10px 20px;
+    text-align: center;
+    color: mediumseagreen;
+    border: 0;
+    font-weight: bold;
+    font-size: 12px;
+    transition: all 150ms ease-in-out;
+    box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px;
+    border-radius: 9px;
+    background-color: #111111;
+    background-image: radial-gradient(76% 151% at 52% -52%, rgba(255, 255, 255, 0.23) 0%, transparent 100%);
+    /*make responsive*/
+    min-width: 120px;
+    /*    max-width: 200px;*/
+}
+
+    .button-custom-success-med:hover {
+        color: mediumseagreen;
+        transition: all 150ms ease-in-out;
+        box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px;
+        background-color: #111111;
+        background-image: radial-gradient(76% 151% at 52% -52%, rgba(255, 255, 255, 0.23) 0%, transparent 100%);
+        filter: brightness(1.1);
+    }
+
+    .button-custom-success-med:active {
+        color: mediumseagreen;
+        transition: all 150ms ease-in-out;
+        box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px;
+        background-color: #111111;
+        background-image: radial-gradient(76% 151% at 52% -52%, rgba(255, 255, 255, 0.23) 0%, transparent 100%);
+        transform: scale(.95);
+    }
+
+.button-custom-yellow-reset {
+    padding: 8px 14px;
+    text-align: center;
+    color: #bfbc1f;
+    border: 0;
+    font-weight: bold;
+    font-size: 12px;
+    transition: all 150ms ease-in-out;
+    box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px;
+    border-radius: 8px;
+    background-color: #111111;
+    background-image: radial-gradient(76% 151% at 52% -52%, rgba(255, 255, 255, 0.23) 0%, transparent 100%);
+    /*make responsive*/
+    min-width: 80px;
+    /*    max-width: 200px;*/
+    margin-top: 28px;
+    margin-left: 0;
+}
+
+    .button-custom-yellow-reset:hover {
+        color: #bfbc1f;
+        transition: all 150ms ease-in-out;
+        box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px;
+        background-color: #111111;
+        background-image: radial-gradient(76% 151% at 52% -52%, rgba(255, 255, 255, 0.23) 0%, transparent 100%);
+        filter: brightness(1.1);
+    }
+
+    .button-custom-yellow-reset:active {
+        color: #bfbc1f;
+        transition: all 150ms ease-in-out;
+        box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px;
+        background-color: #111111;
+        background-image: radial-gradient(76% 151% at 52% -52%, rgba(255, 255, 255, 0.23) 0%, transparent 100%);
+        transform: scale(.95);
+    }
+
+.button-custom-warning-med {
+    padding: 10px 20px;
+    text-align: center;
+    color: darkgoldenrod;
+    border: 0;
+    font-weight: bold;
+    font-size: 12px;
+    transition: all 150ms ease-in-out;
+    box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px;
+    border-radius: 9px;
+    background-color: #111111;
+    background-image: radial-gradient(76% 151% at 52% -52%, rgba(255, 255, 255, 0.23) 0%, transparent 100%);
+    /*make responsive*/
+    min-width: 120px;
+    /*    max-width: 200px;*/
+}
+
+    .button-custom-warning-med:hover {
+        color: darkgoldenrod;
+        transition: all 150ms ease-in-out;
+        box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px;
+        background-color: #111111;
+        background-image: radial-gradient(76% 151% at 52% -52%, rgba(255, 255, 255, 0.23) 0%, transparent 100%);
+        filter: brightness(1.1);
+    }
+
+    .button-custom-warning-med:active {
+        color: darkgoldenrod;
+        transition: all 150ms ease-in-out;
+        box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px;
+        background-color: #111111;
+        background-image: radial-gradient(76% 151% at 52% -52%, rgba(255, 255, 255, 0.23) 0%, transparent 100%);
+        transform: scale(.95);
+    }
+
+.button-custom-danger-med {
+    padding: 10px 20px;
+    text-align: center;
+    color: #a32626;
+    border: 0;
+    font-weight: bold;
+    font-size: 12px;
+    transition: all 150ms ease-in-out;
+    box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px;
+    border-radius: 9px;
+    background-color: #111111;
+    background-image: radial-gradient(76% 151% at 52% -52%, rgba(255, 255, 255, 0.23) 0%, transparent 100%);
+    /*make responsive*/
+    min-width: 120px;
+    /*    max-width: 200px;*/
+}
+
+    .button-custom-danger-med:hover {
+        color: #a32626;
+        transition: all 150ms ease-in-out;
+        box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px;
+        background-color: #111111;
+        background-image: radial-gradient(76% 151% at 52% -52%, rgba(255, 255, 255, 0.23) 0%, transparent 100%);
+        filter: brightness(1.1);
+    }
+
+    .button-custom-danger-med:active {
+        color: #a32626;
+        transition: all 150ms ease-in-out;
+        box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px;
+        background-color: #111111;
+        background-image: radial-gradient(76% 151% at 52% -52%, rgba(255, 255, 255, 0.23) 0%, transparent 100%);
+        transform: scale(.95);
+    }
+
+/* BUTTONS SIZE STANDARD END */
+
 /* BODY LAYOUT */
 .toolbar-top {
     display: flex;

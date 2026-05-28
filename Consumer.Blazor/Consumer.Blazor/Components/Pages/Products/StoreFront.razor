@@ -46,21 +46,6 @@
     
 </div>
 
-@* <div class="row mt-2">
-    <div class="col-1">
-        <h5>Dev Test: Message handling</h5>
-    </div>
-    <div class="col-3">
-        <a class="btn button-custom-success" @onclick="TestHandleSuccess">Test Handle Success</a>
-    </div>
-    <div class="col-3">
-        <a class="btn button-custom-danger" @onclick="TestHandleError">Test Handle Error</a>
-    </div>
-    <div class="col-5">
-
-    </div>
-</div> *@
-
 <ErrorComponent SuccessMessage="@_successMessage" ErrorMessage="@_errorMessage" ClearSuccessCallback="ClearSuccessMessage" ClearErrorCallback="ClearErrorMessage" />
 
 <div class="row mt-2">
@@ -114,7 +99,7 @@
                             <input class="bg-dark text-light form-control" id="pagesize" type="number" @bind="_pageSize" @bind:after="RefreshData" />
                         </div>
                         <div class="col-2">
-                            <a class="btn btn-outline-warning form-control mt-4" @onclick="ClearFilters">Reset</a>
+                            <a class="btn button-custom-yellow-med form-control mt-4" @onclick="ClearFilters">Reset</a>
                         </div>
 
                     </div>
