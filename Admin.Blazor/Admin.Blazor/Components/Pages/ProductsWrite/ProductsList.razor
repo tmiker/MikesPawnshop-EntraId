@@ -12,11 +12,11 @@
     <div class="col-2">
         @if (_apiHealthCheckResult is null)
         {
-            <a class="btn btn-primary form-control" @onclick="ApiHealthCheck">Check API Health</a>
+            <a class="btn button-custom-primary-med form-control" @onclick="ApiHealthCheck">Check API Health</a>
         }
         else
         {
-            <a class="btn btn-primary form-control" @onclick="ClearHealthCheckResult">Hide API Health</a>
+            <a class="btn button-custom-primary-med form-control" @onclick="ClearHealthCheckResult">Hide API Health</a>
         }
     </div>
 </div>
@@ -81,20 +81,20 @@
         <input class="bg-dark text-light form-control" id="pagesize" type="number" @bind="_pageSize" @bind:after="RefreshData" />
     </div>
     <div class="col-2 offset-2">
-        <a class="btn btn-warning form-control mt-4" @onclick="ClearFilters">Reset</a>
+        <a class="btn button-custom-yellow-med form-control mt-4" @onclick="ClearFilters">Reset</a>
     </div>
 
 </div>
 
 <div class="row mt-2">
     <div class="col-2">
-        <a class="btn btn-danger form-control" @onclick="PurgeData">Purge Data</a>
+        <a class="btn button-custom-danger-med form-control" @onclick="PurgeData">Purge Data</a>
     </div>
     <div class="col-2 offset-6">
-        <a class="btn btn-warning form-control" @onclick="ClearMessages">Clear Messages</a>
+        <a class="btn button-custom-warning-med form-control" @onclick="ClearMessages">Clear Messages</a>
     </div>
     <div class="col-2">
-        <a class="btn btn-success form-control" @onclick="AddProduct">Add Product</a>
+        <a class="btn button-custom-success-med form-control" @onclick="AddProduct">Add Product</a>
     </div>
 </div>
 <div class="row mt-2">
