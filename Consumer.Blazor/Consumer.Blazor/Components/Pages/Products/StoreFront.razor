@@ -10,6 +10,17 @@
     <div class="col-3">
         <h4><b>STORE FRONT</b></h4>
     </div>
+    <div class="col-7">
+    </div>
+    <AuthorizeView>
+        <Authorized>
+            <div class="col-2">
+                <a class="btn button-custom-warning form-control" @onclick="ToggleShowCart">@_cartButtonText</a>
+            </div>
+        </Authorized>
+    </AuthorizeView>
+</div>
+<div class="row">
     @if (!_showCart && SelectedProductId == 0)
     {
         <div class="col-3">
@@ -32,13 +43,7 @@
     {
         <div class="col-9"></div>
     }
-    <AuthorizeView>
-        <Authorized>
-            <div class="col-2">
-                <a class="btn button-custom-warning form-control" @onclick="ToggleShowCart">@_cartButtonText</a>
-            </div>
-        </Authorized>
-    </AuthorizeView>
+    
 </div>
 
 @* <div class="row mt-2">
