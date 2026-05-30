@@ -43,7 +43,6 @@
                 </div>
             </div>
 
-
             <div class="form-group row mt-2">
                 <div class="col-3 ">
                     <label for="id">Id:</label>
@@ -81,10 +80,11 @@
                     <label for="description">Description:</label>
                 </div>
                 <div class="col-9">
-                    <InputText inert class="bg-dark text-light form-control " id="description" @bind-Value="@_product.Description" />
+                    <InputTextArea inert class="bg-dark text-light form-control" id="description" @bind-Value="@_product.Description" />
                 </div>
             </div>
-            <div class="form-group row mt-2">
+
+            <div class="form-group row mt-4">
                 <div class="col-5">
                     <div class="form-group row">
                         <div class="col-5 ">
@@ -130,6 +130,14 @@
                             <InputText inert class="bg-dark text-light form-control " id="uom" @bind-Value="_product.UOM" />
                         </div>
                     </div>
+                    <div class="form-group row">
+                        <div class="col-5">
+                            <label for="lowstock">LST:</label>
+                        </div>
+                        <div class="col-7">
+                            <InputNumber inert class="bg-dark text-light form-control " id="lowstock" @bind-Value="_product.LowStockThreshold" />
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -155,18 +163,18 @@
                     </div>
                 </div>
                 <div class="col-3">
-                    <div class="form-group row">
+                    <p class="mt-2"><i>(@_product.QuantityAvailable available)</i></p>
+                    @* <div class="form-group row">
                         <div class="col-5">
                             <label for="lowstock">LST:</label>
                         </div>
                         <div class="col-7">
                             <InputNumber inert class="bg-dark text-light form-control " id="lowstock" @bind-Value="_product.LowStockThreshold" />
                         </div>
-                    </div>
+                    </div> *@
                 </div>
             </div>
 
-            <br />
             <!-- COLUMN 1 END -->
             <AuthorizeView>
                 <Authorized>
@@ -177,29 +185,30 @@
                             <input type="number" class="form-control bg-dark text-light form-control" @bind-value="@_quantityToAdd" />
                         </div>
                         <div class="col-4">
-                            <label>Quantity Available:</label>
-                            <p>@_product.QuantityAvailable</p>
+                            <a class="btn button-custom-success mt-3" @onclick="() => AddToCart(_quantityToAdd)">Add to Cart</a>
                         </div>
-                        <div class="col-4">
-                            <a class="btn button-custom-success" @onclick="() => AddToCart(_quantityToAdd)">Add to Cart</a>
+                        <div class="col-4 text-center">
+                            @* <label>Quantity Available:</label>
+                            <p class="mt-2">@_product.QuantityAvailable</p> *@
+                            @* <p class="mt-4"><i>(@_product.QuantityAvailable available)</i></p> *@
                         </div>
                     </div>
                 </Authorized>
             </AuthorizeView>
         </div>
-        <div class="col-6 text-center">
+        <div class="col-5 offset-1 text-center">
             <!-- COLUMN 2 START -->
 
             <div class="row ">
                 @if (_showDocuments)
                 {
-                    <div class="col-4">
+                    <div class="col-5">
                         <a class="btn button-custom-primary form-control" @onclick="ToogleShowDocuments">Show Images</a>
                     </div>
                 }
                 else
                 {
-                    <div class="col-4">
+                    <div class="col-5">
                         <a class="btn button-custom-primary form-control" @onclick="ToogleShowDocuments">Show Documents</a>
                     </div>
                 }
@@ -247,7 +256,7 @@
                 }
                 else
                 {
-                    <h5 class="mt-2"><i>There are currently no product documents.</i></h5>
+                    <h5 class="text-info mt-2"><i>There are currently no product documents.</i></h5>
                 }
             }
             else
@@ -288,7 +297,7 @@
                 }
                 else
                 {
-                    <h5 class="mt-2"><i>There are currently no product images.</i></h5>
+                    <h5 class="text-info mt-2"><i>There are currently no product images.</i></h5>
                 }
 
                 <br />
@@ -298,7 +307,7 @@
                     {
                         @foreach (var image in _product.Images)
                         {
-                            <div class="col-2">
+                            <div class="col-2 mx-2">
                                 @if (image.SequenceNumber == _primaryImage?.SequenceNumber)
                                 {
                                     <img src="@image.ThumbnailUrl" width="100" style="border:2px solid blue;" />

@@ -17,7 +17,7 @@
     </div>
 </div> *@
 
-<div class="row">
+@* <div class="row">
     <div class="col-3">
         @if (ProductFetchTime.HasValue)
         {
@@ -27,18 +27,38 @@
     <div class="col-3">
         <h6 class="text-secondary"><i>Current Time: @DateTime.Now</i></h6>
     </div>
-</div>
+</div> *@
 
-<h4 class="mt-2"><b>Product Detail</b></h4>
+@* <h4 class="mt-2"><b>Product Detail</b></h4> *@
 
 @if (_product is not null)
 {
     <div class="row">
-        <div class="col-6 text-center">
-
+        <div class="col-6">
             <!-- COLUMN 1 START-->
+            <div class="row">
+                <div class="col-8">
+                    <h4>Product Detail</h4>
+                </div>
+                <div class="col-4">
+                    <a class="btn button-custom-primary form-control" @onclick="BackToList">Back</a>
+                </div>
+            </div>
+            <br />
+            <div class="row mt-2">
+                <div class="col-6">
+                    @if (ProductFetchTime.HasValue)
+                    {
+                        <h6 class="text-secondary"><i>Data Fetched: @ProductFetchTime.Value</i></h6>
+                    }
+                </div>
+                <div class="col-6">
+                    <h6 class="text-secondary"><i>Current Time: @DateTime.Now</i></h6>
+                </div>
+            </div>
+
             <div class="form-group row">
-                <div class="col-3 text-center">
+                <div class="col-3">
                     <label for="id">Id:</label>
                 </div>
                 <div class="col-9">
@@ -46,7 +66,7 @@
                 </div>
             </div>
             <div class="form-group row">
-                <div class="col-3 text-center">
+                <div class="col-3">
                     <label for="aggId">Aggregate Id:</label>
                 </div>
                 <div class="col-9">
@@ -54,7 +74,7 @@
                 </div>
             </div>
             <div class="form-group row">
-                <div class="col-3 text-center">
+                <div class="col-3 ">
                     <label for="name">Name:</label>
                 </div>
                 <div class="col-9">
@@ -62,7 +82,7 @@
                 </div>
             </div>
             <div class="form-group row">
-                <div class="col-3 text-center">
+                <div class="col-3 ">
                     <label for="category">Category:</label>
                 </div>
                 <div class="col-9">
@@ -70,103 +90,142 @@
                 </div>
             </div>
             <div class="form-group row">
-                <div class="col-3 text-center">
+                <div class="col-3 ">
                     <label for="description">Description:</label>
                 </div>
                 <div class="col-9">
-                    <InputText class="bg-dark text-light form-control " id="description" @bind-Value="@_product.Description" />
+                    <InputTextArea class="bg-dark text-light form-control" id="description" @bind-Value="@_product.Description" />
                 </div>
             </div>
-            <div class="form-group row">
-                <div class="col-3 text-center">
-                    <label for="price">Price:</label>
+
+            <div class="form-group row mt-4">
+                <div class="col-5">
+                    <div class="form-group row">
+                        <div class="col-5 ">
+                            <label for="price">Price:</label>
+                        </div>
+                        <div class="col-7">
+                            <InputNumber inert class="bg-dark text-light form-control " id="price" @bind-Value="@_product.Price" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-5 ">
+                            <label for="status">Status:</label>
+                        </div>
+                        <div class="col-7">
+                            <InputText inert class="bg-dark text-light form-control" id="status" @bind-Value="@_product.Status" />
+                        </div>
+                    </div>
                 </div>
-                <div class="col-9">
-                    <InputNumber class="bg-dark text-light form-control " id="price" @bind-Value="@_product.Price" />
+                <div class="col-4">
+                    <div class="form-group row">
+                        <div class="col-5 ">
+                            <label for="currency">Currency:</label>
+                        </div>
+                        <div class="col-7">
+                            <InputText inert class="bg-dark text-light form-control " id="currency" @bind-Value="@_product.Currency" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-5 ">
+                            <label for="version">Version:</label>
+                        </div>
+                        <div class="col-7">
+                            <InputNumber inert class="bg-dark text-light form-control" id="version" @bind-Value="@_product.Version" />
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group row">
-                <div class="col-3 text-center">
-                    <label for="currency">Currency:</label>
-                </div>
-                <div class="col-9">
-                    <InputText class="bg-dark text-light form-control " id="currency" @bind-Value="@_product.Currency" />
+                <div class="col-3">
+                    <div class="form-group row">
+                        <div class="col-5">
+                            <label for="uom">UOM:</label>
+                        </div>
+                        <div class="col-7">
+                            <InputText inert class="bg-dark text-light form-control " id="uom" @bind-Value="_product.UOM" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-5">
+                            <label for="lowstock">LST:</label>
+                        </div>
+                        <div class="col-7">
+                            <InputNumber inert class="bg-dark text-light form-control " id="lowstock" @bind-Value="_product.LowStockThreshold" />
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div class="form-group row">
-                <div class="col-3 text-center">
-                    <label for="status">Status:</label>
+                <div class="col-5">
+                    <div class="form-group row">
+                        <div class="col-5">
+                            <label for="qoh">On Hand:</label>
+                        </div>
+                        <div class="col-7">
+                            <InputNumber inert class="bg-dark text-light form-control " id="qoh" @bind-Value="_product.QuantityOnHand" />
+                        </div>
+                    </div>
                 </div>
-                <div class="col-9">
-                    <InputText class="bg-dark text-light form-control" id="status" @bind-Value="@_product.Status" />
+                <div class="col-4">
+                    <div class="form-group row">
+                        <div class="col-5">
+                            <label for="qalloc">Allocated:</label>
+                        </div>
+                        <div class="col-7">
+                            <InputNumber inert class="bg-dark text-light form-control " id="qalloc" @bind-Value="_product.QuantityAllocated" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <p class="mt-2"><i>(@_product.QuantityAvailable available)</i></p>
+                    @* <div class="form-group row">
+                        <div class="col-5">
+                            <label for="lowstock">LST:</label>
+                        </div>
+                        <div class="col-7">
+                            <InputNumber inert class="bg-dark text-light form-control " id="lowstock" @bind-Value="_product.LowStockThreshold" />
+                        </div>
+                    </div> *@
                 </div>
             </div>
 
-            <div class="form-group row">
-                <div class="col-3 text-center">
-                    <label for="version">Version:</label>
-                </div>
-                <div class="col-9">
-                    <InputNumber class="bg-dark text-light form-control" id="version" @bind-Value="@_product.Version" />
-                </div>
-            </div>
-
+            <hr />
             <div class="row">
-                <div class="col-3">
-                    <label for="qoh">Quantity On Hand:</label>
+                <div class="col-4">
+                    <label>Quantity to Add:</label>
+                    <input type="number" class="form-control bg-dark text-light form-control" @bind-value="@_quantityToAdd" />
                 </div>
-                <div class="col-7">
-                    <InputNumber class="bg-dark text-light form-control " id="qoh" @bind-Value="_product.QuantityOnHand" />
+                <div class="col-4">
+                    <a class="btn button-custom-success mt-3" @onclick="() => AddToCart(_quantityToAdd)">Add to Cart</a>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-3">
-                    <label for="qavail">Quantity Available:</label>
-                </div>
-                <div class="col-7">
-                    <InputNumber class="bg-dark text-light form-control " id="qavail" @bind-Value="_product.QuantityAllocated" />
+                <div class="col-4 text-center">
+                    @* <label>Quantity Available:</label>
+                            <p class="mt-2">@_product.QuantityAvailable</p> *@
+                    @* <p class="mt-4"><i>(@_product.QuantityAvailable available)</i></p> *@
                 </div>
             </div>
-            <div class="row">
-                <div class="col-3">
-                    <label for="uom">UOM:</label>
-                </div>
-                <div class="col-7">
-                    <InputText class="bg-dark text-light form-control " id="uom" @bind-Value="_product.UOM" />
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-3">
-                    <label for="lowstock">Low Stock Threshold:</label>
-                </div>
-                <div class="col-7">
-                    <InputNumber class="bg-dark text-light form-control " id="lowstock" @bind-Value="_product.LowStockThreshold" />
-                </div>
-            </div>
-            <br />
             <!-- COLUMN 1 END -->
 
-            <br />
+            @* <br />
             <div class="row">
                 <div class="col-5 offset-5">
                     <a class="btn button-custom-primary form-control" @onclick="BackToList">Back</a>
                 </div>
-            </div>
+            </div> *@
         </div>
-        <div class="col-6 text-center">
+        <div class="col-5 offset-1 text-center">
             <!-- COLUMN 2 START -->
 
-            <div class="row ">
+            <div class="row">
                 @if (_showDocuments)
                 {
-                    <div class="col-4">
+                    <div class="col-5">
                         <a class="btn button-custom-primary form-control" @onclick="ToogleShowDocuments">Show Images</a>
                     </div>
                 }
                 else
                 {
-                    <div class="col-4">
+                    <div class="col-5">
                         <a class="btn button-custom-primary form-control" @onclick="ToogleShowDocuments">Show Documents</a>
                     </div>
                 }
@@ -214,7 +273,7 @@
                 }
                 else
                 {
-                    <h5 class="mt-2"><i>There are currently no product documents.</i></h5>
+                    <h5 class="text-info mt-2"><i>There are currently no product documents.</i></h5>
                 }
             }
             else
@@ -267,7 +326,7 @@
                 }
                 else
                 {
-                    <h5 class="mt-2"><i>There are currently no product images.</i></h5>
+                    <h5 class="text-info mt-2"><i>There are currently no product images.</i></h5>
                 }
 
                 <br />
@@ -277,7 +336,7 @@
                     {
                         @foreach (var image in _product.Images)
                         {
-                            <div class="col-2">
+                            <div class="col-2 mx-2">
                                 @if (image.SequenceNumber == _primaryImage?.SequenceNumber)
                                 {
                                     <img src="@image.ThumbnailUrl" width="100" style="border:2px solid blue;" />
@@ -320,6 +379,13 @@
     private async Task TestHandleSuccess() => await ShowSuccessMessage($"This is a test success message");
 
     [Parameter]
+    public EventCallback<int> AddToCartWithQuantityCallback { get; set; }
+    private async Task AddToCart(int quantityToAdd)
+    {
+        if (AddToCartWithQuantityCallback.HasDelegate) await AddToCartWithQuantityCallback.InvokeAsync(_quantityToAdd);
+    }
+
+    [Parameter]
     public EventCallback BackToListCallback { get; set; }
     private async Task BackToList()
     {
@@ -327,6 +393,8 @@
     }
 
     public DateTime? ProductFetchTime { get; set; }
+
+    private int _quantityToAdd = 1;
 
     private ProductDTO? _product;
     private string? _productAggregateId;

@@ -71,7 +71,7 @@
             @if (SelectedProductId > 0)
             {
                 <CascadingValue Name="SelectedProductId" Value="@SelectedProductId">
-                    <StorefrontProductDetail BackToListCallback="BackToList" ErrorMessageCallback="HandleErrorMessage" SuccessMessageCallback="HandleSuccessMessage" />
+                    <StorefrontProductDetail AddToCartWithQuantityCallback="AddToCartWithQuantity" BackToListCallback="BackToList" ErrorMessageCallback="HandleErrorMessage" SuccessMessageCallback="HandleSuccessMessage" />
                 </CascadingValue>
             }
             else
@@ -247,6 +247,37 @@
     {
         if (_showCart) HideCart();
         else await ShowCart();
+    }
+
+    private async Task AddToCartWithQuantity(int quantity)
+    {
+        if (SelectedProductId == 0) return;
+
+        ProductSummaryDTO? product = Products!.FirstOrDefault(p => p.Id == SelectedProductId);
+        if (product is null) return;
+        AddShoppingCartItemDTO addShoppingCartItemDTO = new AddShoppingCartItemDTO()
+        {
+            ProductId = product.Id,
+            AggregateId = product.AggregateId.ToString(),
+            Category = product.Category,
+            Name = product.Name,
+            Currency = product.Currency,
+            Price = product.Price,
+            UOM = product.UOM,
+            Quantity = quantity,
+            ThumbnailUrl = null
+        };
+        var result = await _cartsHttpClient.AddNewCartItemAsync(addShoppingCartItemDTO);
+        if (result.IsSuccess)
+        {
+            ShoppingCartItemCount = result.CartItemQuantity;
+            _cartButtonText = $"Cart ({ShoppingCartItemCount})";
+            ShoppingCart = null; // will refresh when select cart view
+        }
+        else
+        {
+            _errorMessage = result.ErrorMessage;
+        }
     }
 
     private async Task AddToCart(Guid productId)
