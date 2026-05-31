@@ -3,7 +3,6 @@
     public class CartData
     {
         public int ItemCount { get; set; }
-
         public bool ShowCart { get; set; }
     }
 }

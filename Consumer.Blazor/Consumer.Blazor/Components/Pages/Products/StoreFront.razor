@@ -84,11 +84,11 @@
                     <div class="row mt-2">
                         <div class="col-2">
                             <label for="namefilter">Name Filter:</label>
-                            <input class="bg-dark text-light form-control" id="namefilter" type="text" @bind="_nameFilter" @bind:after="RefreshData" />
+                            <input class="bg-dark text-light form-control" id="namefilter" type="text" @bind="_nameFilter" @bind:after="GetProducts" />
                         </div>
                         <div class="col-2">
                             <label for="cat">Category Filter:</label>
-                            <select class="bg-dark text-light form-select" id="cat" type="text" @bind="_categoryFilter" @bind:after="RefreshData">
+                            <select class="bg-dark text-light form-select" id="cat" type="text" @bind="_categoryFilter" @bind:after="GetProducts">
                                 <option value=""></option>
                                 <option value="Astronomy">Astronomy</option>
                                 <option value="Books">Books</option>
@@ -101,7 +101,7 @@
                         </div>
                         <div class="col-2">
                             <label for="sort">Sort Column:</label>
-                            <select class="bg-dark text-light form-select" id="sort" type="text" @bind="_sortColumn" @bind:after="RefreshData">
+                            <select class="bg-dark text-light form-select" id="sort" type="text" @bind="_sortColumn" @bind:after="GetProducts">
                                 <option value=""></option>
                                 <option value="Name">Name</option>
                                 <option value="Price desc">Price Desc</option>
@@ -110,7 +110,7 @@
                         </div>
                         <div class="col-2">
                             <label for="pagesize">Page Size:</label>
-                            <input class="bg-dark text-light form-control" id="pagesize" type="number" @bind="_pageSize" @bind:after="RefreshData" />
+                            <input class="bg-dark text-light form-control" id="pagesize" type="number" @bind="_pageSize" @bind:after="GetProducts" />
                         </div>
                         <div class="col-2">
                             <a class="btn button-custom-yellow-med form-control mt-4" @onclick="ClearFilters">Reset</a>
@@ -163,21 +163,21 @@
     {
         if (PagingData is null || _pageNumber >= PagingData.TotalPageCount) return;
         _pageNumber = _pageNumber + 1;
-        await RefreshData();
+        await GetProducts();
     }
 
     private async Task PageBackward()
     {
         if (_pageNumber <= 1) return;
         _pageNumber = _pageNumber - 1;
-        await RefreshData();
+        await GetProducts();
     }
 
     private async Task PageTo(int page)
     {
         if (page == PagingData!.CurrentPage || page < 0 || page > PagingData.TotalPageCount) return;
         _pageNumber = page;
-        await RefreshData();
+        await GetProducts();
     }
 
     private string? _nameFilter = null;
@@ -208,7 +208,7 @@
         _categoryFilter = null;
         _sortColumn = "Name";
         _pageSize = 8;
-        await RefreshData();
+        await GetProducts();
     }
 
     private void Detail(int id)
@@ -224,31 +224,37 @@
     private string? _cartButtonText = "Cart";
     private async Task ShowCart()
     {
-        if (ShoppingCart is null)
-        {
-            var result = await _cartsHttpClient.GetShoppingCartAsync();
-            if (result.IsSuccess)
-            {
-                ShoppingCart = result.ShoppingCart;
-                if (ShoppingCart is not null) await CartItemCountChanged(ShoppingCart.Items.Count);
-            }
-            else _errorMessage = result.ErrorMessage;
-        }
+        if (ShoppingCart is null) await GetCart();
+        // {
+        //     var result = await _cartsHttpClient.GetShoppingCartAsync();
+        //     if (result.IsSuccess)
+        //     {
+        //         ShoppingCart = result.ShoppingCart;
+        //         if (ShoppingCart is not null) await CartItemCountChanged(ShoppingCart.Items.Count);
+        //     }
+        //     else _errorMessage = result.ErrorMessage;
+        // }
         _cartButtonText = "Continue Shopping";
         _showCart = true;
     }
     private void HideCart()
     {
         _cartButtonText = ShoppingCart is null ? "Cart" : $"Cart ({ShoppingCartItemCount})";
-        // GoToCart = "false";
         _showCart = false;
     }
     private async Task ToggleShowCart()
     {
-        if (_showCart) HideCart();
-        else await ShowCart();
+        if (MyCartData is not null)
+        {
+            MyCartData.ShowCart = !MyCartData.ShowCart;         // changes the cascading parameter value but OnParametersSetAsync() is NOT called
+            _previousCartDataShowCart = MyCartData.ShowCart;
+            
+            if (MyCartData.ShowCart) await ShowCart();
+            else HideCart();
+        }
     }
 
+    // Add to cart with quantity from product detail component
     private async Task AddToCartWithQuantity(int quantity)
     {
         if (SelectedProductId == 0) return;
@@ -281,6 +287,7 @@
         }
     }
 
+    // Add to cart with quantity = 1 from product list component
     private async Task AddToCart(Guid aggregateId)
     {
         ProductSummaryDTO? product = Products!.FirstOrDefault(p => p.AggregateId == aggregateId);
@@ -311,7 +318,18 @@
         }
     }
 
-    private async Task RefreshData()
+    private async Task GetCart()
+    {
+        var result = await _cartsHttpClient.GetShoppingCartAsync();
+        if (result.IsSuccess)
+        {
+            ShoppingCart = result.ShoppingCart;
+            if (ShoppingCart is not null) await CartItemCountChanged(ShoppingCart.Items.Count);
+        }
+        else _errorMessage = result.ErrorMessage;
+    }
+
+    private async Task GetProducts()
     {
         var result = await _productReadSideHttpClient.GetPagedAndFilteredProductSummariesAsync(_nameFilter, _categoryFilter, _sortColumn, _pageNumber, _pageSize);
         if (result.IsSuccess)
@@ -328,21 +346,24 @@
         this.StateHasChanged();
     }
 
+    private bool _previousCartDataShowCart = false;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // Console.WriteLine($"OnParametersSetAsync called. MyCartData.ShowCart: {MyCartData?.ShowCart}, _previousCartDataShowCart: {_previousCartDataShowCart}"); 
+        if (MyCartData is not null && MyCartData.ShowCart != _previousCartDataShowCart)
+        {
+            _previousCartDataShowCart = MyCartData.ShowCart;
+            if (MyCartData.ShowCart) await ShowCart();
+            else HideCart();
+        }
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await RefreshData();
-            // if (!string.IsNullOrWhiteSpace(GoToCart) && GoToCart.ToLower() == "true")
-            // {
-            //     await ShowCart();
-            // }
-
-            // if (MyCartData is not null && MyCartData.ShowCart == true)
-            // {
-            //     await ShowCart();
-            // }
-
+            await GetProducts();
             StateHasChanged();
         }
     }

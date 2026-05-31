@@ -138,7 +138,7 @@ builder.Services.AddScoped<IToastrService, ToastrService>();
 // Root Level Cascading Value Source for Cart Data provides access to underlying source's NotifyChangedAsync() method
 builder.Services.AddSingleton(sp =>
 {
-    var cartData = new CartData { ItemCount = 0 };      //, ShowCart = false };
+    var cartData = new CartData { ItemCount = 0, ShowCart = false };
     return new CascadingValueSource<CartData>(name: "ShoppingCartData", cartData, isFixed: false);
 });
 // Root Level Cascading Value that will be the cascading parameter property deriving from the source 
