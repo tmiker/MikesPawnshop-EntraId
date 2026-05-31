@@ -1,10 +1,4 @@
-﻿.button-logout {
-    background-color: #1c2841;
-    color: lightgray;
-    border: none;
-}
-
-form {
+﻿form {
     appearance: none;
     -webkit-appearance: none; /* Safari */
 }

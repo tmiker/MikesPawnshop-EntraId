@@ -1,8 +1,12 @@
 ﻿@page "/store/storefront"
+@* @page "/store/storefront/{GoToCart}" *@
+@layout StorefrontLayout
 @rendermode InteractiveServer
 @inject IPublicProductsReadHttpService _productReadSideHttpClient
 @inject ICartsHttpService _cartsHttpClient
 @inject NavigationManager Nav
+@inject CascadingValueSource<CartData> cartDataSource
+@inject IToastrService ToastrService
 
 <PageTitle>Storefront</PageTitle>
 
@@ -10,7 +14,17 @@
     <div class="col-3">
         <h4><b>STORE FRONT</b></h4>
     </div>
-    <div class="col-7">
+    <div class="col-3">
+        @if (MyCartData is not null)
+        {
+            <h6 class="text-secondary"><i>MyCartData.ShowCart: @MyCartData.ShowCart</i></h6>
+        }
+    </div>
+    <div class="col-4">
+        @if (MyCartData is not null)
+        {
+            <input class="bg-dark text-light" type="checkbox" checked="@MyCartData.ShowCart" @bind-value="MyCartData.ShowCart" @bind-value:after="HandleMyCartDataShowCartChanged" />
+        }
     </div>
     <AuthorizeView>
         <Authorized>
@@ -53,7 +67,7 @@
         @if (_showCart)
         {
             <CascadingValue Name="ShoppingCart" Value="@ShoppingCart">
-                <StorefrontShoppingCart DetailCallback="Detail" CartItemQuantityChangedCallback="CartItemQuantityChanged" ErrorMessageCallback="HandleErrorMessage" SuccessMessageCallback="HandleSuccessMessage" />
+                <StorefrontShoppingCart DetailCallback="Detail" CartItemCountChangedCallback="CartItemCountChanged" ErrorMessageCallback="HandleErrorMessage" SuccessMessageCallback="HandleSuccessMessage" />
             </CascadingValue>
         }
         else
@@ -118,6 +132,12 @@
 
 @code {
 
+    // [Parameter]
+    // public string GoToCart { get; set; } = "false";
+
+    [CascadingParameter(Name = "ShoppingCartData")]
+    public CartData? MyCartData { get; set; }
+
     public List<ProductSummaryDTO>? Products { get; set; }
     public PaginationMetadata? PagingData { get; set; }
     public int SelectedProductId { get; set; } = 0;
@@ -127,9 +147,16 @@
     public int ShoppingCartItemCount { get; set; }
     private bool _showCart = false;
 
-    private void CartItemQuantityChanged(int count)
+    private async Task CartItemCountChanged(int count)
     {
         ShoppingCartItemCount = count;
+        MyCartData?.ItemCount = count;
+        await cartDataSource.NotifyChangedAsync();
+    }
+
+    public async Task HandleMyCartDataShowCartChanged()
+    {
+        await ToastrService.ShowToastrInfo($"Shopping cart visibility changed.");
     }
 
     private async Task PageForward()
@@ -203,7 +230,7 @@
             if (result.IsSuccess)
             {
                 ShoppingCart = result.ShoppingCart;
-                ShoppingCartItemCount = ShoppingCart is null ? 0 : ShoppingCart.Items.Count;
+                if (ShoppingCart is not null) await CartItemCountChanged(ShoppingCart.Items.Count);
             }
             else _errorMessage = result.ErrorMessage;
         }
@@ -213,6 +240,7 @@
     private void HideCart()
     {
         _cartButtonText = ShoppingCart is null ? "Cart" : $"Cart ({ShoppingCartItemCount})";
+        // GoToCart = "false";
         _showCart = false;
     }
     private async Task ToggleShowCart()
@@ -242,7 +270,8 @@
         var result = await _cartsHttpClient.AddNewCartItemAsync(addShoppingCartItemDTO);
         if (result.IsSuccess)
         {
-            ShoppingCartItemCount = result.CartItemQuantity;
+            // ShoppingCartItemCount = result.CartItemQuantity;
+            await CartItemCountChanged(result.CartItemCount);
             _cartButtonText = $"Cart ({ShoppingCartItemCount})";
             ShoppingCart = null; // will refresh when select cart view
         }
@@ -271,7 +300,8 @@
         var result = await _cartsHttpClient.AddNewCartItemAsync(addShoppingCartItemDTO);
         if (result.IsSuccess)
         {
-            ShoppingCartItemCount = result.CartItemQuantity;
+            // ShoppingCartItemCount = result.CartItemQuantity;
+            await CartItemCountChanged(result.CartItemCount);
             _cartButtonText = $"Cart ({ShoppingCartItemCount})";
             ShoppingCart = null; // will refresh when select cart view
         }
@@ -303,6 +333,16 @@
         if (firstRender)
         {
             await RefreshData();
+            // if (!string.IsNullOrWhiteSpace(GoToCart) && GoToCart.ToLower() == "true")
+            // {
+            //     await ShowCart();
+            // }
+
+            // if (MyCartData is not null && MyCartData.ShowCart == true)
+            // {
+            //     await ShowCart();
+            // }
+
             StateHasChanged();
         }
     }

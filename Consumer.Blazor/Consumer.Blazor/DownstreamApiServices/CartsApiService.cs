@@ -18,7 +18,7 @@ namespace Consumer.Blazor.DownstreamApiServices
             _logger = logger;
         }
 
-        public async Task<(bool IsSuccess, int CartItemQuantity, string? ErrorMessage)> AddNewCartItemAsync(AddShoppingCartItemDTO addShoppingCartItemDTO)
+        public async Task<(bool IsSuccess, int CartItemCount, string? ErrorMessage)> AddNewCartItemAsync(AddShoppingCartItemDTO addShoppingCartItemDTO)
         {
             string uri = $"{StaticData.CartsApiService_CartsPath}/items";
             var stringContent = new StringContent(JsonSerializer.Serialize(addShoppingCartItemDTO), Encoding.UTF8, "application/json");
@@ -35,8 +35,8 @@ namespace Consumer.Blazor.DownstreamApiServices
 
             if (response.IsSuccessStatusCode)
             {
-                int cartItemQuantity = await response.Content.ReadFromJsonAsync<int>();
-                return (true, cartItemQuantity, null);
+                int cartItemCount = await response.Content.ReadFromJsonAsync<int>();
+                return (true, cartItemCount, null);
             }
             else
             {

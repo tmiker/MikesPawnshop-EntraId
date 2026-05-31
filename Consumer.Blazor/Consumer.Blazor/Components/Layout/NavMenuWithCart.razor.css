@@ -1,0 +1,9 @@
+﻿.navbar {
+    background-color: #1c2841;
+    width: 100%;
+    margin: 0;
+    border-top: groove;
+    border-bottom: groove;
+    border-color: #454C54;
+    padding: 15px;
+}

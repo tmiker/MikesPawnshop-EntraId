@@ -17,7 +17,7 @@ namespace Consumer.Blazor.HttpServices
             _logger = logger;
         }
 
-        public async Task<(bool IsSuccess, int CartItemQuantity, string? ErrorMessage)> AddNewCartItemAsync(AddShoppingCartItemDTO addShoppingCartItemDTO)
+        public async Task<(bool IsSuccess, int CartItemCount, string? ErrorMessage)> AddNewCartItemAsync(AddShoppingCartItemDTO addShoppingCartItemDTO)
         {
             string uri = $"{StaticData.CartsHttpClient_CartsPath}/items";
             var client = _httpClientFactory.CreateClient(StaticData.CartsHttpClient_ClientName);
@@ -28,8 +28,8 @@ namespace Consumer.Blazor.HttpServices
 
             if (response.IsSuccessStatusCode)
             {
-                int cartItemQuantity = await response.Content.ReadFromJsonAsync<int>();
-                return (true, cartItemQuantity, null);
+                int cartItemCount = await response.Content.ReadFromJsonAsync<int>();
+                return (true, cartItemCount, null);
             }
             else
             {

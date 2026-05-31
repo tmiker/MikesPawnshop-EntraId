@@ -1,5 +1,6 @@
 using Consumer.Blazor;
 using Consumer.Blazor.Client.Abstractions;
+using Consumer.Blazor.Client.DTOs.Carts;
 using Consumer.Blazor.Client.Mappers;
 using Consumer.Blazor.Client.Services;
 using Consumer.Blazor.Client.Utility;
@@ -9,6 +10,7 @@ using Consumer.Blazor.HttpServices;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
@@ -47,17 +49,17 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
         
         // msIdentityOptions.Authority = "https://login.microsoftonline.com/2fd80906-88f0-4874-8d94-1d87e82053f7/v2.0";     
         msIdentityOptions.Instance = "https://login.microsoftonline.com/";
-        msIdentityOptions.TenantId = builder.Configuration["AZURE_CREDENTIALS_TENANT_ID"];                // for azure deploy
-        msIdentityOptions.Domain = builder.Configuration["AZURE_CREDENTIALS_DOMAIN"];                    // for azure deploy
+        msIdentityOptions.TenantId = builder.Configuration["AZURE_CREDENTIALS_TENANT_ID"]; 
+        msIdentityOptions.Domain = builder.Configuration["AZURE_CREDENTIALS_DOMAIN"]; 
 
-        msIdentityOptions.CallbackPath = "/signin-oidc";                        // for local development
-        // msIdentityOptions.CallbackPath = "/.auth/login/aad/callback";        // for azure hosted
+        msIdentityOptions.CallbackPath = "/signin-oidc";
+        // msIdentityOptions.CallbackPath = "/.auth/login/aad/callback";        // azure default
 
-        msIdentityOptions.SignedOutCallbackPath = "/signout-callback-oidc";             // for local development
-        // msIdentityOptions.SignedOutCallbackPath = "/.auth/logout/aad/callback";      // for azure hosted
+        msIdentityOptions.SignedOutCallbackPath = "/signout-callback-oidc";
+        // msIdentityOptions.SignedOutCallbackPath = "/.auth/logout/aad/callback";      // azure default
 
-        msIdentityOptions.ClientId = builder.Configuration["AZURE_CREDENTIALS_CLIENT_ID"];                // for azure deploy
-        msIdentityOptions.ClientSecret = builder.Configuration["AZURE_CREDENTIALS_CLIENT_SECRET"];        // for azure deploy
+        msIdentityOptions.ClientId = builder.Configuration["AZURE_CREDENTIALS_CLIENT_ID"];                
+        msIdentityOptions.ClientSecret = builder.Configuration["AZURE_CREDENTIALS_CLIENT_SECRET"];        
 
         msIdentityOptions.ResponseType = "code";
         msIdentityOptions.GetClaimsFromUserInfoEndpoint = true;
@@ -71,26 +73,21 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddDownstreamApi(StaticData.AccountsApiService_ServiceName, configOptions =>              // api name
     {
         configOptions.BaseUrl = yarpProxyBaseUrl;
-        // configOptions.BaseUrl = StaticData.AccountsApiService_LocalBaseURL;                    // api base url
-        // configOptions.BaseUrl = StaticData.AccountsApiService_AzureBaseURL;
-        configOptions.Scopes = [builder.Configuration["ACCOUNTS_API_SCOPE"]!];                 // Note: scope shows in api access token, not client identity token
+        configOptions.Scopes = [builder.Configuration["ACCOUNTS_API_SCOPE"]!];                 
     })
     .AddDownstreamApi(StaticData.CartsApiService_ServiceName, configOptions =>
     {
         configOptions.BaseUrl = yarpProxyBaseUrl;
-        // configOptions.BaseUrl = StaticData.CartsApiService_LocalBaseURL;
         configOptions.Scopes = [builder.Configuration["CARTS_API_SCOPE"]!];
     })
     .AddDownstreamApi(StaticData.OrdersApiService_ServiceName, configOptions =>
     {
         configOptions.BaseUrl = yarpProxyBaseUrl;
-        // configOptions.BaseUrl = StaticData.OrdersApiService_LocalBaseURL;
         configOptions.Scopes = [builder.Configuration["ORDERS_API_SCOPE"]!];
     })
     .AddDownstreamApi(StaticData.ProductsReadApiService_ServiceName, configOptions =>
     {
         configOptions.BaseUrl = yarpProxyBaseUrl;
-        // configOptions.BaseUrl = StaticData.ProductsReadApiService_LocalBaseURL;
         configOptions.Scopes = [builder.Configuration["PRODUCTS_READ_API_SCOPE"]!];
     })
     .AddDistributedTokenCaches();
@@ -125,41 +122,27 @@ builder.Services.AddScoped<IAccountsHttpService, AccountsApiService>();
 builder.Services.AddScoped<IOrdersHttpService, OrdersApiService>();
 builder.Services.AddScoped<IClaimsHttpService, ClaimsApiService>();
 
-//// HTTP Clients
+//// Public Access HTTP Clients (No Access Token Handler)
 builder.Services.AddHttpClient(name: StaticData.ProductsReadHttpClient_ClientName, configureClient: config =>
 {
     config.BaseAddress = new Uri(yarpProxyBaseUrl);
-    // config.BaseAddress = new Uri(StaticData.ProductsReadHttpClient_BaseURL);
     config.DefaultRequestHeaders.Clear();
     config.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-});     // NO TOKEN HANDLER REQUIRED - INTENDED FOR PUBLIC ENDPOINTS    // .AddUserAccessTokenHandler();
+});  // .AddUserAccessTokenHandler();
 builder.Services.AddSingleton<IPublicProductsReadHttpService, ProductsReadHttpService>();
-//builder.Services.AddHttpClient(name: StaticData.CartsHttpClient_ClientName, configureClient: config =>
-//{
-//    config.BaseAddress = new Uri(StaticData.CartsHttpClient_BaseURL);
-//    config.DefaultRequestHeaders.Clear();
-//    config.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-//}).AddUserAccessTokenHandler();
-// builder.Services.AddSingleton<ICartsHttpService, CartsHttpService>();
-//builder.Services.AddHttpClient(name: StaticData.AccountsHttpClient_ClientName, configureClient: config =>
-//{
-//    config.BaseAddress = new Uri(StaticData.AccountsHttpClient_BaseURL);
-//    config.DefaultRequestHeaders.Clear();
-//    config.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-//}).AddUserAccessTokenHandler();
-// builder.Services.AddSingleton<IAccountsHttpService, AccountsHttpService>();
-//builder.Services.AddHttpClient(name: StaticData.OrdersHttpClient_ClientName, configureClient: config =>
-//{
-//    config.BaseAddress = new Uri(StaticData.OrdersHttpClient_BaseURL);
-//    config.DefaultRequestHeaders.Clear();
-//    config.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-//}).AddUserAccessTokenHandler();
-// builder.Services.AddSingleton<IOrdersHttpService, OrdersHttpService>();
-// builder.Services.AddSingleton<IClaimsHttpService, ClaimsHttpService>();
 
 // Services
 builder.Services.AddScoped<IOrderMapper, OrderMapper>();
 builder.Services.AddScoped<IToastrService, ToastrService>();
+
+// Root Level Cascading Value Source for Cart Data provides access to underlying source's NotifyChangedAsync() method
+builder.Services.AddSingleton(sp =>
+{
+    var cartData = new CartData { ItemCount = 0 };      //, ShowCart = false };
+    return new CascadingValueSource<CartData>(name: "ShoppingCartData", cartData, isFixed: false);
+});
+// Root Level Cascading Value that will be the cascading parameter property deriving from the source 
+builder.Services.AddCascadingValue(sp => sp.GetRequiredService<CascadingValueSource<CartData>>());
 
 var app = builder.Build();
 

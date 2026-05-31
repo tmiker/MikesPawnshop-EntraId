@@ -13,7 +13,7 @@
             <h5 class="text-center mt-2"><b>My Cart</b></h5>
         </div>
         <div class="col-2 offset-2">
-            <a class="btn button-custom-warning form-control" @onclick="Checkout"><i class="bi-lightning-charge"> &nbsp; </i>Checkout</a>
+            <a class="btn button-custom-warning form-control" @onclick="Checkout"><i class="bi-lightning-charge"></i> &nbsp; Checkout</a>
         </div>
     }
     else
@@ -22,22 +22,10 @@
             <h5 class="text-center mt-2"><b>Checkout</b></h5>
         </div>
         <div class="col-2 offset-2">
-            <a class="btn button-custom-warning form-control" @onclick="BackToCart"><i class="bi-cart2"> &nbsp; </i>Back to Cart</a>
+            <a class="btn button-custom-warning form-control" @onclick="BackToCart"><i class="bi-cart2"></i> &nbsp; Back to Cart</a>
         </div>
     }
 </div>
-
-@* <div class="row mt-2">
-    <div class="col-2">
-        <p class="text-danger-alt"><b><i>Count: @MyCart?.Items?.Count</i></b></p>
-    </div>
-    <div class="col-3">
-        <p class="text-danger-alt"><b><i>MyCart Id: @MyCart?.Id</i></b></p>
-    </div>
-    <div class="col-5">
-        <p class="text-danger-alt"><b><i>ShoppingCart Id: @MyCart?.ShoppingCartId</i></b></p>
-    </div>
-</div> *@
 
 @if (_addOrderDTO is not null)
 {
@@ -136,10 +124,10 @@ else
     }
 
     [Parameter]
-    public EventCallback<int> CartItemQuantityChangedCallback { get; set; }
-    private async Task CartItemQuantityChanged(int count)
+    public EventCallback<int> CartItemCountChangedCallback { get; set; }
+    private async Task CartItemCountChanged(int count)
     {
-        if (CartItemQuantityChangedCallback.HasDelegate) await CartItemQuantityChangedCallback.InvokeAsync(count);
+        if (CartItemCountChangedCallback.HasDelegate) await CartItemCountChangedCallback.InvokeAsync(count);
     }
 
     [Parameter]
@@ -195,7 +183,7 @@ else
                 if (item.Quantity <= 0)
                 {
                     MyCart.Items!.Remove(item);
-                    if (CartItemQuantityChangedCallback.HasDelegate) await CartItemQuantityChangedCallback.InvokeAsync(MyCart.Items.Count);
+                    if (CartItemCountChangedCallback.HasDelegate) await CartItemCountChangedCallback.InvokeAsync(MyCart.Items.Count);
                 }
             }
         }
@@ -210,7 +198,7 @@ else
             if (item is not null)
             {
                 MyCart.Items!.Remove(item);
-                if (CartItemQuantityChangedCallback.HasDelegate) await CartItemQuantityChangedCallback.InvokeAsync(MyCart.Items.Count);
+                if (CartItemCountChangedCallback.HasDelegate) await CartItemCountChangedCallback.InvokeAsync(MyCart.Items.Count);
             }
         }
     }
