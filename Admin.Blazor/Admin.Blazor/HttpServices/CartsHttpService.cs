@@ -46,7 +46,7 @@ namespace Admin.Blazor.HttpServices
             }
         }
 
-        public async Task<(bool IsSuccess, int CartItemQuantity, string? ErrorMessage)> AddNewCartItemAsync(AddShoppingCartItemDTO addShoppingCartItemDTO)
+        public async Task<(bool IsSuccess, int CartItemCount, string? ErrorMessage)> AddNewCartItemAsync(AddShoppingCartItemDTO addShoppingCartItemDTO)
         {
             string uri = $"{StaticData.CartsHttpClient_CartsPath}/items";
             var client = _httpClientFactory.CreateClient(StaticData.CartsHttpClient_ClientName);

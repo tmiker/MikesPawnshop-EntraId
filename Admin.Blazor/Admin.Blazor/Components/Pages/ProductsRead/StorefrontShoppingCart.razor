@@ -139,11 +139,11 @@ else
     }
 
     [Parameter]
-    public EventCallback<int> CartItemQuantityChangedCallback { get; set; }
+    public EventCallback<int> CartItemCountChangedCallback { get; set; }
 
     private async Task CartItemQuantityChanged(int count)
     {
-        if (CartItemQuantityChangedCallback.HasDelegate) await CartItemQuantityChangedCallback.InvokeAsync(count);
+        if (CartItemCountChangedCallback.HasDelegate) await CartItemCountChangedCallback.InvokeAsync(count);
     }
 
     [Parameter]
@@ -199,7 +199,7 @@ else
                 if (item.Quantity <= 0)
                 {
                     MyCart.Items!.Remove(item);
-                    if (CartItemQuantityChangedCallback.HasDelegate) await CartItemQuantityChangedCallback.InvokeAsync(MyCart.Items.Count);
+                    if (CartItemCountChangedCallback.HasDelegate) await CartItemCountChangedCallback.InvokeAsync(MyCart.Items.Count);
                 }
             }
         }
@@ -214,7 +214,7 @@ else
             if (item is not null)
             {
                 MyCart.Items!.Remove(item);
-                if (CartItemQuantityChangedCallback.HasDelegate) await CartItemQuantityChangedCallback.InvokeAsync(MyCart.Items.Count);
+                if (CartItemCountChangedCallback.HasDelegate) await CartItemCountChangedCallback.InvokeAsync(MyCart.Items.Count);
             }
         }
     }

@@ -1,15 +1,23 @@
 ﻿@page "/store/storefront"
+@layout StorefrontLayout
 @rendermode InteractiveServer
 @inject IProductsReadHttpService _productReadSideHttpClient
 @inject ICartsHttpService _cartsHttpClient
 @inject NavigationManager Nav
+@inject CascadingValueSource<CartData> cartDataSource
 @attribute [Authorize(Policy = "IsAdminOrManager")]
 
 <PageTitle>Storefront</PageTitle>
 
 <div class="row mt-2">
-    <div class="col-8">
+    <div class="col-4">
         <h4><b>STORE FRONT</b></h4>
+    </div>
+    <div class="col-4">
+        @if (MyCartData is not null)
+        {
+            <h6 class="text-secondary"><i>MyCartData.ShowCart: @MyCartData.ShowCart</i></h6>
+        }
     </div>
     <div class="col-2">
         @if (_apiHealthCheckResult is null)
@@ -63,7 +71,7 @@
         @if (_showCart)
         {
             <CascadingValue Name="ShoppingCart" Value="@ShoppingCart">
-                <StorefrontShoppingCart DetailCallback="Detail" CartItemQuantityChangedCallback="CartItemQuantityChanged" ErrorMessageCallback="HandleErrorMessage" SuccessMessageCallback="HandleSuccessMessage" />
+                <StorefrontShoppingCart DetailCallback="Detail" CartItemCountChangedCallback="CartItemCountChanged" ErrorMessageCallback="HandleErrorMessage" SuccessMessageCallback="HandleSuccessMessage" />
             </CascadingValue>
         }
         else
@@ -80,11 +88,11 @@
                     <div class="row mt-2">
                         <div class="col-2">
                             <label for="namefilter">Name Filter:</label>
-                            <input class="bg-dark text-light form-control" id="namefilter" type="text" @bind="_nameFilter" @bind:after="RefreshData" />
+                            <input class="bg-dark text-light form-control" id="namefilter" type="text" @bind="_nameFilter" @bind:after="GetProducts" />
                         </div>
                         <div class="col-2">
                             <label for="cat">Category Filter:</label>
-                            <select class="bg-dark text-light form-select" id="cat" type="text" @bind="_categoryFilter" @bind:after="RefreshData">
+                            <select class="bg-dark text-light form-select" id="cat" type="text" @bind="_categoryFilter" @bind:after="GetProducts">
                                 <option value=""></option>
                                 <option value="Astronomy">Astronomy</option>
                                 <option value="Books">Books</option>
@@ -97,7 +105,7 @@
                         </div>
                         <div class="col-2">
                             <label for="sort">Sort Column:</label>
-                            <select class="bg-dark text-light form-select" id="sort" type="text" @bind="_sortColumn" @bind:after="RefreshData">
+                            <select class="bg-dark text-light form-select" id="sort" type="text" @bind="_sortColumn" @bind:after="GetProducts">
                                 <option value=""></option>
                                 <option value="Name">Name</option>
                                 <option value="Price desc">Price Desc</option>
@@ -106,7 +114,7 @@
                         </div>
                         <div class="col-2">
                             <label for="pagesize">Page Size:</label>
-                            <input class="bg-dark text-light form-control" id="pagesize" type="number" @bind="_pageSize" @bind:after="RefreshData" />
+                            <input class="bg-dark text-light form-control" id="pagesize" type="number" @bind="_pageSize" @bind:after="GetProducts" />
                         </div>
                         <div class="col-2">
                             <a class="btn button-custom-yellow-med form-control mt-4" @onclick="ClearFilters">Reset</a>
@@ -128,12 +136,16 @@
 
 @code {
 
+    [CascadingParameter(Name = "ShoppingCartData")]
+    public CartData? MyCartData { get; set; }
+
     public List<ProductSummaryDTO>? Products { get; set; }
     public PaginationMetadata? PagingData { get; set; }
     public int SelectedProductId { get; set; } = 0;
     public ShoppingCartDTO? ShoppingCart { get; set; }
     public int ShoppingCartItemCount { get; set; }
     private bool _showCart = false;
+    public bool TableView = true;
 
     public DateTime? ProductsFetchTime { get; set; }
     public DateTime? PageRenderTime { get; set; }
@@ -153,30 +165,32 @@
         }
     }
 
-    private void CartItemQuantityChanged(int count)
+    private async Task CartItemCountChanged(int count)
     {
         ShoppingCartItemCount = count;
+        MyCartData?.ItemCount = count;
+        await cartDataSource.NotifyChangedAsync();
     }
 
     private async Task PageForward()
     {
         if (PagingData is null || _pageNumber >= PagingData.TotalPageCount) return;
         _pageNumber = _pageNumber + 1;
-        await RefreshData();
+        await GetProducts();
     }
 
     private async Task PageBackward()
     {
         if (_pageNumber <= 1) return;
         _pageNumber = _pageNumber - 1;
-        await RefreshData();
+        await GetProducts();
     }
 
     private async Task PageTo(int page)
     {
         if (page == PagingData!.CurrentPage || page < 0 || page > PagingData.TotalPageCount) return;
         _pageNumber = page;
-        await RefreshData();
+        await GetProducts();
 
     }
 
@@ -209,7 +223,7 @@
         _categoryFilter = null;
         _sortColumn = "Name";
         _pageSize = 10;
-        await RefreshData();
+        await GetProducts();
     }
 
     private void Detail(int id)
@@ -225,16 +239,16 @@
     private string? _cartButtonText = "Cart";
     private async Task ShowCart()
     {
-        if (ShoppingCart is null)
-        {
-            var result = await _cartsHttpClient.GetShoppingCartAsync();
-            if (result.IsSuccess)
-            {
-                ShoppingCart = result.ShoppingCart;
-                ShoppingCartItemCount = ShoppingCart is null ? 0 : ShoppingCart.Items.Count;
-            }
-            else _errorMessage = result.ErrorMessage;
-        }
+        if (ShoppingCart is null) await GetCart();
+        // {
+        //     var result = await _cartsHttpClient.GetShoppingCartAsync();
+        //     if (result.IsSuccess)
+        //     {
+        //         ShoppingCart = result.ShoppingCart;
+        //         ShoppingCartItemCount = ShoppingCart is null ? 0 : ShoppingCart.Items.Count;
+        //     }
+        //     else _errorMessage = result.ErrorMessage;
+        // }
         _cartButtonText = "Continue Shopping";
         _showCart = true;
     }
@@ -245,10 +259,17 @@
     }
     private async Task ToggleShowCart()
     {
-        if (_showCart) HideCart();
-        else await ShowCart();
+        if (MyCartData is not null)
+        {
+            MyCartData.ShowCart = !MyCartData.ShowCart;         // changes the cascading parameter value but OnParametersSetAsync() is NOT called
+            _previousCartDataShowCart = MyCartData.ShowCart;
+
+            if (MyCartData.ShowCart) await ShowCart();
+            else HideCart();
+        }
     }
 
+    // Add to cart with quantity from product detail component
     private async Task AddToCartWithQuantity(int quantity)
     {
         if (SelectedProductId == 0) return;
@@ -270,7 +291,8 @@
         var result = await _cartsHttpClient.AddNewCartItemAsync(addShoppingCartItemDTO);
         if (result.IsSuccess)
         {
-            ShoppingCartItemCount = result.CartItemQuantity;
+            // ShoppingCartItemCount = result.CartItemQuantity;
+            await CartItemCountChanged(result.CartItemCount);
             _cartButtonText = $"Cart ({ShoppingCartItemCount})";
             ShoppingCart = null; // will refresh when select cart view
         }
@@ -280,6 +302,7 @@
         }
     }
 
+    // Add to cart with quantity = 1 from product list component
     private async Task AddToCart(Guid productId)
     {
         ProductSummaryDTO? product = Products!.FirstOrDefault(p => p.AggregateId == productId);
@@ -299,7 +322,8 @@
         var result = await _cartsHttpClient.AddNewCartItemAsync(addShoppingCartItemDTO);
         if (result.IsSuccess)
         {
-            ShoppingCartItemCount = result.CartItemQuantity;
+            // ShoppingCartItemCount = result.CartItemQuantity;
+            await CartItemCountChanged(result.CartItemCount);
             _cartButtonText = $"Cart ({ShoppingCartItemCount})";
             ShoppingCart = null; // will refresh when select cart view
         }
@@ -309,7 +333,18 @@
         }
     }
 
-    private async Task RefreshData()
+    private async Task GetCart()
+    {
+        var result = await _cartsHttpClient.GetShoppingCartAsync();
+        if (result.IsSuccess)
+        {
+            ShoppingCart = result.ShoppingCart;
+            if (ShoppingCart is not null) await CartItemCountChanged(ShoppingCart.Items.Count);
+        }
+        else _errorMessage = result.ErrorMessage;
+    }
+
+    private async Task GetProducts()
     {
         var result = await _productReadSideHttpClient.GetPagedAndFilteredProductSummariesAsync(_nameFilter, _categoryFilter, _sortColumn, _pageNumber, _pageSize);
         if (result.IsSuccess)
@@ -326,11 +361,24 @@
         this.StateHasChanged();
     }
 
+    private bool _previousCartDataShowCart = false;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Console.WriteLine($"OnParametersSetAsync called. MyCartData.ShowCart: {MyCartData?.ShowCart}, _previousCartDataShowCart: {_previousCartDataShowCart}");
+        if (MyCartData is not null && MyCartData.ShowCart != _previousCartDataShowCart)
+        {
+            _previousCartDataShowCart = MyCartData.ShowCart;
+            if (MyCartData.ShowCart) await ShowCart();
+            else HideCart();
+        }
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await RefreshData();
+            await GetProducts();
             StateHasChanged();
         }
     }

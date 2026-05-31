@@ -1,5 +1,6 @@
 using Admin.Blazor;
 using Admin.Blazor.Client.Abstractions;
+using Admin.Blazor.Client.DTOs.Carts;
 using Admin.Blazor.Client.Mappers;
 using Admin.Blazor.Client.Services;
 using Admin.Blazor.Client.Utility;
@@ -10,6 +11,7 @@ using Duende.AccessTokenManagement.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
@@ -179,6 +181,16 @@ builder.Services.AddSingleton<IPublicProductsReadHttpService, ProductsReadHttpSe
 // Services
 builder.Services.AddScoped<IOrderMapper, OrderMapper>();
 builder.Services.AddScoped<IToastrService, ToastrService>();
+
+// Root Level Cascading Value Source for Cart Data provides access to underlying source's NotifyChangedAsync() method
+builder.Services.AddSingleton(sp =>
+{
+    var cartData = new CartData { ItemCount = 0, ShowCart = false };
+    return new CascadingValueSource<CartData>(name: "ShoppingCartData", cartData, isFixed: false);
+});
+// Root Level Cascading Value that will be the cascading parameter property deriving from the source 
+builder.Services.AddCascadingValue(sp => sp.GetRequiredService<CascadingValueSource<CartData>>());
+
 
 var app = builder.Build();
 

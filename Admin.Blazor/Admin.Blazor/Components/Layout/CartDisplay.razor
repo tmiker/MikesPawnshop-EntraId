@@ -1,0 +1,40 @@
+﻿@using System.Security.Claims
+@using Microsoft.AspNetCore.Authorization
+@rendermode InteractiveServer
+@* @inject NavigationManager Nav *@
+
+@inject CascadingValueSource<CartData> cartDataSource
+
+<AuthorizeView>
+    <Authorized>
+        @if (MyCartData?.ItemCount > 0)
+        {
+            <div class="d-flex align-items-center mx-5">
+                <span class="my-0 text-warning-alt" @onclick="ToggleShowShoppingCart" style="cursor:pointer;"><i class="bi-cart2"></i> &nbsp; (@MyCartData?.ItemCount)</span>
+                @* <span class="my-0 text-warning-alt"><i class="bi-cart2"></i> &nbsp; (@MyCartData?.ItemCount)</span> *@
+            </div>
+        }
+        else
+        {
+            <div class="d-flex align-items-center mx-5">
+                <span class="my-0 text-warning-alt" @onclick="ToggleShowShoppingCart" style="cursor:pointer;"><i class="bi-cart2"></i></span>
+                @* <span class="my-0 text-warning-alt"><i class="bi-cart2"></i></span> *@
+            </div>
+        }
+    </Authorized>
+</AuthorizeView>
+
+@code {
+
+    [CascadingParameter(Name = "ShoppingCartData")] 
+    public CartData? MyCartData { get; set; }
+
+    public async Task ToggleShowShoppingCart() 
+    {
+        if (MyCartData is not null)
+        {
+            MyCartData.ShowCart = !MyCartData.ShowCart;
+            await cartDataSource.NotifyChangedAsync();
+        }
+    }
+}

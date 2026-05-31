@@ -6,7 +6,6 @@
 @inject ICartsHttpService _cartsHttpClient
 @inject NavigationManager Nav
 @inject CascadingValueSource<CartData> cartDataSource
-@inject IToastrService ToastrService
 
 <PageTitle>Storefront</PageTitle>
 
@@ -23,7 +22,7 @@
     <div class="col-4">
         @if (MyCartData is not null)
         {
-            <input class="bg-dark text-light" type="checkbox" checked="@MyCartData.ShowCart" @bind-value="MyCartData.ShowCart" @bind-value:after="HandleMyCartDataShowCartChanged" />
+            <input class="bg-dark text-light" type="checkbox" checked="@MyCartData.ShowCart" @bind-value="MyCartData.ShowCart" />
         }
     </div>
     <AuthorizeView>
@@ -132,9 +131,6 @@
 
 @code {
 
-    // [Parameter]
-    // public string GoToCart { get; set; } = "false";
-
     [CascadingParameter(Name = "ShoppingCartData")]
     public CartData? MyCartData { get; set; }
 
@@ -152,11 +148,6 @@
         ShoppingCartItemCount = count;
         MyCartData?.ItemCount = count;
         await cartDataSource.NotifyChangedAsync();
-    }
-
-    public async Task HandleMyCartDataShowCartChanged()
-    {
-        await ToastrService.ShowToastrInfo($"Shopping cart visibility changed.");
     }
 
     private async Task PageForward()

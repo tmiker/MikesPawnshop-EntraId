@@ -11,20 +11,6 @@
     </div>
 </div>
 
-@* <div class="row mt-2">
-    <div class="col-1">
-        <h5>Dev Test: Message callback propagation</h5>
-    </div>
-    <div class="col-3">
-        <a class="btn button-custom-success" @onclick="TestHandleSuccess">Test Handle Success</a>
-    </div>
-    <div class="col-3">
-        <a class="btn button-custom-danger" @onclick="TestHandleError">Test Handle Error</a>
-    </div>
-    <div class="col-5">
-    </div>
-</div> *@
-
 @if (_tableView)
 {
     if (ProductSummaries is not null)
@@ -94,7 +80,7 @@ else
     @if (Products != null && Products.Any())
     {
         <div class="row mt-2">
-            @foreach (var product in Products)
+            @foreach (var product in Products.Skip(PagingData!.PageSize * (PagingData.CurrentPage - 1)).Take(PagingData.PageSize))
             {
                 <div class="col-4">
                     <ProductCard Product="product" AddToCartCallback="() => AddToCart(product.AggregateId)" ProductDetailCallback="() => Detail(product.Id)" />
@@ -162,6 +148,8 @@ else
     public List<ProductSummaryDTO>? ProductSummaries { get; set; }
     [CascadingParameter(Name = "PagingData")]
     public PaginationMetadata? PagingData { get; set; }
+    // [CascadingParameter(Name = "TableView")]
+    // public bool TableView { get; set; }
 
     [Parameter]
     public EventCallback<string> ErrorMessageCallback { get; set; }
@@ -248,13 +236,4 @@ else
         }
         else await ShowErrorMessage(productsResult.ErrorMessage ?? "An unspecified error occurred.");
     }
-
-    // protected override void OnAfterRender(bool isFirstRender)
-    // {
-    //     if (isFirstRender)
-    //     {
-    //         Console.WriteLine($"@@@@@@@@@@ **************** StorefrontProducts.razor OnAfterRender was called. *************** @@@@@@@@@");
-    //         // this.StateHasChanged();
-    //     }
-    // }
 }
