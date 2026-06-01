@@ -178,23 +178,6 @@ else
     [Parameter]
     public EventCallback<Guid> AddToCartCallback { get; set; }
 
-    // private bool _tableView = true;
-    // private string _tableViewButtonText = "Card View";
-    // private async Task ToggleTableView()
-    // {
-    //     _tableView = !_tableView;
-    //     if (_tableView)
-    //     {
-    //         _tableViewButtonText = "Card View";
-    //         DeleteFullProductsList();
-    //     }
-    //     else
-    //     {
-    //         _tableViewButtonText = "Table View";
-    //         await LoadFullProductsList();
-    //     }
-    // }
-
     private async Task PageForward()
     {
         if (PageForwardCallback.HasDelegate) await PageForwardCallback.InvokeAsync();
@@ -218,43 +201,5 @@ else
     private async Task AddToCart(Guid productId)
     {
         if (AddToCartCallback.HasDelegate) await AddToCartCallback.InvokeAsync(productId);
-    }
-
-    public List<ProductDTO>? Products;
-    private void DeleteFullProductsList()
-    {
-        if (Products is not null) Products = null;
-    }
-    private async Task LoadFullProductsList()
-    {
-        var productsResult = await _readProductsClient.GetProductsAsync();
-        if (productsResult.IsSuccess)
-        {
-            if (productsResult.Products is not null && productsResult.Products.Any())
-            {
-                Products = productsResult.Products.ToList();
-            }
-        }
-        else await ShowErrorMessage(productsResult.ErrorMessage ?? "An unspecified error occurred.");
-    }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        if (TableView)
-        {
-            DeleteFullProductsList();
-        }
-        else
-        {
-            await LoadFullProductsList();
-        }
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await LoadFullProductsList();
-        }
     }
 }
