@@ -5,9 +5,11 @@
 @inject NavigationManager Nav
 @attribute [Authorize(Policy = "IsAdminOrManager")]
 
+<PageTitle>Manage Products</PageTitle>
+
 <div class="row mt-2">
-    <div class="col-10">
-        <h4><b>WRITE SIDE PRODUCTS</b></h4>
+    <div class="col-8">
+        <h3><b>Manage Products</b></h3>
     </div>
     <div class="col-2">
         @if (_apiHealthCheckResult is null)
@@ -18,6 +20,9 @@
         {
             <a class="btn button-custom-primary-med form-control" @onclick="ClearHealthCheckResult">Hide API Health</a>
         }
+    </div>
+    <div class="col-2">
+        <a class="btn button-custom-danger-med form-control" @onclick="PurgeData">Purge Data</a>
     </div>
 </div>
 
@@ -80,22 +85,28 @@
         <label for="pagesize">Page Size:</label>
         <input class="bg-dark text-light form-control" id="pagesize" type="number" @bind="_pageSize" @bind:after="RefreshData" />
     </div>
-    <div class="col-2 offset-2">
+    <div class="col-2">
         <a class="btn button-custom-yellow-med form-control mt-4" @onclick="ClearFilters">Reset</a>
     </div>
-
+    @if (!string.IsNullOrWhiteSpace(_successMessage) || !string.IsNullOrWhiteSpace(_successMessage))
+    {
+        <div class="col-2">
+            <a class="btn button-custom-warning-med form-control mt-4" @onclick="ClearMessages">Clear Messages</a>
+        </div>
+    }
+    else
+    {
+        <div class="col-2">
+            <a class="btn button-custom-success-med form-control mt-4" @onclick="AddProduct">Add Product</a>
+        </div>
+    }
 </div>
 
 <div class="row mt-2">
-    <div class="col-2">
-        <a class="btn button-custom-danger-med form-control" @onclick="PurgeData">Purge Data</a>
+    
+    <div class="col-8">
     </div>
-    <div class="col-2 offset-6">
-        <a class="btn button-custom-warning-med form-control" @onclick="ClearMessages">Clear Messages</a>
-    </div>
-    <div class="col-2">
-        <a class="btn button-custom-success-med form-control" @onclick="AddProduct">Add Product</a>
-    </div>
+    
 </div>
 <div class="row mt-2">
     <div class="col-12">
@@ -131,7 +142,7 @@
                             <td>@product.Documents?.Count</td>
                             <td>@product.Version</td>
                             <td>
-                                <a class="btn btn-primary" @onclick="() => Detail(product.Id.ToString())">Detail</a>
+                                <a class="btn btn-primary" @onclick="() => Detail(product.Id.ToString())">Manage</a>
                             </td>
 
                         </tr>
@@ -223,7 +234,7 @@
     private int _maxVersion = Int32.MaxValue;
 
     private int _pageNumber = 1;
-    private int _pageSize = 10;
+    private int _pageSize = 8;
     private PaginationMetadata? _pagingData;
 
     private int _productsCount;

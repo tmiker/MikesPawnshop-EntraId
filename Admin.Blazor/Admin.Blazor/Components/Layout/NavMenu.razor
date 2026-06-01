@@ -26,27 +26,27 @@
                     <Authorized>
                         <li class="nav-item px-3 dropdown">
                             <NavLink class="nav-link dropdown-toggle" href="dev" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                <i class="bi-code-slash"></i> &nbsp; Development
+                                <i class="bi-code-slash"></i> &nbsp; Developers
                             </NavLink>
                             <div class="dropdown-menu dropdown-menu-dark">
                                 <NavLink class="dropdown-item" href="dev/testProductsWriteApi" Match="NavLinkMatch.All">
-                                    <i class="bi-lightning"></i> &nbsp; Products Write API Testing
+                                    <i class="bi-lightning"></i> &nbsp; Test Products Write API Exceptions
                                 </NavLink>
                                 @* <NavLink class="dropdown-item" href="dev/testProductsReadApi" Match="NavLinkMatch.All">
                                     <i class="bi-lightning"></i> &nbsp; Products Read API Testing
                                 </NavLink> *@
                                 <div class="dropdown-divider"></div>
                                 <NavLink class="dropdown-item" href="dev/toastr-demo-server" Match="NavLinkMatch.All">
-                                    <i class="bi-lightning"></i> &nbsp; Toastr Server
+                                    <i class="bi-lightning"></i> &nbsp; Test Server-Side Toasts
                                 </NavLink>
                                 <div class="dropdown-divider"></div>
                                 <NavLink class="dropdown-item" href="dev/toastr-demo-client" Match="NavLinkMatch.All">
-                                    <i class="bi-lightning"></i> &nbsp; Toastr Client
+                                    <i class="bi-lightning"></i> &nbsp; Test Client-Side Toasts
                                 </NavLink>
-                                <div class="dropdown-divider"></div>
-                                <NavLink class="dropdown-item" href="dev/accounts-api-testing" Match="NavLinkMatch.All">
+                                @* <div class="dropdown-divider"></div> *@
+                                @* <NavLink class="dropdown-item" href="dev/accounts-api-testing" Match="NavLinkMatch.All">
                                     <i class="bi-lightning"></i> &nbsp; Test Accounts API
-                                </NavLink>
+                                </NavLink> *@
                                 <div class="dropdown-divider"></div>
                                 <NavLink class="dropdown-item" href="dev/testAccessDeniedRouting" Match="NavLinkMatch.All">
                                     <i class="bi-emoji-astonished-fill"></i> &nbsp; Test Access Denied Routing
@@ -55,7 +55,7 @@
                         </li>
                         <li class="nav-item px-3 dropdown">
                             <NavLink class="nav-link dropdown-toggle" href="claims" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                <i class="bi-person-fill"></i> &nbsp; Claims
+                                <i class="bi-person-fill"></i> &nbsp; User Claims
                             </NavLink>
                             <div class="dropdown-menu dropdown-menu-dark">
                                 <NavLink class="dropdown-item" href="claims/accountsApiClaims" Match="NavLinkMatch.All">
@@ -83,27 +83,28 @@
 
                         <li class="nav-item px-3 dropdown">
                             <NavLink class="nav-link dropdown-toggle" href="products" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                <i class="bi-box-seam"></i> &nbsp; Products
+                                <i class="bi-box-seam"></i> &nbsp; Product Management
                             </NavLink>
                             <div class="dropdown-menu dropdown-menu-dark">
                                 <NavLink class="dropdown-item" href="products/productsList" Match="NavLinkMatch.All">
                                     <i class="bi bi-list-nested-nav-menu"></i> &nbsp; Manage Products
                                 </NavLink>
                                 <div class="dropdown-divider"></div>
-                                <NavLink class="dropdown-item" href="products/productsRead" Match="NavLinkMatch.All">
-                                    <i class="bi bi-list-nested-nav-menu"></i> &nbsp; Products Read Side (public http client)
-                                </NavLink>
                                 <NavLink class="dropdown-item" href="products/productSnapshotsWrite" Match="NavLinkMatch.All">
-                                    <i class="bi bi-list-nested-nav-menu"></i> &nbsp; Products Write Side
+                                    <i class="bi bi-list-nested-nav-menu"></i> &nbsp; Write Side Products (from events)
                                 </NavLink>
                                 <NavLink class="dropdown-item" href="products/eventRecordsWrite" Match="NavLinkMatch.All">
-                                    <i class="bi bi-list-nested-nav-menu"></i> &nbsp; Products Event Records
+                                    <i class="bi bi-list-nested-nav-menu"></i> &nbsp; Write Side Event Records
                                 </NavLink>
                                 <NavLink class="dropdown-item" href="products/outboxRecordsWrite" Match="NavLinkMatch.All">
-                                    <i class="bi bi-list-nested-nav-menu"></i> &nbsp; Products Outbox Records
+                                    <i class="bi bi-list-nested-nav-menu"></i> &nbsp; Write Side Outbox Records
                                 </NavLink>
                                 <NavLink class="dropdown-item" href="products/snapshotRecordsWrite" Match="NavLinkMatch.All">
-                                    <i class="bi bi-list-nested-nav-menu"></i> &nbsp; Products Snapshot Records
+                                    <i class="bi bi-list-nested-nav-menu"></i> &nbsp; Write Side Snapshot Records
+                                </NavLink>
+                                <div class="dropdown-divider"></div>
+                                <NavLink class="dropdown-item" href="products/productsRead" Match="NavLinkMatch.All">
+                                    <i class="bi bi-list-nested-nav-menu"></i> &nbsp; Read Side Products  (public client)
                                 </NavLink>
                             </div>
                         </li>
@@ -116,10 +117,16 @@
                                 <NavLink class="dropdown-item" href="store/storefront" Match="NavLinkMatch.All">
                                     <i class="bi bi-list-nested-nav-menu"></i> &nbsp; Storefront
                                 </NavLink>
+                                <NavLink class="dropdown-item" href="store/myOrders" Match="NavLinkMatch.All">
+                                    <i class="bi bi-list-nested-nav-menu"></i> &nbsp; My Orders
+                                </NavLink>
+                                <NavLink class="dropdown-item" href="store/myAccount" Match="NavLinkMatch.All">
+                                    <i class="bi bi-list-nested-nav-menu"></i> &nbsp; My Account
+                                </NavLink>
                             </div>
                         </li>
 
-                        <li class="nav-item px-3 dropdown">
+                        @* <li class="nav-item px-3 dropdown">
                             <NavLink class="nav-link dropdown-toggle" href="orders" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                 <i class="bi-mailbox-flag"></i> &nbsp; Orders
                             </NavLink>
@@ -127,8 +134,6 @@
                                 <NavLink class="dropdown-item" href="orders/myOrders" Match="NavLinkMatch.All">
                                     <i class="bi bi-list-nested-nav-menu"></i> &nbsp; My Orders
                                 </NavLink>
-
-                                @* <div class="dropdown-divider"></div> *@
                             </div>
                         </li>
 
@@ -140,9 +145,8 @@
                                 <NavLink class="dropdown-item" href="account/myAccount" Match="NavLinkMatch.All">
                                     <i class="bi bi-list-nested-nav-menu"></i> &nbsp; My Account
                                 </NavLink>
-                                @* <div class="dropdown-divider"></div> *@
                             </div>
-                        </li>
+                        </li> *@
                     </Authorized>
                 </AuthorizeView>
             </ul>

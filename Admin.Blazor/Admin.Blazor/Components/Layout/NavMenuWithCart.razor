@@ -37,16 +37,16 @@
                                 </NavLink> *@
                                 <div class="dropdown-divider"></div>
                                 <NavLink class="dropdown-item" href="dev/toastr-demo-server" Match="NavLinkMatch.All">
-                                    <i class="bi-lightning"></i> &nbsp; Toastr Server
+                                    <i class="bi-lightning"></i> &nbsp; Test Server-Side Toasts
                                 </NavLink>
                                 <div class="dropdown-divider"></div>
                                 <NavLink class="dropdown-item" href="dev/toastr-demo-client" Match="NavLinkMatch.All">
-                                    <i class="bi-lightning"></i> &nbsp; Toastr Client
+                                    <i class="bi-lightning"></i> &nbsp; Test Client-Side Toasts
                                 </NavLink>
-                                <div class="dropdown-divider"></div>
+                                @* <div class="dropdown-divider"></div>
                                 <NavLink class="dropdown-item" href="dev/accounts-api-testing" Match="NavLinkMatch.All">
                                     <i class="bi-lightning"></i> &nbsp; Test Accounts API
-                                </NavLink>
+                                </NavLink> *@
                                 <div class="dropdown-divider"></div>
                                 <NavLink class="dropdown-item" href="dev/testAccessDeniedRouting" Match="NavLinkMatch.All">
                                     <i class="bi-emoji-astonished-fill"></i> &nbsp; Test Access Denied Routing
@@ -116,10 +116,16 @@
                                 <NavLink class="dropdown-item" href="store/storefront" Match="NavLinkMatch.All">
                                     <i class="bi bi-list-nested-nav-menu"></i> &nbsp; Storefront
                                 </NavLink>
+                                <NavLink class="dropdown-item" href="store/myOrders" Match="NavLinkMatch.All">
+                                    <i class="bi bi-list-nested-nav-menu"></i> &nbsp; My Orders
+                                </NavLink>
+                                <NavLink class="dropdown-item" href="store/myAccount" Match="NavLinkMatch.All">
+                                    <i class="bi bi-list-nested-nav-menu"></i> &nbsp; My Account
+                                </NavLink>
                             </div>
                         </li>
 
-                        <li class="nav-item px-3 dropdown">
+                        @* <li class="nav-item px-3 dropdown">
                             <NavLink class="nav-link dropdown-toggle" href="orders" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                 <i class="bi-mailbox-flag"></i> &nbsp; Orders
                             </NavLink>
@@ -127,8 +133,6 @@
                                 <NavLink class="dropdown-item" href="orders/myOrders" Match="NavLinkMatch.All">
                                     <i class="bi bi-list-nested-nav-menu"></i> &nbsp; My Orders
                                 </NavLink>
-
-                                @* <div class="dropdown-divider"></div> *@
                             </div>
                         </li>
 
@@ -140,9 +144,8 @@
                                 <NavLink class="dropdown-item" href="account/myAccount" Match="NavLinkMatch.All">
                                     <i class="bi bi-list-nested-nav-menu"></i> &nbsp; My Account
                                 </NavLink>
-                                @* <div class="dropdown-divider"></div> *@
-                            </div>
-                        </li>
+                            </div> 
+                        </li> *@
                     </Authorized>
                 </AuthorizeView>
             </ul>

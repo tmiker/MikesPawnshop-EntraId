@@ -19,14 +19,19 @@
                     {
                         <div class="row">
                             <div class="col-12">
-                                <h6 class="text-danger"><b><i>Confirm purge data?</i></b></h6>
+                                <h6 class="text-danger"><b><i>Confirm purge data!</i></b></h6>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-3 offset-1">
-                                <label for="pin">Pin Number:</label>
+                        <div class="row mt-2">
+                            <div class="col-12">
+                                <p><b><i>Please enter a valid Adminstrator pin number to purge data.</i></b></p>
                             </div>
-                            <div class="col-7">
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-3 offset-1">
+                                <label class="mt-2" for="pin">Pin Number:</label>
+                            </div>
+                            <div class="col-8">
                                 <InputNumber class="form-control bg-dark text-light" id="pin" @bind-Value="PurgeDataDTO.PinNumber" />
                                 <ValidationMessage For="@(() => PurgeDataDTO.PinNumber)" />
                             </div>
@@ -35,10 +40,10 @@
                         <br />
 
                         <div class="row mt-2">
-                            <div class="col-4 offset-3">
+                            <div class="col-4 offset-4">
                                 <button class="btn button-modal-primary form-control" @onclick="CancelPurgeData">Cancel</button>
                             </div>
-                            <div class="col-4 offset-1">
+                            <div class="col-4">
                                 <button class="btn button-modal-success form-control" type="submit">@SubmitButtonTitle</button>
                             </div>
                         </div>

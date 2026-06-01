@@ -3,8 +3,12 @@
 @inject IProductsWriteHttpService _writeSideHttpClient
 @attribute [Authorize(Policy = "IsAdminOrManager")]
 
+<PageTitle>Write Side Products</PageTitle>
+
 <h4 class="mt-2"><b>WRITE SIDE PRODUCT SNAPSHOTS</b></h4>
 <h6 class="mt-2"><i>Record Count: @_productSnapshotCount</i></h6>
+<h5 class="mt-2"><i>Products hydrated from Products.Write.API EventStore events, then mapped to Snapshots DTOs</i></h5>
+
 @if (!string.IsNullOrWhiteSpace(_addResultString))
 {
     <h6><b><i>Add Result: @_addResultString</i></b></h6>
@@ -33,10 +37,6 @@
         <label for="aggId">Aggregate Id:</label>
         <input id="aggId" type="text" class="bg-dark text-light form-control" @bind="_aggregateIdString" @bind:after="RefreshData" />
     </div>
-    @* <div class="col-2">
-        <label for="minV">Min Version:</label>
-        <input id="minV" type="text" class="bg-dark text-light form-control" @bind="_minVersion" @bind:after="RefreshData" />
-    </div> *@
     <div class="col-2">
         <label for="maxV">Max Version:</label>
         <input id="maxV" type="text" class="bg-dark text-light form-control" @bind="_maxVersion" @bind:after="RefreshData" />
@@ -45,8 +45,8 @@
         <label for="pagesize">Page Size:</label>
         <input id="pagesize" type="number" class="bg-dark text-light form-control" @bind="_pageSize" @bind:after="RefreshData" />
     </div>
-    <div class="col-2">
-        <a class="btn btn-warning form-control mt-4" @onclick="ClearFilters">Reset</a>
+    <div class="col-2 offset-4">
+        <a class="btn button-custom-yellow-med form-control mt-4" @onclick="ClearFilters">Reset</a>
     </div>
 </div>
 
@@ -249,7 +249,7 @@
     private int _maxVersion = Int32.MaxValue;
 
     private int _pageNumber = 1;
-    private int _pageSize = 10;
+    private int _pageSize = 8;
     private PaginationMetadata? _pagingData;
 
     private int _productSnapshotCount;
