@@ -6,19 +6,17 @@
     <div class="col-10">
         <h4 class="mt-2"><b>Read Side Storefront Products</b></h4>
     </div>
-    <div class="col-2">
+    @* <div class="col-2">
         <a class="btn button-custom-primary form-control" @onclick="ToggleTableView">@_tableViewButtonText</a>
-    </div>
+    </div> *@
 </div>
 
-@if (_tableView)
+@if (ProductSummaries is not null)
 {
-    if (ProductSummaries is not null)
+    @if (TableView)
     {
         <div class="row mt-2">
             <div class="col-12">
-
-
                 <table class="table table-dark table-bordered text-center">
                     <thead class="bg-primary text-light">
                         <tr>
@@ -69,25 +67,24 @@
 
             </div>
         </div>
+
     }
     else
     {
-
-    }
-}
-else
-{
-    @if (Products != null && Products.Any())
-    {
         <div class="row mt-2">
-            @foreach (var product in Products.Skip(PagingData!.PageSize * (PagingData.CurrentPage - 1)).Take(PagingData.PageSize))
+            @foreach (var product in ProductSummaries)
             {
-                <div class="col-4">
+                <div class="col-3">
                     <ProductCard Product="product" AddToCartCallback="() => AddToCart(product.AggregateId)" ProductDetailCallback="() => Detail(product.Id)" />
                 </div>
             }
         </div>
     }
+
+}
+else
+{
+
 }
 
 <div class="toolbar-paging">
@@ -148,8 +145,9 @@ else
     public List<ProductSummaryDTO>? ProductSummaries { get; set; }
     [CascadingParameter(Name = "PagingData")]
     public PaginationMetadata? PagingData { get; set; }
-    // [CascadingParameter(Name = "TableView")]
-    // public bool TableView { get; set; }
+
+    [CascadingParameter(Name = "TableView")]
+    public bool TableView { get; set; }
 
     [Parameter]
     public EventCallback<string> ErrorMessageCallback { get; set; }
@@ -180,22 +178,22 @@ else
     [Parameter]
     public EventCallback<Guid> AddToCartCallback { get; set; }
 
-    private bool _tableView = true;
-    private string _tableViewButtonText = "Card View";
-    private async Task ToggleTableView()
-    {
-        _tableView = !_tableView;
-        if (_tableView)
-        {
-            _tableViewButtonText = "Card View";
-            DeleteFullProductsList();
-        }
-        else
-        {
-            _tableViewButtonText = "Table View";
-            await LoadFullProductsList();
-        }
-    }
+    // private bool _tableView = true;
+    // private string _tableViewButtonText = "Card View";
+    // private async Task ToggleTableView()
+    // {
+    //     _tableView = !_tableView;
+    //     if (_tableView)
+    //     {
+    //         _tableViewButtonText = "Card View";
+    //         DeleteFullProductsList();
+    //     }
+    //     else
+    //     {
+    //         _tableViewButtonText = "Table View";
+    //         await LoadFullProductsList();
+    //     }
+    // }
 
     private async Task PageForward()
     {
@@ -223,7 +221,10 @@ else
     }
 
     public List<ProductDTO>? Products;
-    private void DeleteFullProductsList() => Products = null;
+    private void DeleteFullProductsList()
+    {
+        if (Products is not null) Products = null;
+    }
     private async Task LoadFullProductsList()
     {
         var productsResult = await _readProductsClient.GetProductsAsync();
@@ -235,5 +236,25 @@ else
             }
         }
         else await ShowErrorMessage(productsResult.ErrorMessage ?? "An unspecified error occurred.");
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (TableView)
+        {
+            DeleteFullProductsList();
+        }
+        else
+        {
+            await LoadFullProductsList();
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadFullProductsList();
+        }
     }
 }

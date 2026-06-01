@@ -119,14 +119,18 @@
                         <div class="col-2">
                             <a class="btn button-custom-yellow-med form-control mt-4" @onclick="ClearFilters">Reset</a>
                         </div>
-
+                        <div class="col-2">
+                            <a class="btn button-custom-yellow-med form-control mt-4" @onclick="ToggleTableView">@_tableViewButtonText</a>
+                        </div>
                     </div>
                 </div>
 
                 <CascadingValue Name="Products" Value="@Products">
                     <CascadingValue Name="PagingData" Value="@PagingData">
-                        <StorefrontProducts DetailCallback="Detail" AddToCartCallback="AddToCart" PageForwardCallback="PageForward"
-                                            PageBackwardCallback="PageBackward" PageToCallback="PageTo" ErrorMessageCallback="HandleErrorMessage" SuccessMessageCallback="HandleSuccessMessage" />
+                        <CascadingValue Name="TableView" Value="@TableView">
+                            <StorefrontProducts DetailCallback="Detail" AddToCartCallback="AddToCart" PageForwardCallback="PageForward"
+                                                PageBackwardCallback="PageBackward" PageToCallback="PageTo" ErrorMessageCallback="HandleErrorMessage" SuccessMessageCallback="HandleSuccessMessage" />
+                        </CascadingValue>
                     </CascadingValue>
                 </CascadingValue>
             }
@@ -145,7 +149,13 @@
     public ShoppingCartDTO? ShoppingCart { get; set; }
     public int ShoppingCartItemCount { get; set; }
     private bool _showCart = false;
-    public bool TableView = true;
+
+    public bool TableView = false;
+    private string _tableViewButtonText => TableView ? "Card View" : "Table View";
+    private void ToggleTableView() 
+    {
+        TableView = !TableView;
+    }
 
     public DateTime? ProductsFetchTime { get; set; }
     public DateTime? PageRenderTime { get; set; }
@@ -240,15 +250,6 @@
     private async Task ShowCart()
     {
         if (ShoppingCart is null) await GetCart();
-        // {
-        //     var result = await _cartsHttpClient.GetShoppingCartAsync();
-        //     if (result.IsSuccess)
-        //     {
-        //         ShoppingCart = result.ShoppingCart;
-        //         ShoppingCartItemCount = ShoppingCart is null ? 0 : ShoppingCart.Items.Count;
-        //     }
-        //     else _errorMessage = result.ErrorMessage;
-        // }
         _cartButtonText = "Continue Shopping";
         _showCart = true;
     }

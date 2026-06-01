@@ -1,5 +1,83 @@
 ﻿﻿@if (Product != null)
 {
+    <div class="card mb-4">
+        <div class="card-header bg-dark text-light">
+            @Product.Name
+        </div>
+        <div class="card-body bg-dark text-light">
+            <div class="row">
+                <div class="col-6">
+                    <span class="product-price">$@Product.Price</span>
+                    <span class="product-uom">@Product.UOM</span>
+                </div>
+                <div class="col-6">
+                    <div class="text-end">
+                        @if (Product.DefaultImageUri is not null)
+                        {
+                            <img class="rounded-top" src="@Product.DefaultImageUri" height="60" alt="placeholder" />
+                        }
+                        else
+                        {
+                            <img class="rounded" src="/images/image-pending.png" height="60" alt="placeholder" />
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <textarea rows="2" class="bg-dark text-light product-description">@Product.Description</textarea>
+            </div>
+        </div>
+        <div class="card-footer bg-dark text-light text-center">
+            <AuthorizeView>
+                <Authorized>
+                    <a class="btn btn-primary btn-sm" style="width:120px" @onclick="ProductDetail">Details</a>
+                    <a class="btn btn-success btn-sm" style="width:120px" @onclick="AddToCart">Add to Cart</a>
+                </Authorized>
+                <NotAuthorized>
+                    <a class="btn btn-primary btn-sm" style="width:120px" @onclick="ProductDetail">Details</a>
+                </NotAuthorized>
+            </AuthorizeView>
+
+        </div>
+    </div>
+}
+else
+{
+    <span class="text-danger"><b>Error retrieving product.</b></span>
+}
+
+@code {
+
+    [Parameter]
+    public ProductSummaryDTO? Product { get; set; }
+
+    [Parameter]
+    public EventCallback<string> AddToCartCallback { get; set; }
+
+    [Parameter]
+    public EventCallback<string> ProductDetailCallback { get; set; }
+
+    private async Task AddToCart()
+    {
+        await AddToCartCallback.InvokeAsync(Product?.AggregateId.ToString());
+    }
+
+    private async Task ProductDetail()
+    {
+        await ProductDetailCallback.InvokeAsync(Product?.AggregateId.ToString());
+    }
+}
+
+
+
+
+
+
+
+
+
+@* ﻿@if (Product != null)
+{
     <div class="card bg-dark text-light">
         <div class="card-header ">
             <div class="row">
@@ -23,9 +101,7 @@
                     }
                     else
                     {
-                        @* <img class="rounded-top" src="/images/tirade-tiny.jpg" height="90" alt="placeholder" /> *@
                         <img class="rounded" src="/images/image-pending.png" height="90" alt="placeholder" />
-                        @* <img src="https://camerastoreproducts.blob.core.windows.net/dev-test/tirade-tiny.jpg" height="90" /> *@
                     }
                 </div>
             </div>
@@ -71,4 +147,4 @@ else
     {
         await ProductDetailCallback.InvokeAsync(Product?.AggregateId.ToString());
     }
-}
+} *@
