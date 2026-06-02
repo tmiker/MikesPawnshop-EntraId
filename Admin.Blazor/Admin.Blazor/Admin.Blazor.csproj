@@ -18,4 +18,8 @@
     <PackageReference Include="Serilog.Sinks.Console.LogThemes" Version="0.4.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Components\Pages\Admin\" />
+  </ItemGroup>
+
 </Project>
