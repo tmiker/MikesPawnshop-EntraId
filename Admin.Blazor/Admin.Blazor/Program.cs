@@ -162,7 +162,6 @@ builder.Services.AddSingleton(sp =>
 // Root Level Cascading Value that will be the cascading parameter property deriving from the source 
 builder.Services.AddCascadingValue(sp => sp.GetRequiredService<CascadingValueSource<CartData>>());
 
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -192,6 +191,8 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(Admin.Blazor.Client._Imports).Assembly);
+
+app.MapGet("/ping", () => "Blazor Admin Client is up and running!  Last Build: 1 Jun 2026 @ 20:20 CST").AllowAnonymous();
 
 app.MapGet("/login", (string? returnUrl, HttpContext httpContext) =>
 {

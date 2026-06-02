@@ -174,6 +174,8 @@ app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(Consumer.Blazor.Client._Imports).Assembly);
 
+app.MapGet("/ping", () => "Blazor Consumer Client is up and running!  Last Build: 1 Jun 2026 @ 19:40 CST").AllowAnonymous();
+
 app.MapGet("/login", (string? returnUrl, HttpContext httpContext) =>
 {
     Console.WriteLine($"Blazor Web App logging in ...");
