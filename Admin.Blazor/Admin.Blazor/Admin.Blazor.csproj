@@ -9,13 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Components\Pages\Admin\**" />
-    <Content Remove="Components\Pages\Admin\**" />
-    <EmbeddedResource Remove="Components\Pages\Admin\**" />
-    <None Remove="Components\Pages\Admin\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Admin.Blazor.Client\Admin.Blazor.Client.csproj" />
     <PackageReference Include="Duende.AccessTokenManagement.OpenIdConnect" Version="4.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.7" />
