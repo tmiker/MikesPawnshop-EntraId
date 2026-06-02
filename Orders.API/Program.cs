@@ -166,7 +166,7 @@ try
 
     app.MapControllers();
 
-    app.MapGet("/", () => "Orders API is up and running. 22 May 2026 @ 21:14");
+    app.MapGet("/", () => "Orders API is up and running.  Last Build: 1 Jun 2026 @ 22:24 CST");
 
     //// YARP healthcheck endpoint - uncomment if configure YARP HealthChecks for Orders - use this URL in YARP
     //app.MapHealthChecks("/api/orders/healthYarp", new HealthCheckOptions
