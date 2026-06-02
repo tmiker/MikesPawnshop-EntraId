@@ -41,8 +41,6 @@
     public IConfiguration Configuration { get; set; } = default!;
     [Inject]
     public static HttpClient Client { get; set; } = new HttpClient();
-    [Inject]
-    public IWebHostEnvironment WebHostEnv { get; set; } = default!;
 
     private string? _consumerBaseUrl;
     private bool _thinking = false;
@@ -52,10 +50,6 @@
     {
         _thinking = true;
         var baseUrl = Configuration["BlazorConsumerClientBaseURL"];
-        if (WebHostEnv.EnvironmentName == "Development")
-        {
-            baseUrl = "https://localhost:7217";
-        }
         var pingUrl = $"{baseUrl}/ping";
         try
         {
