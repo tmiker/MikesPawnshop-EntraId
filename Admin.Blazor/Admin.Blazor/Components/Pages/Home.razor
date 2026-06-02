@@ -3,50 +3,29 @@
 
 <PageTitle>Admin Client Home</PageTitle>
 
-<h1>ADMIN CLIENT</h1>
-
-<h2 class="mt-4">Mikes Pawnshop with Entra Id and APIs using Azure Cosmos Db</h2>
+<h2 class="mt-4">Mikes Pawnshop Admin Client</h2>
 
 <div class="row mt-4">
-    @if (_showInfo)
-    {
-        <div class="col-3">
-            <a class="btn button-custom-info-med form-control" @onclick="ToggleInfo">Ping Services</a>
-        </div>
-    }
-    else
-    {
-        <div class="col-3">
-            <a class="btn button-custom-info-med form-control" @onclick="ToggleInfo">Display Info</a>
-        </div>
-    }
+    <div class="col-12">
+        <TabControl>
+
+            <TabPage Text="Application Information">
+                <ProjectInfo />
+            </TabPage>
+            <TabPage Text="Services Status">
+                <ProjectServicesComponent />
+            </TabPage>
+            <TabPage Text="Consumer Client App">
+                <ProjectCompanionAppComponent />
+            </TabPage>
+            <TabPage Text="Developer Notes">
+                <ProjectNotes />
+            </TabPage>
+            
+        </TabControl>
+    </div>
 </div>
 
-@if (_showInfo)
-{
-    <div class="row mt-4">
-        <h3 class="text-warning-altmt-4">Why app.MapGet("/login", ... vs MapPost() ???</h3>
-
-        <h3 class="text-warning-alt mt-4">REMOVE DEV TEST ENDPOINTS FROM PRODUCTS READ API ProductsController - SHOULD BE GOING TO DEV TESTS CONTROLLER.</h3>
-        <h4 class="text-warning-alt mt-2">--- Removed Endpoints:  GetApiUserInfo, ThrowExceptionForTesting, GetCloudAmqpTestingDummyValue</h4>
-
-        <h3 class="text-warning-altmt-4">Manage Product Detail page - Documents View link does not work</h3>
-
-        <h3 class="text-warning-alt mt-4">Register Pages - dress up.</h3>
-
-        <h3 class="mt-4">Caching:</h3>
-        <h4 class="mt-2">OutputCache used on Storefront requests for Products GET (Blazor Consumer and Blazor Admin).</h4>
-        <h4 class="mt-2">--- Products.Read.API has custom IOutputCachePolicy to allow caching with auth token</h4>
-    </div>
-}
-else
-{
-    <PingServicesComponent />
-}
-
-
 @code {
-    private bool _showInfo = true;
-
-    private void ToggleInfo() => _showInfo = !_showInfo;
+    
 }

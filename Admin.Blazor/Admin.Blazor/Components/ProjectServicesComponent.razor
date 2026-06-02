@@ -3,29 +3,11 @@
 
 <PageTitle>Pawnshop Services</PageTitle>
 
-<h3 class="mt-2">Pawnshop Services</h3>
-
-<div class="row mt-4">
-    <div class="col-5">
-        <h6 class="mt-2">Open Pawnshop Consumer Client Application (in a new window):</h6>
-    </div>
-    @if (!string.IsNullOrEmpty(_consumerBaseUrl))
-    {
-        <div class="col-3">
-            <a class="btn button-custom-info-med form-control" href="@_consumerBaseUrl" target="_blank">Consumer Client</a>
-        </div>
-    }
-    else
-    {
-        <div class="col-3">
-            <h6><i>Missing Client URL</i></h6>
-        </div>
-    }
-</div>
+<h5 class="mt-2">Check Pawnshop Service Status</h5>
 
 <div class="row mt-4">
     <div class="col-3">
-        <a class="btn button-custom-info-med form-control" @onclick="PingAccountsAPI">Ping Accounts API</a>
+        <a class="btn button-custom-primary-med form-control" @onclick="PingAccountsAPI">Ping Accounts API</a>
     </div>
     <div class="col-7">
         <input type="text" class="bg-dark text-light form-control" @bind-value=_accountsApiResponse" />
@@ -33,14 +15,14 @@
     @if (!string.IsNullOrEmpty(_accountsApiResponse))
     {
         <div class="col-2">
-            <a class="btn btn-secondary form-control" @onclick=ClearAccountsApiResponse>Clear</a>
+            <a class="btn button-custom-secondary-med form-control" @onclick=ClearAccountsApiResponse>Clear</a>
         </div>
     }
 </div>
 
 <div class="row mt-4">
     <div class="col-3">
-        <a class="btn button-custom-info-med form-control" @onclick="PingCartsAPI">Ping Carts API</a>
+        <a class="btn button-custom-primary-med form-control" @onclick="PingCartsAPI">Ping Carts API</a>
     </div>
     <div class="col-7">
         <input type="text" class="bg-dark text-light form-control" @bind-value=_cartsApiResponse" />
@@ -48,14 +30,14 @@
     @if (!string.IsNullOrEmpty(_cartsApiResponse))
     {
         <div class="col-2">
-            <a class="btn btn-secondary form-control" @onclick=ClearCartsApiResponse>Clear</a>
+            <a class="btn button-custom-secondary-med form-control" @onclick=ClearCartsApiResponse>Clear</a>
         </div>
     }
 </div>
 
 <div class="row mt-4">
     <div class="col-3">
-        <a class="btn button-custom-info-med form-control" @onclick="PingOrdersAPI">Ping Orders API</a>
+        <a class="btn button-custom-primary-med form-control" @onclick="PingOrdersAPI">Ping Orders API</a>
     </div>
     <div class="col-7">
         <input type="text" class="bg-dark text-light form-control" @bind-value=_ordersApiResponse" />
@@ -63,14 +45,14 @@
     @if (!string.IsNullOrEmpty(_ordersApiResponse))
     {
         <div class="col-2">
-            <a class="btn btn-secondary form-control" @onclick=ClearOrdersApiResponse>Clear</a>
+            <a class="btn button-custom-secondary-med form-control" @onclick=ClearOrdersApiResponse>Clear</a>
         </div>
     }
 </div>
 
 <div class="row mt-4">
     <div class="col-3">
-        <a class="btn button-custom-info-med form-control" @onclick="PingProductsReadAPI">Ping Products Read API</a>
+        <a class="btn button-custom-primary-med form-control" @onclick="PingProductsReadAPI">Ping Products Read API</a>
     </div>
     <div class="col-7">
         <input type="text" class="bg-dark text-light form-control" @bind-value=_productsReadApiResponse" />
@@ -78,14 +60,14 @@
     @if (!string.IsNullOrEmpty(_productsReadApiResponse))
     {
         <div class="col-2">
-            <a class="btn btn-secondary form-control" @onclick=ClearProductsReadApiResponse>Clear</a>
+            <a class="btn button-custom-secondary-med form-control" @onclick=ClearProductsReadApiResponse>Clear</a>
         </div>
     }
 </div>
 
 <div class="row mt-4">
     <div class="col-3">
-        <a class="btn button-custom-info-med form-control" @onclick="PingProductsWriteAPI">Ping Products Write API</a>
+        <a class="btn button-custom-primary-med form-control" @onclick="PingProductsWriteAPI">Ping Products Write API</a>
     </div>
     <div class="col-7">
         <input type="text" class="bg-dark text-light form-control" @bind-value=_proeductsWriteApiResponse" />
@@ -93,14 +75,14 @@
     @if (!string.IsNullOrEmpty(_proeductsWriteApiResponse))
     {
         <div class="col-2">
-            <a class="btn btn-secondary form-control" @onclick=ClearProductsWriteApiResponse>Clear</a>
+            <a class="btn button-custom-secondary-med form-control" @onclick=ClearProductsWriteApiResponse>Clear</a>
         </div>
     }
 </div>
 
-<div class="row mt-4">
+@* <div class="row mt-4">
     <div class="col-3">
-        <a class="btn button-custom-info-med form-control" @onclick="PingConsumerClient">Ping Consumer Client</a>
+        <a class="btn button-custom-primary-med form-control" @onclick="PingConsumerClient">Ping Consumer Client</a>
     </div>
     <div class="col-7">
         <input type="text" class="bg-dark text-light form-control" @bind-value=_consumerClientResponse" />
@@ -108,14 +90,14 @@
     @if (!string.IsNullOrEmpty(_consumerClientResponse))
     {
         <div class="col-2">
-            <a class="btn btn-secondary form-control" @onclick=ClearConsumerClientResponse>Clear</a>
+            <a class="btn button-custom-secondary-med form-control" @onclick=ClearConsumerClientResponse>Clear</a>
         </div>
     }
-</div>
+</div> *@
 
 @* <div class="row mt-4">
     <div class="col-3">
-        <a class="btn button-custom-info-med form-control" @onclick="PingAdminClient">Ping Admin Client</a>
+        <a class="btn button-custom-primary-med form-control" @onclick="PingAdminClient">Ping Admin Client</a>
     </div>
     <div class="col-7">
         <input type="text" class="bg-dark text-light form-control" @bind-value=_adminClientResponse" />
@@ -123,14 +105,14 @@
     @if (!string.IsNullOrEmpty(_adminClientResponse))
     {
         <div class="col-2">
-            <a class="btn btn-secondary form-control" @onclick=ClearAdminClientResponse>Clear</a>
+            <a class="btn button-custom-secondary-med form-control" @onclick=ClearAdminClientResponse>Clear</a>
         </div>
     }
 </div> *@
 
 <div class="row mt-4">
     <div class="col-3">
-        <a class="btn button-custom-info-med form-control" @onclick="PingYarpProxy">Ping YARP Proxy</a>
+        <a class="btn button-custom-primary-med form-control" @onclick="PingYarpProxy">Ping YARP Proxy</a>
     </div>
     <div class="col-7">
         <input type="text" class="bg-dark text-light form-control" @bind-value=_yarpProxyResponse" />
@@ -138,7 +120,7 @@
     @if (!string.IsNullOrEmpty(_yarpProxyResponse))
     {
         <div class="col-2">
-            <a class="btn btn-secondary form-control" @onclick=ClearYarpProxyResponse>Clear</a>
+            <a class="btn button-custom-secondary-med form-control" @onclick=ClearYarpProxyResponse>Clear</a>
         </div>
     }
 </div>
@@ -153,7 +135,7 @@
     @if (!string.IsNullOrEmpty(_pingAllResult))
     {
         <div class="col-2">
-            <a class="btn btn-secondary form-control" @onclick=ClearPingAllPawnshopEndpointsResult>Clear</a>
+            <a class="btn button-custom-secondary-med form-control" @onclick=ClearPingAllPawnshopEndpointsResult>Clear</a>
         </div>
     }
 </div>
@@ -172,8 +154,8 @@
     public IConfiguration Configuration { get; set; } = default!;
     [Inject]
     public static HttpClient Client { get; set; } = new HttpClient();
-    [Inject]
-    public IWebHostEnvironment WebHostEnv { get; set; } = default!;
+    // [Inject]
+    // public IWebHostEnvironment WebHostEnv { get; set; } = default!;
 
     private bool _thinking = false;
     private string? _accountsApiResponse;
@@ -181,11 +163,10 @@
     private string? _ordersApiResponse;
     private string? _productsReadApiResponse;
     private string? _proeductsWriteApiResponse;
-    private string? _consumerClientResponse;
-    private string? _adminClientResponse;
+    // private string? _consumerClientResponse;
+    // private string? _adminClientResponse;
     private string? _yarpProxyResponse;
     private string? _pingAllResult;
-    private string? _consumerBaseUrl;
 
     private async Task PingAccountsAPI()
     {
@@ -193,6 +174,7 @@
         var baseUrl = Configuration["AccountsApiBaseURL"];
         try
         {
+            _accountsApiResponse = "...pinging Accounts API..."; 
             using (var response = await Client.GetAsync($"{baseUrl}"))
             {
                 if (response.IsSuccessStatusCode)
@@ -220,6 +202,7 @@
         var baseUrl = Configuration["CartsApiBaseURL"];
         try
         {
+            _cartsApiResponse = "...pinging Carts API...";
             using (var response = await Client.GetAsync($"{baseUrl}"))
             {
                 if (response.IsSuccessStatusCode)
@@ -247,6 +230,7 @@
         var baseUrl = Configuration["OrdersApiBaseURL"];
         try
         {
+            _ordersApiResponse = "...pinging Orders API...";
             using (var response = await Client.GetAsync($"{baseUrl}"))
             {
                 if (response.IsSuccessStatusCode)
@@ -274,6 +258,7 @@
         var baseUrl = Configuration["ProductsReadApiBaseURL"];
         try
         {
+            _productsReadApiResponse = "...pinging Products Read API...";
             using (var response = await Client.GetAsync($"{baseUrl}"))
             {
                 if (response.IsSuccessStatusCode)
@@ -301,6 +286,7 @@
         var baseUrl = Configuration["ProductsWriteApiBaseURL"];
         try
         {
+            _proeductsWriteApiResponse = "...pinging Products Write API...";
             using (var response = await Client.GetAsync($"{baseUrl}"))
             {
                 if (response.IsSuccessStatusCode)
@@ -322,39 +308,13 @@
     }
     private void ClearProductsWriteApiResponse() => _proeductsWriteApiResponse = null;
 
-    private async Task PingAdminClient()
-    {
-        _thinking = true;
-        var baseUrl = Configuration["BlazorAdminClientBaseURL"];
-        try
-        {
-            using (var response = await Client.GetAsync($"{baseUrl}"))
-            {
-                if (response.IsSuccessStatusCode)
-                {
-                    _adminClientResponse = await response.Content.ReadAsStringAsync();
-                }
-                else
-                {
-                    _adminClientResponse = "Failed to reach Blazor Admin Client.";
-                }
-                _thinking = false;
-            }
-        }
-        catch (Exception ex)
-        {
-            _adminClientResponse = $"Admin Client Error: {ex.Message}";
-            _thinking = false;
-        }
-    }
-    private void ClearAdminClientResponse() => _adminClientResponse = null;
-
     private async Task PingYarpProxy()
     {
         _thinking = true;
         var baseUrl = Configuration["YarpProxyBaseURL"];
         try
         {
+            _yarpProxyResponse = "...pinging YARP Proxy...";
             using (var response = await Client.GetAsync($"{baseUrl}"))
             {
                 if (response.IsSuccessStatusCode)
@@ -376,37 +336,66 @@
     }
     private void ClearYarpProxyResponse() => _yarpProxyResponse = null;
 
-    private async Task PingConsumerClient()
-    {
-        _thinking = true;
-        var baseUrl = Configuration["BlazorConsumerClientBaseURL"];
-        if (WebHostEnv.EnvironmentName == "Development")
-        {
-            baseUrl = "https://localhost:7217";
-        }
-        var pingUrl = $"{baseUrl}/ping";
-        try
-        {
-            using (var response = await Client.GetAsync($"{pingUrl}"))
-            {
-                if (response.IsSuccessStatusCode)
-                {
-                    _consumerClientResponse = await response.Content.ReadAsStringAsync();
-                }
-                else
-                {
-                    _consumerClientResponse = "Failed to reach Blazor Consumer Client.";
-                }
-                _thinking = false;
-            }
-        }
-        catch (Exception ex)
-        {
-            _consumerClientResponse = $"Consumer Client Error: {ex.Message}";
-            _thinking = false;
-        }
-    }
-    private void ClearConsumerClientResponse() => _consumerClientResponse = null;
+    // private async Task PingAdminClient()
+    // {
+    //     _thinking = true;
+    //     var baseUrl = Configuration["BlazorAdminClientBaseURL"];
+    //     try
+    //     {
+    //         _adminClientResponse = "...pinging Blazor Admin Client...";
+    //         using (var response = await Client.GetAsync($"{baseUrl}"))
+    //         {
+    //             if (response.IsSuccessStatusCode)
+    //             {
+    //                 _adminClientResponse = await response.Content.ReadAsStringAsync();
+    //             }
+    //             else
+    //             {
+    //                 _adminClientResponse = "Failed to reach Blazor Admin Client.";
+    //             }
+    //             _thinking = false;
+    //         }
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         _adminClientResponse = $"Admin Client Error: {ex.Message}";
+    //         _thinking = false;
+    //     }
+    // }
+    // private void ClearAdminClientResponse() => _adminClientResponse = null;
+
+    // private async Task PingConsumerClient()
+    // {
+    //     _thinking = true;
+    //     var baseUrl = Configuration["BlazorConsumerClientBaseURL"];
+    //     if (WebHostEnv.EnvironmentName == "Development")
+    //     {
+    //         baseUrl = "https:localhost:7217";
+    //     }
+    //     var pingUrl = $"{baseUrl}/ping";
+    //     try
+    //     {
+    //         _consumerClientResponse = "...pinging Blazor Consumer Client...";
+    //         using (var response = await Client.GetAsync($"{pingUrl}"))
+    //         {
+    //             if (response.IsSuccessStatusCode)
+    //             {
+    //                 _consumerClientResponse = await response.Content.ReadAsStringAsync();
+    //             }
+    //             else
+    //             {
+    //                 _consumerClientResponse = "Failed to reach Blazor Consumer Client.";
+    //             }
+    //             _thinking = false;
+    //         }
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         _consumerClientResponse = $"Consumer Client Error: {ex.Message}";
+    //         _thinking = false;
+    //     }
+    // }
+    // private void ClearConsumerClientResponse() => _consumerClientResponse = null;
 
     private async Task PingAllPawnshopEndpoints()
     {
@@ -418,8 +407,8 @@
             PingOrdersAPI(),
             PingProductsReadAPI(),
             PingProductsWriteAPI(),
-            PingYarpProxy(),
-            PingConsumerClient()
+            PingYarpProxy()
+            // PingConsumerClient()
         };
         await Task.WhenAll(tasks);
         _pingAllResult = "Finished pinging all endpoints.";
@@ -433,18 +422,11 @@
         _ordersApiResponse = null;
         _productsReadApiResponse = null;
         _proeductsWriteApiResponse = null;
-        _consumerClientResponse = null;
+        //_consumerClientResponse = null;
         // _adminClientResponse = null;
         _yarpProxyResponse = null;
         _pingAllResult = null;
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            _consumerBaseUrl = Configuration["BlazorConsumerClientBaseURL"];
-            this.StateHasChanged();
-        }
-    }
+    
 }

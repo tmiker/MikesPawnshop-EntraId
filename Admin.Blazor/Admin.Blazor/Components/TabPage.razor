@@ -1,0 +1,25 @@
+﻿
+@if (Parent?.ActivePage == this)
+{
+    <div class="mt-3">
+        @ChildContent
+    </div>
+}
+
+@code {
+    [CascadingParameter]
+    private TabControl? Parent { get; set; }
+
+    [Parameter]
+    public string Text { get; set; } = string.Empty;
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (Parent is null) throw new ArgumentNullException(nameof(Parent), "TabPage must be used within a TabControl.");
+
+        Parent.AddTab(this);
+    }
+}

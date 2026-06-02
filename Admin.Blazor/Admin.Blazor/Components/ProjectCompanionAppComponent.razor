@@ -1,0 +1,92 @@
+﻿<h5>The Consumer Client application is a Blazor Web app intended for consumer consumption.</h5>
+
+<div class="row mt-4">
+    <div class="col-3">
+        <a class="btn button-custom-primary-med form-control" @onclick="PingConsumerClient">Ping Consumer Client</a>
+    </div>
+    <div class="col-7">
+        <input type="text" class="bg-dark text-light form-control" @bind-value=_consumerClientResponse" />
+    </div>
+    @if (!string.IsNullOrEmpty(_consumerClientResponse))
+    {
+        <div class="col-2">
+            <a class="btn button-custom-secondary-med form-control" @onclick=ClearConsumerClientResponse>Clear</a>
+        </div>
+    }
+</div>
+
+<div class="row mt-4">
+    
+    @if (!string.IsNullOrEmpty(_consumerBaseUrl))
+    {
+        <div class="col-3">
+            <a class="btn button-custom-primary-med form-control" href="@_consumerBaseUrl" target="_blank">Open Consumer Client</a>
+        </div>
+        <div class="col-5">
+            <h6 class="mt-2">Open Pawnshop Consumer Client Application in a new window</h6>
+        </div>
+    }
+    else
+    {
+        <div class="col-3">
+            <h6><i>Missing Client URL</i></h6>
+        </div>
+    }
+</div>
+
+
+@code {
+
+    [Inject]
+    public IConfiguration Configuration { get; set; } = default!;
+    [Inject]
+    public static HttpClient Client { get; set; } = new HttpClient();
+    [Inject]
+    public IWebHostEnvironment WebHostEnv { get; set; } = default!;
+
+    private string? _consumerBaseUrl;
+    private bool _thinking = false;
+    private string? _consumerClientResponse;
+
+    private async Task PingConsumerClient()
+    {
+        _thinking = true;
+        var baseUrl = Configuration["BlazorConsumerClientBaseURL"];
+        if (WebHostEnv.EnvironmentName == "Development")
+        {
+            baseUrl = "https://localhost:7217";
+        }
+        var pingUrl = $"{baseUrl}/ping";
+        try
+        {
+            _consumerClientResponse = "...pinging Blazor Consumer Client...";
+            using (var response = await Client.GetAsync($"{pingUrl}"))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    _consumerClientResponse = await response.Content.ReadAsStringAsync();
+                }
+                else
+                {
+                    _consumerClientResponse = "Failed to reach Blazor Consumer Client.";
+                }
+                _thinking = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            _consumerClientResponse = $"Consumer Client Error: {ex.Message}";
+            _thinking = false;
+        }
+    }
+    private void ClearConsumerClientResponse() => _consumerClientResponse = null;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _consumerBaseUrl = Configuration["BlazorConsumerClientBaseURL"];
+            this.StateHasChanged();
+        }
+    }
+}

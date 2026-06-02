@@ -90,6 +90,54 @@ h1:focus {
     color: firebrick;
 }
 
+/* TABS */
+
+.tab-control {
+    background-color: #090909;
+    padding-left: 28px;
+    padding-right: 28px;
+    padding-bottom: 28px;
+    border-radius: 10px;
+    border-color: #454C54;
+    border-width: thin;
+    border-style: solid;
+}
+
+.tab-active {
+    color: #8cd1f8;
+    background-color: #090909;
+    border-color: #454C54;
+    border-width: thin;
+    border-style: solid;
+    text-align: center;
+    font-weight: bold;
+    font-size: 18px;
+    width: 240px;
+}
+    .tab-active:hover {
+        color: #8cd1f8;
+        background-color: #090909;
+        border-color: #454C54;
+        border-width: thin;
+        border-style: solid;
+        text-align: center;
+        font-weight: bold;
+        font-size: 18px;
+        width: 240px;
+    }
+
+.tab-inactive {
+    color: grey;
+    background-color: #2B2B2B;
+    border-color: #454C54;
+    border-width: thin;
+    border-style: solid;
+    text-align: center;
+    font-weight: bold;
+    font-size: 18px;
+    width: 240px;
+}
+
 /* BUTTONS */
 
 .button-custom {
