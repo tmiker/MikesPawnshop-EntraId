@@ -24,18 +24,25 @@ namespace Accounts.API.Crypto
 
         public (bool IsSuccess, KeyContainerResponseDTO? KeyContainerResponse, string? ErrorMessage) GetPublicKeyForSpecifiedContainerAsync()
         {
-            string keyContainerName = Guid.NewGuid().ToString();
-            _logger.LogInformation("*** {this}: Accounts Key Container Name generated: {key} ***", this.GetType().Name, keyContainerName);
+            try
+            {
+                string keyContainerName = Guid.NewGuid().ToString();
+                _logger.LogInformation("*** {this}: Accounts Key Container Name generated: {key} ***", this.GetType().Name, keyContainerName);
 
-            string publicKey = _rsaKeyContainerManager.GetPublicKeyForContainerWithName(keyContainerName);
-            // Return encrypted public key by using aes encryption
-            string? aesKey = _config["IntAcctsAesSymEncryption_Key"];   // _config["IntAcctsAesSymEncryption:Key"];
-            string? iv = _config["IntAcctsAesSymEncryption_IV"];        // _config["IntAcctsAesSymEncryption:IV"];
-            string encryptedPublicKey = _aesEncryptor.EncryptSymmetric(publicKey, aesKey!, iv!);
+                string publicKey = _rsaKeyContainerManager.GetPublicKeyForContainerWithName(keyContainerName);
+                // Return encrypted public key by using aes encryption
+                string? aesKey = _config["IntAcctsAesSymEncryption_Key"];   // _config["IntAcctsAesSymEncryption:Key"];
+                string? iv = _config["IntAcctsAesSymEncryption_IV"];        // _config["IntAcctsAesSymEncryption:IV"];
+                string encryptedPublicKey = _aesEncryptor.EncryptSymmetric(publicKey, aesKey!, iv!);
 
-            KeyContainerResponseDTO keyContainerResponseDTO = new KeyContainerResponseDTO() { EncryptedPublicKey = encryptedPublicKey, KeyContainerName = keyContainerName };
-            _logger.LogInformation("{this}: KeyContainerResponseDTO generated to return to public api. Encrypted Public Key: {key}", this.GetType().Name, encryptedPublicKey);  // *** REMOVE ****
-            return (true, keyContainerResponseDTO, null);
+                KeyContainerResponseDTO keyContainerResponseDTO = new KeyContainerResponseDTO() { EncryptedPublicKey = encryptedPublicKey, KeyContainerName = keyContainerName };
+                _logger.LogInformation("{this}: KeyContainerResponseDTO generated to return to public api. Encrypted Public Key: {key}", this.GetType().Name, encryptedPublicKey);  // *** REMOVE ****
+                return (true, keyContainerResponseDTO, null);
+            } catch (Exception ex)
+            {
+                // _logger.LogError(ex, "{this}: Error occurred while generating KeyContainerResponseDTO. Message: {message}", this.GetType().Name, ex.Message);
+                return (false, null, $"Accounts API Error occurred while generating KeyContainerResponseDTO in the KeyContainerService. Message: {ex.Message}");
+            }
         }
     }
 }

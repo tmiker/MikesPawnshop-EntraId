@@ -211,7 +211,7 @@ else
             _submitOrderResult = new SubmitOrderResultDTO(submitOrderResult.IsSuccess, submitOrderResult.OrderId, submitOrderResult.ErrorMessage);
             var deleteCartResult = await _cartService.RemoveShoppingCartAsync();
             // instead of doing a bunch of callbacks on storefront pages to remove MyCart object in client, just redirect to orders page.
-            _nav.NavigateTo("/orders/myOrders");
+            _nav.NavigateTo("/store/myOrders");
         }
         else await ShowErrorMessage(submitOrderResult.ErrorMessage ?? $"An Error Occurred."); 
     }

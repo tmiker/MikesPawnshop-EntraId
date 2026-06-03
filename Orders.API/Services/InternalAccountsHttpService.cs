@@ -32,6 +32,7 @@ namespace Orders.API.Services
             // MOVED CONTAINER NAMING TO INTERNAL SERVICE TO ENSURE UNIQUENESS !!! Create request dto with unique container name (containers deleted at end of each request reply cycle)
 
             HttpRequestMessage keyRequest = new HttpRequestMessage(HttpMethod.Get, keyUri);
+
             keyRequest.Headers.Add(StaticData.OrdersToAccountsApiKeyHeaderName, apiKey);
             // keyRequest.Content = new StringContent(JsonSerializer.Serialize(keyContainerRequestDTO), Encoding.UTF8, "application/json");
             using (HttpResponseMessage keyResponse = await client.SendAsync(keyRequest))
@@ -43,7 +44,7 @@ namespace Orders.API.Services
                 }
                 else
                 {
-                    string errorMessage = $"Failed to retrieve a key container response. Status code: {keyResponse.StatusCode}";
+                    string errorMessage = $"Failed to retrieve a key container response at URI: {keyRequest.RequestUri}. Status code: {keyResponse.StatusCode}";        // ***
                     _logger.LogError(errorMessage);
                     return (false, null, errorMessage);
                 }
@@ -96,7 +97,7 @@ namespace Orders.API.Services
                 }
                 else
                 {
-                    string errorMessage = $"Failed to retrieve a key container response. Status code: {response.StatusCode}";
+                    string errorMessage = $"Failed to retrieve a user account status at URI: {request.RequestUri}. Status code: {response.StatusCode}";
                     _logger.LogError(errorMessage);
                     AccountStatusResponseDTO responseDTO = new AccountStatusResponseDTO()
                     {
