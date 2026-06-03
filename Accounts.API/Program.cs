@@ -57,7 +57,7 @@ try
             policy.AllowAnyOrigin();
             policy.AllowAnyHeader();
             policy.AllowAnyMethod();
-            policy.WithExposedHeaders("X-Pagination");
+            policy.WithExposedHeaders("X-Pagination", "X-OrdersToAccounts-API-Key");
         });
     });
 
