@@ -10,17 +10,15 @@ namespace Accounts.API.Services
         private readonly IConfiguration _config;
         private readonly IMongoCollection<Account> _accounts;
         private readonly IAccountDataMapper _mapper;
-        private readonly IRsaAsymmetricKeyContainerManager _rsaKeyContainerManager;
-        private readonly IRsaAsymmetricEncryptionManager _rsaEncryptor;
+        private readonly IEncryptionHelper _encryptionHelper;
         private readonly ILogger<InternalAccountService> _logger;
 
         private const int _baseCreditLimit = 5000;
 
         public InternalAccountService(
             IConfiguration config,
-            IAccountDataMapper mapper, 
-            IRsaAsymmetricKeyContainerManager rsaKeyContainerManager,
-            IRsaAsymmetricEncryptionManager rsaEncryptor,
+            IAccountDataMapper mapper,
+            IEncryptionHelper encryptionHelper,
             ILogger<InternalAccountService> logger)
         {
             _config = config;
@@ -29,9 +27,7 @@ namespace Accounts.API.Services
             var database = client.GetDatabase(_config["MONGO_DATABASE"]);
             _accounts = database.GetCollection<Account>(_config["MONGO_ACCOUNT_COLLECTION"]);
             _mapper = mapper;
-            _rsaKeyContainerManager = rsaKeyContainerManager;
-            _rsaEncryptor = rsaEncryptor;
-
+            _encryptionHelper = encryptionHelper;
             _logger = logger;
         }
 
@@ -39,36 +35,28 @@ namespace Accounts.API.Services
         {
             AccountStatusResponseDTO accountStatusResponse = new AccountStatusResponseDTO();
 
-            if (string.IsNullOrWhiteSpace(requestDTO.EncryptedOwnerId) || string.IsNullOrWhiteSpace(requestDTO.KeyContainerName))
+            if (string.IsNullOrWhiteSpace(requestDTO.EncryptedOwnerId))
             {
                 accountStatusResponse.IsSuccess = false;
                 accountStatusResponse.Errors.Add("Missing Required Request Data.");
                 return accountStatusResponse;
             }
 
-            // GET KEYS FOR DECRYPTION OF ENCRYPTED OWNERID 
-            string publicAndPrivateKeys = _rsaKeyContainerManager.GetPublicAndPrivateKeyForContainerWithName(requestDTO.KeyContainerName);
-            // _logger.LogInformation("*** {this}: Public and Private Keys retrieved using RSA key container. Keys: {keys} ***", this.GetType().Name, publicAndPrivateKeys);   // *** DEV ONLY REMOVE *** //
-            _logger.LogInformation("*** {this}: Public and Private Keys retrieved using RSA key container named: {keycontainername} ***", this.GetType().Name, requestDTO.KeyContainerName);
+            string aesKey = _config["IntAcctsAesSymEncryption_Key"] ?? throw new InvalidOperationException("AES key is not configured.");
+            string aesIV = _config["IntAcctsAesSymEncryption_IV"] ?? throw new InvalidOperationException("AES IV is not configured.");
 
-            // DECRYPT ENCRYPTED OWNERID 
-            string decryptedOwnerId = _rsaEncryptor.DecryptUsingRsaXmlString(requestDTO.EncryptedOwnerId, publicAndPrivateKeys);
-            // _logger.LogInformation("*** {this}: Decrypted OwnerId using RSA decryption keys. Decrypted OwnerId: {did} ***", this.GetType().Name, decryptedOwnerId); // *** DEV ONLY REMOVE *** //
-
-            // DELETE KEYS AND CONTAINER TO CLEAN UP RESOURCES AS NO LONGER NEEDED
-            _rsaKeyContainerManager.DeleteKeyFromContainer(requestDTO.KeyContainerName);
+            string decryptedOwnerId = _encryptionHelper.Decrypt(requestDTO.EncryptedOwnerId, aesKey, aesIV);
 
             if (decryptedOwnerId == null)
             {
                 accountStatusResponse.IsSuccess = false;
                 accountStatusResponse.Errors.Add("Unable to validate credentials.");
-                _logger.LogInformation("*** {this}: Unable to obtain valid user credentials from decrypted OwnerId using RSA decryption keys. ***", this.GetType().Name); 
+                _logger.LogInformation("*** Unable to obtain valid user credentials from decrypted OwnerId. ***"); 
                 return accountStatusResponse;
             }
             else
             {
-                _logger.LogInformation("*** {this}: Decrypted OwnerId successfully obtained using RSA decryption keys. ***", this.GetType().Name); 
-
+                _logger.LogInformation("*** Decrypted OwnerId successfully obtained using RSA decryption keys. ***"); 
                 Account? account = await _accounts.Find(a => a.OwnerId == decryptedOwnerId).FirstOrDefaultAsync();
 
                 accountStatusResponse.Status = account != null ? account.AccountStatus : null;
@@ -84,7 +72,6 @@ namespace Accounts.API.Services
                 else accountStatusResponse.IsSuccess = true;
                 return accountStatusResponse;
             }
-
         }
     }
 }

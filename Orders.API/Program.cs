@@ -126,6 +126,8 @@ try
     builder.Services.AddSingleton<IInternalAccountsHttpService, InternalAccountsHttpService>();
 
     // *** Crypto Services *** //
+    builder.Services.AddScoped<IEncryptionHelper, EncryptionHelper>();
+    // the below require Cryptographic Services API (CAPI) and are deprecated
     builder.Services.AddScoped<IAesSymmetricEncryptionManager, AesSymmetricEncryptionManager>();
     builder.Services.AddScoped<IRsaAsymmetricEncryptionManager, RsaAsymmetricEncryptionManager>();
     builder.Services.AddScoped<IRsaAsymmetricKeyContainerManager, RsaAsymmetricKeyContainerManager>();
@@ -166,7 +168,7 @@ try
 
     app.MapControllers();
 
-    app.MapGet("/", () => "Orders API is up and running.  Last Build: 3 Jun 2026 @ 21:02 CST");
+    app.MapGet("/", () => "Orders API is up and running.  Last Build: 4 Jun 2026 @ 03:12 CST");
 
     //// YARP healthcheck endpoint - uncomment if configure YARP HealthChecks for Orders - use this URL in YARP
     //app.MapHealthChecks("/api/orders/healthYarp", new HealthCheckOptions

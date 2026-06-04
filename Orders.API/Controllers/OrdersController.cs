@@ -1,13 +1,8 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Orders.API.Abstractions;
 using Orders.API.DTOs;
 using Orders.API.Exceptions;
-using System.Security.Claims;
-using System.Text;
 
 namespace Orders.API.Controllers
 {

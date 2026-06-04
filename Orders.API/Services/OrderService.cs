@@ -11,28 +11,31 @@ namespace Orders.API.Services
     public class OrderService : IOrderService
     {
         private readonly IConfiguration _config;
+        private readonly IEncryptionHelper _encryptionHelper;
         private readonly IMongoCollection<Order> _orders;
         private readonly IInternalAccountsHttpService _internalAccountsHttpService;
-        private readonly IAesSymmetricEncryptionManager _aesSymmetricEncryptor;
-        private readonly IRsaAsymmetricEncryptionManager _rsaAsymmetricEncryptor;
+        //private readonly IAesSymmetricEncryptionManager _aesSymmetricEncryptor;
+        //private readonly IRsaAsymmetricEncryptionManager _rsaAsymmetricEncryptor;
         private readonly ILogger<OrderService> _logger;
 
         public OrderService(
             IConfiguration config,
+            IEncryptionHelper encryptionHelper,
             IInternalAccountsHttpService internalAccountsHttpService,
-            IAesSymmetricEncryptionManager aesSymmetricEncryptor,
-            IRsaAsymmetricEncryptionManager rsaAsymmetricEncryptor,
+            //IAesSymmetricEncryptionManager aesSymmetricEncryptor,
+            //IRsaAsymmetricEncryptionManager rsaAsymmetricEncryptor,
             ILogger<OrderService> logger)
         {
             _config = config;
+            _encryptionHelper = encryptionHelper;
             string? environment = _config["ASPNETCORE_ENVIRONMENT"];
             var client = environment == "Development" ? new MongoClient(_config["LOCAL_MONGO_CONNECTION"]) :
                 new MongoClient(_config["AZURE_MONGO_CONNECTION"]);
             var database = client.GetDatabase(_config["MONGO_DATABASE"]);
             _orders = database.GetCollection<Order>(_config["MONGO_ORDER_COLLECTION"]);
             _internalAccountsHttpService = internalAccountsHttpService;
-            _aesSymmetricEncryptor = aesSymmetricEncryptor;
-            _rsaAsymmetricEncryptor = rsaAsymmetricEncryptor;
+            //_aesSymmetricEncryptor = aesSymmetricEncryptor;
+            //_rsaAsymmetricEncryptor = rsaAsymmetricEncryptor;
             _logger = logger;
         }
 
@@ -101,37 +104,23 @@ namespace Orders.API.Services
         private async Task<AccountStatusResponseDTO> GetAccountStatusAsync(string ownerId, CancellationToken cancellationToken)
         {
             AccountStatusResponseDTO responseDTO = new AccountStatusResponseDTO();
+            AccountStatusRequestDTO statusRequestDTO = new AccountStatusRequestDTO();
 
-            // 1. Get account detail dto from internal accounts services - note the service will add api key for authorization and encrypt data
-            var accountKeyResult = await _internalAccountsHttpService.GetKeyContainerDataForAccountsAsync();
-            if (accountKeyResult.IsSuccess)
+            try
             {
-                if (string.IsNullOrWhiteSpace(accountKeyResult.KeyContainerResponse?.EncryptedPublicKey) || string.IsNullOrWhiteSpace(accountKeyResult.KeyContainerResponse?.KeyContainerName))
-                {
-                    responseDTO.Errors.Add("Missing Key Container Information.");
-                    return responseDTO;
-                }
-                else
-                {
-                    // DELETE AES PUBLIC KEY
-                    string? aesKey = _config["IntAcctsAesSymEncryption_Key"];
-                    string? iv = _config["IntAcctsAesSymEncryption_IV"];
-                    string publicKey = _aesSymmetricEncryptor.DecryptSymmetric(accountKeyResult.KeyContainerResponse.EncryptedPublicKey, aesKey!, iv!);
-
-                    // ASYM ENCRYPT OWNER ID USING RSA PUBLIC KEY AND SET PROPERTY IN REQUEST
-                    string encryptedOwnerId = _rsaAsymmetricEncryptor.EncryptUsingPublicKeyXmlString(ownerId, publicKey);
-                    _logger.LogInformation("*** {this}: OwnerId encryption complete for sending to private api. Encrypted Owner Id: {id} ***", this.GetType().Name, encryptedOwnerId);
-
-                    AccountStatusRequestDTO statusRequestDTO = new AccountStatusRequestDTO() { EncryptedOwnerId = encryptedOwnerId, KeyContainerName = accountKeyResult.KeyContainerResponse?.KeyContainerName! };
-                    responseDTO = await _internalAccountsHttpService.GetUserAccountStatusAsync(statusRequestDTO, cancellationToken);   // ownerId, accountKeyResult.KeyContainerResponse?.KeyContainerName!, accountKeyResult.KeyContainerResponse?.EncryptedPublicKey!);
-                    return responseDTO;
-                }
+                string aesKey = _config["IntAcctsAesSymEncryption_Key"] ?? throw new InvalidOperationException("AES key is not configured.");
+                string aesIV = _config["IntAcctsAesSymEncryption_IV"] ?? throw new InvalidOperationException("AES IV is not configured.");
+                var encryptedOwnerId = _encryptionHelper.Encrypt(ownerId, aesKey, aesIV);
+                statusRequestDTO = new AccountStatusRequestDTO() { EncryptedOwnerId = encryptedOwnerId };  
             }
-            else
+            catch (Exception ex)
             {
-                responseDTO.Errors.Add(accountKeyResult.ErrorMessage ?? "Error retrieving account key container data.");
+                responseDTO.Errors.Add($"Error encrypting required data. {ex.Message}");
                 return responseDTO;
             }
+
+            responseDTO = await _internalAccountsHttpService.GetUserAccountStatusAsync(statusRequestDTO, cancellationToken);
+            return responseDTO;
         }
 
         public async Task<(bool IsSuccess, IEnumerable<OrderDTO>? OrderDTOs, PaginationMetadata? PagingData, string? ErrorMessage)> GetAllUserOrdersAsync(string ownerId, string? filter, int pageNumber, int pageSize, string? sortColumn = null, string? sortOrder = null)
