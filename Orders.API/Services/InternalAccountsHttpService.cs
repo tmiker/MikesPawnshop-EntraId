@@ -44,7 +44,8 @@ namespace Orders.API.Services
                 }
                 else
                 {
-                    string errorMessage = $"Failed to retrieve a key container response at URI: {keyRequest.RequestUri}. Status code: {keyResponse.StatusCode}";        // ***
+                    string error = await keyResponse.Content.ReadAsStringAsync();
+                    string errorMessage = $"Failed to retrieve a key container response at URI: {keyRequest.RequestUri}. Status Code: {keyResponse.StatusCode} API Return Error: {error}";        // ***
                     _logger.LogError(errorMessage);
                     return (false, null, errorMessage);
                 }

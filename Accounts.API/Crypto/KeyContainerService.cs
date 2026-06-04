@@ -35,8 +35,15 @@ namespace Accounts.API.Crypto
                 string? iv = _config["IntAcctsAesSymEncryption_IV"];        // _config["IntAcctsAesSymEncryption:IV"];
                 string encryptedPublicKey = _aesEncryptor.EncryptSymmetric(publicKey, aesKey!, iv!);
 
+                if (string.IsNullOrWhiteSpace(encryptedPublicKey) || string.IsNullOrWhiteSpace(keyContainerName))
+                {
+                    return (false, null, "Failed to generate KeyContainerResponseDTO: Property values cannot be null or whitespace.");
+                }
+
                 KeyContainerResponseDTO keyContainerResponseDTO = new KeyContainerResponseDTO() { EncryptedPublicKey = encryptedPublicKey, KeyContainerName = keyContainerName };
-                _logger.LogInformation("{this}: KeyContainerResponseDTO generated to return to public api. Encrypted Public Key: {key}", this.GetType().Name, encryptedPublicKey);  // *** REMOVE ****
+
+                // _logger.LogInformation("{this}: KeyContainerResponseDTO generated to return to public api. Encrypted Public Key: {key}", this.GetType().Name, encryptedPublicKey);  // *** REMOVE ****
+                
                 return (true, keyContainerResponseDTO, null);
             } catch (Exception ex)
             {
