@@ -6,28 +6,6 @@
 @inject IOrderMapper _orderMapper
 @attribute [Authorize(Policy = "IsAdminOrManager")]
 
-@* <div class="row mt-2">
-    <div class="col-2">
-    </div>
-    <div class="col-8">
-        <h5 class="text-center"><b>Checkout View</b></h5>
-    </div>
-</div> *@
-
-@* <div class="row mt-2">
-    <div class="col-1">
-        <h5>DEV: </h5>
-    </div>
-    <div class="col-3">
-        <a class="btn button-custom-success" @onclick="TestHandleSuccess">Test Handle Success</a>
-    </div>
-    <div class="col-3">
-        <a class="btn button-custom-danger" @onclick="TestHandleError">Test Handle Error</a>
-    </div>
-    <div class="col-5">
-    </div>
-</div> *@
-
 @if (_submitOrderResult is not null)
 {
     <div class="row">
@@ -211,6 +189,7 @@ else
             _submitOrderResult = new SubmitOrderResultDTO(submitOrderResult.IsSuccess, submitOrderResult.OrderId, submitOrderResult.ErrorMessage);
             var deleteCartResult = await _cartService.RemoveShoppingCartAsync();
             // instead of doing a bunch of callbacks on storefront pages to remove MyCart object in client, just redirect to orders page.
+            // _nav.NavigateTo("/store/myOrders");
             _nav.NavigateTo("/store/myOrders");
         }
         else await ShowErrorMessage(submitOrderResult.ErrorMessage ?? $"An Error Occurred."); 
@@ -220,8 +199,6 @@ else
     {
         if (isFirstRender)
         {
-            Console.WriteLine($"@@@@@@@@@@ **************** StorefrontCheckoutView.razor OnAfterRender was called. *************** @@@@@@@@@");
-
             if (AddOrderDTO is null) await ShowErrorMessage($"Order data was not provided.");
             else
             {
