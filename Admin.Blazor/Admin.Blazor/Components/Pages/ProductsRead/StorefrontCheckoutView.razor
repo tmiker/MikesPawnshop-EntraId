@@ -6,7 +6,7 @@
 @inject IOrderMapper _orderMapper
 @attribute [Authorize(Policy = "IsAdminOrManager")]
 
-@if (_submitOrderResult is not null)
+@* @if (_submitOrderResult is not null)
 {
     <div class="row">
         <div class="col-12">
@@ -15,7 +15,7 @@
     </div>
 }
 else
-{
+{ *@
     <div class="row mt-2">
         <div class="col-7">
             @* LEFT COLUMN DATA *@
@@ -144,19 +144,12 @@ else
             </div>
         </div>
     }
-}
+@* } *@
 
 @code {
 
     [Parameter]
     public AddOrderDTO? AddOrderDTO { get; set; }
-
-    // [Parameter]
-    // public EventCallback OrderSuccessfullySubmittedCallback { get; set; }
-    // private async Task OrderSuccessfullySubmitted()
-    // {
-    //     if (OrderSuccessfullySubmittedCallback.HasDelegate) await OrderSuccessfullySubmittedCallback.InvokeAsync();
-    // }
 
     [Parameter]
     public EventCallback<string> ErrorMessageCallback { get; set; }
@@ -172,10 +165,6 @@ else
         if (SuccessMessageCallback.HasDelegate) await SuccessMessageCallback.InvokeAsync(successMessage);
     }
 
-    // Dev Test Messaging from this component
-    private async Task TestHandleError() => await ShowErrorMessage($"This is a test error message");
-    private async Task TestHandleSuccess() => await ShowSuccessMessage($"This is a test success message");
-
     private AccountDTO? _accountInfo { get; set; }
 
     private SubmitOrderResultDTO? _submitOrderResult { get; set; }
@@ -186,13 +175,11 @@ else
 
         if (submitOrderResult.IsSuccess)
         {
-            _submitOrderResult = new SubmitOrderResultDTO(submitOrderResult.IsSuccess, submitOrderResult.OrderId, submitOrderResult.ErrorMessage);
+            //_submitOrderResult = new SubmitOrderResultDTO(submitOrderResult.IsSuccess, submitOrderResult.OrderId, submitOrderResult.ErrorMessage);
             var deleteCartResult = await _cartService.RemoveShoppingCartAsync();
-            // instead of doing a bunch of callbacks on storefront pages to remove MyCart object in client, just redirect to orders page.
-            // _nav.NavigateTo("/store/myOrders");
             _nav.NavigateTo("/store/myOrders");
         }
-        else await ShowErrorMessage(submitOrderResult.ErrorMessage ?? $"An Error Occurred."); 
+        else await ShowErrorMessage(submitOrderResult.ErrorMessage ?? $"An Error Occurred placing your order."); 
     }
 
     protected override async Task OnAfterRenderAsync(bool isFirstRender)
