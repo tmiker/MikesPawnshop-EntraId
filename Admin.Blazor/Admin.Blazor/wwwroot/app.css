@@ -93,7 +93,7 @@ h1:focus {
 /* TABS */
 
 .tab-control {
-    background-color: #090909;
+    background-color: #1E1E1E;
     padding-left: 28px;
     padding-right: 28px;
     padding-bottom: 28px;
@@ -105,7 +105,7 @@ h1:focus {
 
 .tab-active {
     color: #8cd1f8;
-    background-color: #090909;
+    background-color: #1E1E1E;
     border-color: #454C54;
     border-width: thin;
     border-style: solid;
@@ -117,7 +117,7 @@ h1:focus {
 
     .tab-active:hover {
         color: #8cd1f8;
-        background-color: #090909;
+        background-color: #1E1E1E;
         border-color: #454C54;
         border-width: thin;
         border-style: solid;
@@ -129,7 +129,7 @@ h1:focus {
 
 .tab-inactive {
     color: grey;
-    background-color: #2B2B2B;
+    background-color: #272B30;
     border-color: #454C54;
     border-width: thin;
     border-style: solid;
