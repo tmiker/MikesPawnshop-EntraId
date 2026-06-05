@@ -145,6 +145,7 @@
     {
         MyCartData?.ItemCount = count;
         await cartDataSource.NotifyChangedAsync();
+        _cartButtonText = MyCartData is null || MyCartData.ItemCount < 0 ? "Cart" : $"Cart ({MyCartData.ItemCount})";
     }
 
     private async Task PageForward()
@@ -265,7 +266,7 @@
         if (result.IsSuccess)
         {
             await CartItemCountChanged(result.CartItemCount);
-            _cartButtonText = MyCartData is null || MyCartData.ItemCount < 0 ? "Cart" : $"Cart ({MyCartData.ItemCount})"; 
+            // _cartButtonText = MyCartData is null || MyCartData.ItemCount < 0 ? "Cart" : $"Cart ({MyCartData.ItemCount})"; 
             ShoppingCart = null; // will refresh when select cart view if null
         }
         else
@@ -295,7 +296,7 @@
         if (result.IsSuccess)
         {
             await CartItemCountChanged(result.CartItemCount);
-            _cartButtonText = MyCartData is null || MyCartData.ItemCount < 0 ? "Cart" : $"Cart ({MyCartData.ItemCount})"; 
+            // _cartButtonText = MyCartData is null || MyCartData.ItemCount < 0 ? "Cart" : $"Cart ({MyCartData.ItemCount})"; 
             ShoppingCart = null; // will refresh when select cart view
         }
         else
