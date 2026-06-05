@@ -6,16 +6,6 @@
 @inject IOrderMapper _orderMapper
 @attribute [Authorize]
 
-@if (_submitOrderResult is not null)
-{
-    <div class="row">
-        <div class="col-12">
-            <h5 class="text-primary"><b><i>Your order with Order Id @_submitOrderResult.OrderId was successfully placed! Redirecting to Orders page...</i></b></h5>
-        </div>
-    </div>
-}
-else
-{
     <div class="row mt-2">
         <div class="col-7">
             @* LEFT COLUMN DATA *@
@@ -78,8 +68,6 @@ else
                 <div class="col-12">
                     @if (_accountInfo != null)
                     {
-                        @* <h4 class="text-success">Account Info Address Count: @_accountInfo.Addresses.Count</h4> *@
-
                         foreach (var address in _accountInfo.Addresses)
                         {
                             if (address.IsPrimaryShipping)
@@ -110,27 +98,9 @@ else
                         <option>AMEX ...9012</option>
                     </select>
                 </div>
-                @* <div class="col-12">
-                    <label>Name:</label>
-                    <input type="text" placeholder="Name on card" />
-                </div>
-                <div class="col-12">
-                    <label>Card Number:</label>
-                    <input type="text" />
-                </div>
-                <div class="col-12">
-                    <label>Card Type:</label>
-                    <input type="text" />
-                </div>
-                <div class="col-12">
-                    <label>Security Code:</label>
-                    <input type="number" />
-                </div> *@
             </div>
         </div>
     </div>
-
-
 
     <hr />
     @if (AddOrderDTO != null && _accountInfo != null)
@@ -146,20 +116,18 @@ else
             </div>
         </div>
     }
-}
 
 @code {
 
     [Parameter]
     public AddOrderDTO? AddOrderDTO { get; set; }
 
-    // [Parameter]
-    // public EventCallback OrderSuccessfullySubmittedCallback { get; set; }
-
-    // private async Task OrderSuccessfullySubmitted()
-    // {
-    //     if (OrderSuccessfullySubmittedCallback.HasDelegate) await OrderSuccessfullySubmittedCallback.InvokeAsync();
-    // }
+    [Parameter]
+    public EventCallback OrderSubmittedCallback { get; set; }
+    private async Task OrderSubmitted()
+    {
+        if (OrderSubmittedCallback.HasDelegate) await OrderSubmittedCallback.InvokeAsync();
+    }
 
     [Parameter]
     public EventCallback<string> ErrorMessageCallback { get; set; }
@@ -175,13 +143,7 @@ else
         if (SuccessMessageCallback.HasDelegate) await SuccessMessageCallback.InvokeAsync(successMessage);
     }
 
-    // Dev Test Messaging from this component
-    private async Task TestHandleError() => await ShowErrorMessage($"This is a test error message");
-    private async Task TestHandleSuccess() => await ShowSuccessMessage($"This is a test success message");
-
     private AccountDTO? _accountInfo { get; set; }
-
-    private SubmitOrderResultDTO? _submitOrderResult { get; set; }
 
     private async Task SubmitOrder()
     {
@@ -189,9 +151,8 @@ else
 
         if (submitOrderResult.IsSuccess)
         {
-            _submitOrderResult = new SubmitOrderResultDTO(submitOrderResult.IsSuccess, submitOrderResult.OrderId, submitOrderResult.ErrorMessage);
             var deleteCartResult = await _cartService.RemoveShoppingCartAsync();
-            // instead of doing a bunch of callbacks on storefront pages to remove MyCart object in client, just redirect to orders page.
+            await OrderSubmitted();
             _nav.NavigateTo("/orders/myOrders");
         }
         else await ShowErrorMessage(submitOrderResult.ErrorMessage ?? $"An Error Occurred.");
@@ -201,8 +162,6 @@ else
     {
         if (isFirstRender)
         {
-            Console.WriteLine($"@@@@@@@@@@ **************** StorefrontCheckoutView.razor OnAfterRender was called. *************** @@@@@@@@@");
-
             if (AddOrderDTO is null) await ShowErrorMessage($"Order data was not provided.");
             else
             {

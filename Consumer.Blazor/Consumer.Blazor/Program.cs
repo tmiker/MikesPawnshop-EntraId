@@ -138,7 +138,7 @@ builder.Services.AddScoped<IToastrService, ToastrService>();
 // Root Level Cascading Value Source for Cart Data provides access to underlying source's NotifyChangedAsync() method
 builder.Services.AddSingleton(sp =>
 {
-    var cartData = new CartData { ItemCount = 0, ShowCart = false };
+    var cartData = new CartData { ItemCount = -1, ShowCart = false };
     return new CascadingValueSource<CartData>(name: "ShoppingCartData", cartData, isFixed: false);
 });
 // Root Level Cascading Value that will be the cascading parameter property deriving from the source 
@@ -174,7 +174,7 @@ app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(Consumer.Blazor.Client._Imports).Assembly);
 
-app.MapGet("/ping", () => "Blazor Consumer Client is up and running!  Last Build: 1 Jun 2026 @ 19:40 CST").AllowAnonymous();
+app.MapGet("/ping", () => "Blazor Consumer Client is up and running!  Last Build: 5 Jun 2026 @ 00:20 CST").AllowAnonymous();
 
 app.MapGet("/login", (string? returnUrl, HttpContext httpContext) =>
 {

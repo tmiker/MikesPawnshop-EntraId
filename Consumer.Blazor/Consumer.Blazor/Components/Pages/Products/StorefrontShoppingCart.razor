@@ -29,7 +29,7 @@
 
 @if (_addOrderDTO is not null)
 {
-    <StorefrontCheckoutView AddOrderDTO="@_addOrderDTO" ErrorMessageCallback="HandleComponentError" SuccessMessageCallback="HandleComponentSuccess" />
+    <StorefrontCheckoutView AddOrderDTO="@_addOrderDTO" OrderSubmittedCallback="OrderSubmitted" ErrorMessageCallback="HandleComponentError" SuccessMessageCallback="HandleComponentSuccess" />
 }
 else
 {
@@ -131,6 +131,13 @@ else
     }
 
     [Parameter]
+    public EventCallback OrderSubmittedCallback { get; set; }
+    private async Task OrderSubmitted()
+    {
+        if (OrderSubmittedCallback.HasDelegate) await OrderSubmittedCallback.InvokeAsync();
+    }
+
+    [Parameter]
     public EventCallback<string> ErrorMessageCallback { get; set; }
     private async Task ShowErrorMessage(string errorMessage)
     {
@@ -147,10 +154,6 @@ else
     // Handlers for StorefrontCheckoutView Child Component Message Parameters
     private async Task HandleComponentError(string message) => await ShowErrorMessage(message);
     private async Task HandleComponentSuccess(string message) => await ShowSuccessMessage(message);
-
-    // Dev Test Messaging from this component
-    private async Task TestHandleError() => await ShowErrorMessage($"This is a test error message");
-    private async Task TestHandleSuccess() => await ShowSuccessMessage($"This is a test success message");
 
     private AddOrderDTO? _addOrderDTO;
 

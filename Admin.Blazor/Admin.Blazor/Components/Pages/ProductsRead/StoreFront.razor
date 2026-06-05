@@ -71,7 +71,8 @@
         @if (_showCart)
         {
             <CascadingValue Name="ShoppingCart" Value="@ShoppingCart">
-                <StorefrontShoppingCart DetailCallback="Detail" CartItemCountChangedCallback="CartItemCountChanged" ErrorMessageCallback="HandleErrorMessage" SuccessMessageCallback="HandleSuccessMessage" />
+                <StorefrontShoppingCart DetailCallback="Detail" CartItemCountChangedCallback="CartItemCountChanged" OrderSubmittedCallback="HandleOrderSubmitted" 
+                    ErrorMessageCallback="HandleErrorMessage" SuccessMessageCallback="HandleSuccessMessage" />
             </CascadingValue>
         }
         else
@@ -147,7 +148,6 @@
     public PaginationMetadata? PagingData { get; set; }
     public int SelectedProductId { get; set; } = 0;
     public ShoppingCartDTO? ShoppingCart { get; set; }
-    public int ShoppingCartItemCount { get; set; }
     private bool _showCart = false;
 
     public bool TableView = false;
@@ -177,7 +177,6 @@
 
     private async Task CartItemCountChanged(int count)
     {
-        ShoppingCartItemCount = count;
         MyCartData?.ItemCount = count;
         await cartDataSource.NotifyChangedAsync();
     }
@@ -223,10 +222,6 @@
     private async Task HandleErrorMessage(string error) => _errorMessage = error;
     private async Task HandleSuccessMessage(string success) => _successMessage = success;
 
-    private async Task TestHandleError() => _errorMessage = $"This is a test error message";            // await HandleErrorMessage($"This is a test error message");
-    private async Task TestHandleSuccess() => _successMessage = $"This is a test success message";      // await HandleSuccessMessage($"This is a test success message");
-
-
     private async Task ClearFilters()
     {
         _nameFilter = null;
@@ -255,7 +250,7 @@
     }
     private void HideCart()
     {
-        _cartButtonText = ShoppingCart is null ? "Cart" : $"Cart ({ShoppingCartItemCount})";
+        _cartButtonText = MyCartData is null || MyCartData.ItemCount < 0 ? "Cart" : $"Cart ({MyCartData.ItemCount})";   
         _showCart = false;
     }
     private async Task ToggleShowCart()
@@ -268,6 +263,20 @@
             if (MyCartData.ShowCart) await ShowCart();
             else HideCart();
         }
+    }
+
+    private async Task HandleOrderSubmitted()
+    {
+        // Could handle this with component lifecycle methods instead of event callbacks from Checkout view, 
+        // but then would not be maintaining the MyCartData objects state, only masking it.
+        if (MyCartData is not null)
+        {
+            MyCartData.ShowCart = false;
+            MyCartData.ItemCount = 0;
+            _previousCartDataShowCart = false;
+        }
+        await cartDataSource.NotifyChangedAsync();
+        HideCart();
     }
 
     // Add to cart with quantity from product detail component
@@ -292,9 +301,8 @@
         var result = await _cartsHttpClient.AddNewCartItemAsync(addShoppingCartItemDTO);
         if (result.IsSuccess)
         {
-            // ShoppingCartItemCount = result.CartItemQuantity;
             await CartItemCountChanged(result.CartItemCount);
-            _cartButtonText = $"Cart ({ShoppingCartItemCount})";
+            _cartButtonText = MyCartData is null || MyCartData.ItemCount < 0 ? "Cart" : $"Cart ({MyCartData.ItemCount})"; 
             ShoppingCart = null; // will refresh when select cart view
         }
         else
@@ -323,9 +331,8 @@
         var result = await _cartsHttpClient.AddNewCartItemAsync(addShoppingCartItemDTO);
         if (result.IsSuccess)
         {
-            // ShoppingCartItemCount = result.CartItemQuantity;
             await CartItemCountChanged(result.CartItemCount);
-            _cartButtonText = $"Cart ({ShoppingCartItemCount})";
+            _cartButtonText = MyCartData is null || MyCartData.ItemCount < 0 ? "Cart" : $"Cart ({MyCartData.ItemCount})"; 
             ShoppingCart = null; // will refresh when select cart view
         }
         else
@@ -366,7 +373,6 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        Console.WriteLine($"OnParametersSetAsync called. MyCartData.ShowCart: {MyCartData?.ShowCart}, _previousCartDataShowCart: {_previousCartDataShowCart}");
         if (MyCartData is not null && MyCartData.ShowCart != _previousCartDataShowCart)
         {
             _previousCartDataShowCart = MyCartData.ShowCart;
@@ -379,6 +385,7 @@
     {
         if (firstRender)
         {
+            _cartButtonText = MyCartData is null || MyCartData.ItemCount < 0 ? "Cart" : $"Cart ({MyCartData.ItemCount})";   
             await GetProducts();
             StateHasChanged();
         }

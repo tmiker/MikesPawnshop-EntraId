@@ -6,16 +6,6 @@
 @inject IOrderMapper _orderMapper
 @attribute [Authorize(Policy = "IsAdminOrManager")]
 
-@* @if (_submitOrderResult is not null)
-{
-    <div class="row">
-        <div class="col-12">
-            <h5 class="text-primary"><b><i>Your order with Order Id @_submitOrderResult.OrderId was successfully placed! Redirecting to Orders page...</i></b></h5>
-        </div>
-    </div>
-}
-else
-{ *@
     <div class="row mt-2">
         <div class="col-7">
             @* LEFT COLUMN DATA *@
@@ -78,8 +68,6 @@ else
                 <div class="col-12">
                     @if (_accountInfo != null)
                     {
-                        @* <h4 class="text-success">Account Info Address Count: @_accountInfo.Addresses.Count</h4> *@
-
                         foreach (var address in _accountInfo.Addresses)
                         {
                             if (address.IsPrimaryShipping)
@@ -110,22 +98,6 @@ else
                         <option>AMEX ...9012</option>
                     </select>
                 </div>
-                @* <div class="col-12">
-                    <label>Name:</label>
-                    <input type="text" placeholder="Name on card" />
-                </div>
-                <div class="col-12">
-                    <label>Card Number:</label>
-                    <input type="text" />
-                </div>
-                <div class="col-12">
-                    <label>Card Type:</label>
-                    <input type="text" />
-                </div>
-                <div class="col-12">
-                    <label>Security Code:</label>
-                    <input type="number" />
-                </div> *@
             </div>
         </div>
     </div>
@@ -144,12 +116,18 @@ else
             </div>
         </div>
     }
-@* } *@
 
 @code {
 
     [Parameter]
     public AddOrderDTO? AddOrderDTO { get; set; }
+
+    [Parameter]
+    public EventCallback OrderSubmittedCallback { get; set; }
+    private async Task OrderSubmitted()
+    {
+        if (OrderSubmittedCallback.HasDelegate) await OrderSubmittedCallback.InvokeAsync();
+    }
 
     [Parameter]
     public EventCallback<string> ErrorMessageCallback { get; set; }
@@ -175,8 +153,8 @@ else
 
         if (submitOrderResult.IsSuccess)
         {
-            //_submitOrderResult = new SubmitOrderResultDTO(submitOrderResult.IsSuccess, submitOrderResult.OrderId, submitOrderResult.ErrorMessage);
             var deleteCartResult = await _cartService.RemoveShoppingCartAsync();
+            await OrderSubmitted();
             _nav.NavigateTo("/store/myOrders");
         }
         else await ShowErrorMessage(submitOrderResult.ErrorMessage ?? $"An Error Occurred placing your order."); 
