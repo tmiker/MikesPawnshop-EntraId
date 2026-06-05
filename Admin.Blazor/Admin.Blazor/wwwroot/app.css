@@ -114,6 +114,7 @@ h1:focus {
     font-size: 18px;
     width: 240px;
 }
+
     .tab-active:hover {
         color: #8cd1f8;
         background-color: #090909;
@@ -414,6 +415,103 @@ h1:focus {
         transform: scale(.95);
     }
 
+.button-custom-table-primary {
+    padding: 6px 12px;
+    text-align: center;
+    color: #4c98d9;
+    border: 0;
+    font-weight: bold;
+    font-size: 12px;
+    transition: all 150ms ease-in-out;
+    box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px;
+    border-radius: 6px;
+    background-color: #111111;
+    background-image: radial-gradient(76% 151% at 52% -52%, rgba(255, 255, 255, 0.23) 0%, transparent 100%);
+    /*make responsive*/
+    min-width: 80px;
+    /*    max-width: 200px;*/
+}
+
+    .button-custom-table-primary:hover {
+        color: #4c98d9;
+        transition: all 150ms ease-in-out;
+        box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px;
+        background-color: #111111;
+        background-image: radial-gradient(76% 151% at 52% -52%, rgba(255, 255, 255, 0.23) 0%, transparent 100%);
+        filter: brightness(1.1);
+    }
+
+    .button-custom-table-primary:active {
+        color: #4c98d9;
+        transition: all 150ms ease-in-out;
+        box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px;
+        background-color: #111111;
+        background-image: radial-gradient(76% 151% at 52% -52%, rgba(255, 255, 255, 0.23) 0%, transparent 100%);
+        transform: scale(.95);
+    }
+
+.button-custom-table-danger {
+    padding: 6px 12px;
+    text-align: center;
+    color: firebrick;
+    border: 0;
+    font-weight: bold;
+    font-size: 12px;
+    transition: all 150ms ease-in-out;
+    box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px;
+    border-radius: 6px;
+    background-color: #111111;
+    background-image: radial-gradient(76% 151% at 52% -52%, rgba(255, 255, 255, 0.23) 0%, transparent 100%);
+    min-width: 80px;
+}
+
+    .button-custom-table-danger:hover {
+        color: firebrick;
+        transition: all 150ms ease-in-out;
+        box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px;
+        background-color: #111111;
+        background-image: radial-gradient(76% 151% at 52% -52%, rgba(255, 255, 255, 0.23) 0%, transparent 100%);
+        filter: brightness(1.1);
+    }
+
+    .button-custom-table-danger:active {
+        color: firebrick;
+        transition: all 150ms ease-in-out;
+        box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px;
+        background-color: #111111;
+        background-image: radial-gradient(76% 151% at 52% -52%, rgba(255, 255, 255, 0.23) 0%, transparent 100%);
+        transform: scale(.95);
+    }
+
+/* button for delete icon */
+
+.button-custom-toolbar-char-danger {
+    padding: 2px;
+    color: #a32626;
+    text-align: center;
+    border: 0;
+    font-weight: bold;
+    font-size: 16px;
+    transition: all 150ms ease-in-out;
+    box-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px 0px inset, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px;
+    border-radius: 6px;
+    background-color: #111111;
+    background-image: radial-gradient(76% 151% at 52% -52%, rgba(255, 255, 255, 0.23) 0%, transparent 100%);
+    min-width: 32px;
+    max-width: 32px;
+    margin-left: 30px;
+}
+
+    .button-custom-toolbar-char-danger:hover {
+        filter: brightness(1.1);
+        color: red;
+    }
+
+    .button-custom-toolbar-char-danger:active {
+        transform: scale(.95);
+        color: red;
+    }
+
 .button-custom-paging-arrow {
     padding: 2px;
     color: #4c98d9;
@@ -557,7 +655,6 @@ h1:focus {
     .button-modal-danger:active {
         transform: scale(.95);
     }
-
 /* BUTTONS SIZE STANDARD START */
 
 .button-custom-primary-med {
@@ -804,9 +901,7 @@ h1:focus {
         background-image: radial-gradient(76% 151% at 52% -52%, rgba(255, 255, 255, 0.23) 0%, transparent 100%);
         transform: scale(.95);
     }
-
 /* BUTTONS SIZE STANDARD END */
-
 /* BODY LAYOUT */
 .toolbar-top {
     display: flex;
@@ -901,7 +996,6 @@ h1:focus {
     margin-left: 12px;
     margin-right: 12px;
 }
-
 /* CRUD BUTTONS */
 .btn-toolbar-custom {
     background-color: #272B30;
@@ -922,7 +1016,6 @@ h1:focus {
     .btn-toolbar-custom-no-indent:hover {
         color: whitesmoke;
     }
-
 /* INPUT SELECT */
 .toolbar-label-select {
     align-content: center;
@@ -975,7 +1068,6 @@ h1:focus {
     margin-left: 0px;
     margin-right: 6px;
 }
-
 /* INPUT SEARCH */
 .toolbar-label-search {
     align-content: center;
@@ -1066,6 +1158,7 @@ h1:focus {
     width: 42px;
     height: 42px;
 }
+
     .clear-btn-custom:hover {
         background-color: goldenrod;
     }
@@ -1086,7 +1179,6 @@ h1:focus {
     border-width: thin;
     border-radius: 3px;
 }
-
 /* FOR MOVIES LIST PAGE */
 
 .toolbar-top-second-row {
@@ -1201,7 +1293,6 @@ h1:focus {
     width: 180px;
     padding-top: 12px;
 }
-
 /* JOURNAL.RAZOR CUSTOM CSS */
 .container-page {
     display: flex;

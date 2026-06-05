@@ -3,34 +3,6 @@
 @inject IProductsReadHttpService _readSideHttpClient
 @attribute [Authorize(Policy = "IsAdminOrManager")]
 
-@* <div class="row mt-2">
-    <div class="col-1">
-        <h5>Dev Test: Message callback propagation</h5>
-    </div>
-    <div class="col-3">
-        <a class="btn button-custom-success" @onclick="TestHandleSuccess">Test Handle Success</a>
-    </div>
-    <div class="col-3">
-        <a class="btn button-custom-danger" @onclick="TestHandleError">Test Handle Error</a>
-    </div>
-    <div class="col-5">
-    </div>
-</div> *@
-
-@* <div class="row">
-    <div class="col-3">
-        @if (ProductFetchTime.HasValue)
-        {
-            <h6 class="text-secondary"><i>Data Fetched: @ProductFetchTime.Value</i></h6>
-        }
-    </div>
-    <div class="col-3">
-        <h6 class="text-secondary"><i>Current Time: @DateTime.Now</i></h6>
-    </div>
-</div> *@
-
-@* <h4 class="mt-2"><b>Product Detail</b></h4> *@
-
 @if (_product is not null)
 {
     <div class="row">
@@ -250,7 +222,7 @@
                                 <th>File Name</th>
                                 <th>Title</th>
                                 <th></th>
-                                <th></th>
+                                @* <th></th> *@
                             </tr>
                         </thead>
                         <tbody>
@@ -261,11 +233,11 @@
                                     <td>@doc.Name</td>
                                     <td>@doc.Title</td>
                                     <td>
-                                        <a class="btn btn-primary" style="width:80px;">View</a>
+                                        <a class="btn button-custom-table-primary" style="width:80px;">View</a>
                                     </td>
-                                    <td>
-                                        <a class="btn btn-danger" style="width:80px;">Delete</a>
-                                    </td>
+                                    @* <td>
+                                        <a class="btn button-custom-table-danger" style="width:80px;">Delete</a>
+                                    </td> *@
                                 </tr>
                             }
                         </tbody>

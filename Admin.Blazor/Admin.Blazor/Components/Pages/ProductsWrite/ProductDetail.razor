@@ -228,10 +228,10 @@
                                     <td>@doc.Name</td>
                                     <td>@doc.Title</td>
                                     <td>
-                                        <a class="btn btn-primary">View</a>
+                                        <a class="btn button-custom-table-primary">View</a>
                                     </td>
                                     <td>
-                                        <a class="btn btn-danger">Delete</a>
+                                        <a class="btn button-custom-table-danger">Delete</a>
                                     </td>
                                 </tr>
                             }
@@ -275,8 +275,13 @@
                             <div class="col-6 offset-2 text-center">
                                 <span><i>@_primaryImage.Name</i></span>
                             </div>
-                            <div class="col-1 offset-2 text-center">
+                            @* <div class="col-1 offset-2 text-center">
                                 <a class="btn btn-sm btn-danger " @onclick="(() => DeleteImage(_primaryImage.Name!))">&#128465;</a>
+                            </div> *@
+                            <div class="col-1 offset-2 text-center">
+                                <a class="btn button-custom-toolbar-char-danger" title="Delete image" role="button" @onclick="(() => DeleteImage(_primaryImage.Name!))">
+                                    <i class="bi-trash2"></i>
+                                </a>
                             </div>
                         }
                     </div>
