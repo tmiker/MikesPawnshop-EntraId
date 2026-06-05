@@ -4,13 +4,17 @@ namespace Products.Write.Application.DTOs
 {
     public class DeleteDocumentDTO
     {
-        public string ProductId { get; init; }
-        public string FileName { get; init; } 
+        public string ProductId { get; init; } = default!;
+        public string FileName { get; init; } = default!;
+        public string? CorrelationId { get; set; }
 
-        public DeleteDocumentDTO(string productId, string fileName)
-        {
-            ProductId = productId;
-            FileName = fileName;
-        }
+
+        //public DeleteDocumentDTO(string productId, string fileName, string? title, string? correlationId)
+        //{
+        //    ProductId = productId;
+        //    FileName = fileName;
+        //    Title = title;
+        //    CorrelationId = correlationId;
+        //}
     }
 }

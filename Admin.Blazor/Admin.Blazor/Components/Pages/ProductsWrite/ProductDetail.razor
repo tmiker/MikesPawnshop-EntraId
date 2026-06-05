@@ -228,10 +228,10 @@
                                     <td>@doc.Name</td>
                                     <td>@doc.Title</td>
                                     <td>
-                                        <a class="btn button-custom-table-primary">View</a>
+                                        <a class="btn button-custom-table-primary" href="@doc.DocumentUrl" target="_blank">View</a>
                                     </td>
                                     <td>
-                                        <a class="btn button-custom-table-danger">Delete</a>
+                                        <a class="btn button-custom-table-danger" @onclick="() => DeleteDocument(doc.Name!)">Delete</a>
                                     </td>
                                 </tr>
                             }
@@ -338,6 +338,14 @@
 {
     <AddDocumentModal ModalTitle="Add Document" SubmitButtonTitle="Add Document" DocumentToAdd="@_addDocumentDTO" Submit="SubmitAddDocument" Cancel="CancelAddDocument" />
 }
+@if (_deleteImageDTO is not null)
+{
+    <DeleteImageModal ModalTitle="Confirm Delete Image" SubmitButtonTitle="Delete" ImageToDelete="@_deleteImageDTO" Submit="SubmitDeleteImage" Cancel="CancelDeleteImage" />
+}
+@if (_deleteDocumentDTO is not null)
+{
+    <DeleteDocumentModal ModalTitle="Confirm Delete Document" SubmitButtonTitle="Delete" DocumentToDelete="@_deleteDocumentDTO" Submit="SubmitDeleteDocument" Cancel="CancelDeleteDocument" />
+}
 
 @code {
 
@@ -414,6 +422,7 @@
     private DeleteImageDTO? _deleteImageDTO;
     private void DeleteImage(string filename)
     {
+        if (string.IsNullOrWhiteSpace(filename)) _errorMessage = "The document file name is null or empty.";
         if (_product!.Images is not null)
         {            
             _deleteImageDTO = new DeleteImageDTO(_product!.Id.ToString(), filename, null);
@@ -433,13 +442,17 @@
     }
 
     private DeleteDocumentDTO? _deleteDocumentDTO;
-    private void DeleteDocument(string filename)
+    private async Task DeleteDocument(string filename)
     {
+        if (string.IsNullOrWhiteSpace(filename)) _errorMessage = "The document file name is null or empty.";
         if (_product!.Documents is not null)
         {
             _deleteDocumentDTO = new DeleteDocumentDTO(_product!.Id.ToString(), filename, null);
         }
-        else _errorMessage = $"There are no product documents.";
+        else
+        {
+            _errorMessage = $"There are no product documents.";
+        }
     }
     private void CancelDeleteDocument() => _deleteImageDTO = null;
     private async Task SubmitDeleteDocument()
@@ -514,150 +527,5 @@
             this.StateHasChanged();
         }
     }
-
-    protected override void OnInitialized()
-    {
-        // if (Int32.TryParse(id, out int number)) Id = number;
-        // else _errorMessage = $"Unable to parse Product Id";
-        // if (SelectedProduct is not null) Id = SelectedProduct.Id;
-    }
 }
 
-@*
-    //// ****************** ADD AND REMOVE IMAGES AND DOCUMENTS END *******************
-
-    //// ****************** ALTERNATE ADD AND REMOVE IMAGES AND DOCUMENTS START *******************
-    ///
-    // private CancellationTokenSource? _cancellationTokenSource = null;
-    // private AddImageDTO? _addImageDTO = null;
-    // private void AddImageAsync()
-    // {
-    //     _addImageDTO = new AddImageDTO { ProductId = _product?.AggregateId.ToString()! };
-    //     _showAddImageView = true;
-    // }
-    // private void CancelAddImage()
-    // {
-    //     _showAddImageView = false;
-    //     _addImageDTO = null;
-    // }
-    // private async Task SubmitNewImage()
-    // {
-    //     _cancellationTokenSource = new CancellationTokenSource();
-    //     var result = await _writeSideHttpClient.AddProductImageAsync(_addImageDTO!, _cancellationTokenSource.Token);
-    //     if (result.IsSuccess) _successMessage = "Image successfully added";
-    //     else _errorMessage = result.ErrorMessage!;
-    //     _showAddImageView = false;
-    //     _addImageDTO = null;
-    //     _cancellationTokenSource = null;
-    //     await ReloadAsync();
-    // }
-
-    // private void SetPrimaryImage(int sequenceNumber)
-    // {
-    //     await _toastrService.ShowToastrError($"NOT YET IMPLEMENTED FOR PRODUCTS!");
-    //     var primaryImage = _product!.Images?.FirstOrDefault(i => i.SequenceNumber == sequenceNumber);
-    //     if (primaryImage != null)
-    //     {
-    //         _primaryImage = primaryImage;
-    //     }
-    // }
-
-    // private DeleteImageDTO? _deleteImageDTO = null;
-    // private async Task DeleteImageAsync(string filename)
-    // {
-    //     _deleteImageDTO = new DeleteImageDTO(_product!.AggregateId.ToString(), filename, null);
-    //     var result = await _writeSideHttpClient.DeleteProductImageAsync(_deleteImageDTO);
-    //     if (result.IsSuccess)
-    //     {
-    //         _successMessage = "Image successfully removed";
-    //         await ReloadAsync();
-    //     }
-    //     else
-    //     {
-    //         _errorMessage = result.ErrorMessage!;
-    //         await ReloadAsync();
-    //     }
-    // }
-    //// ****************** ALTERNATE ADD AND REMOVE IMAGES AND DOCUMENTS END *******************
-
-*@
-
-@*
-                    //// ****************** ALTERNATE ADD AND REMOVE IMAGES AND DOCUMENTS  *******************
-
-                    <!-- COLUMN 2 START-->
-            @if (!_showAddImageView)
-            {
-                <div class="row">
-                    <div class="col-4 offset-4 text-center ">
-                        <h5><b>Images</b></h5>
-                    </div>
-                        <div class="col-3 offset-1 text-end">
-                            <a class="btn btn-toolbar-custom" role="button" @onclick="AddImageAsync">
-                                <i class="bi-plus-lg m-1"></i>  Add Image
-                            </a>
-                        </div>
-                </div>
-                @if (_primaryImage != null)
-                {
-                    <div class="row">
-                        <div class="col-12 text-center">
-                            <img src="@_primaryImage.ImageUrl" width="400" />
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12 text-center">
-                            <p class="text-primary"><i>@_primaryImage.Caption</i></p>
-                        </div>
-                    </div>
-                }
-                else
-                {
-                    <br />
-                    <div class="row">
-                        <div class="col-12 text-center">
-                            <h6 class="text-primary"><b><i>No images available</i></b></h6>
-                        </div>
-                    </div>
-                    <br />
-                }
-                <div class="row">
-                    @if (_primaryImage != null)
-                    {
-                        <div class="col-1 text-center ">
-                            <span><i>@_primaryImage.SequenceNumber</i></span>
-                        </div>
-                        <div class="col-6 offset-2 text-center">
-                            <span><i>@_primaryImage.Name</i></span>
-                        </div>
-                            <div class="col-1 offset-2 text-center">
-                                <a class="btn btn-sm btn-danger " @onclick="(() => DeleteImageAsync(_primaryImage.Name!))">&#128465;</a>
-                            </div>
-                    }
-                </div>
-            }
-            else
-            {
-                <AddImageModal />
-            }
-            <br />
-            <div class="row">
-                @if (_product.Images is not null && _product.Images.Any())
-                {
-                    @foreach (var image in _product.Images)
-                    {
-                        <div class="col-2">
-                            @if (image.SequenceNumber == 1)
-                            {
-                                <img src="@image.ThumbnailUrl" width="100" style="border:2px solid blue;" />
-                            }
-                            else
-                            {
-                                <img src="@image.ThumbnailUrl" width="100" style="cursor:pointer;" @onclick="(() => SetPrimaryImage(image.SequenceNumber))" />
-                            }
-                        </div>
-                    }
-                }
-            </div>
-            <!-- COLUMN 2 END-->
-                *@
