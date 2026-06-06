@@ -174,9 +174,9 @@ app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(Consumer.Blazor.Client._Imports).Assembly);
 
-app.MapGet("/ping", () => "Blazor Consumer Client is up and running!  Last Build: 5 Jun 2026 @ 09:15 CST").AllowAnonymous();
+app.MapGet("/ping", () => "Blazor Consumer Client is up and running!  Last Build: 5 Jun 2026 @ 19:05 CST").AllowAnonymous();
 
-app.MapPost("/login", (string? returnUrl, HttpContext httpContext) =>
+app.MapGet("/login", (string? returnUrl, HttpContext httpContext) =>
 {
     Console.WriteLine($"Blazor Web App logging in ...");
     // ensure the returnUrl is valid & safe (calls method ValidateUri defined int partial Program class below):
