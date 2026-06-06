@@ -55,10 +55,10 @@
                                 <td>@product.QuantityAllocated</td>
                                 <td>@product.QuantityAvailable</td>
                                 <td>
-                                    <a class="btn btn-primary" @onclick="() => Detail(product.Id)">Detail</a>
+                                    <a class="btn btn-outline-primary btn-sm" style="width:100px" @onclick="() => Detail(product.Id)">Detail</a>
                                 </td>
                                 <td>
-                                    <a class="btn btn-success" @onclick="() => AddToCart(product.AggregateId)">Add to Cart</a>
+                                    <a class="btn btn-outline-success btn-sm" style="width:100px" @onclick="() => AddToCart(product.AggregateId)">Add to Cart</a>
                                 </td>
                             </tr>
                         }
