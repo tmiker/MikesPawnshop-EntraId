@@ -14,23 +14,23 @@
         <h4><b>STORE FRONT</b></h4>
     </div>
     <div class="col-4">
-        @if (MyCartData is not null)
+        @* @if (MyCartData is not null)
         {
             <h6 class="text-secondary"><i>MyCartData.ShowCart: @MyCartData.ShowCart</i></h6>
-        }
+        } *@
     </div>
     <div class="col-2">
         @if (_apiHealthCheckResult is null)
         {
-            <a class="btn button-custom-primary form-control" @onclick="CartsApiHealthCheck">Carts API Health</a>
+            <a class="btn button-custom-primary-med form-control" @onclick="CartsApiHealthCheck">Carts API Health</a>
         }
         else
         {
-            <a class="btn button-custom-primary form-control" @onclick="ClearHealthCheckResult">Hide API Health</a>
+            <a class="btn button-custom-primary-med  form-control" @onclick="ClearHealthCheckResult">Hide API Health</a>
         }
     </div>
     <div class="col-2">
-        <a class="btn button-custom-warning form-control" @onclick="ToggleShowCart">@_cartButtonText</a>
+        <a class="btn button-custom-warning-med form-control" @onclick="ToggleShowCart"><i class="bi-cart2"></i> &nbsp; @_cartButtonText</a>
     </div>
 </div>
 
@@ -208,7 +208,7 @@
     private string? _categoryFilter = null;
     private string? _sortColumn = "Name";
     private int _pageNumber = 1;
-    private int _pageSize = 10;
+    private int _pageSize = 4;
 
     // ERROR COMPONENT MESSAGING
     private string? _errorMessage;

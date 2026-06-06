@@ -12,7 +12,7 @@
                     <h4>Product Detail</h4>
                 </div>
                 <div class="col-4">
-                    <a class="btn button-custom-primary form-control" @onclick="BackToList">Back</a>
+                    <a class="btn button-custom-primary-med form-control" @onclick="BackToList">Back</a>
                 </div>
             </div>
 
@@ -171,12 +171,9 @@
                             <input type="number" class="form-control bg-dark text-light form-control" @bind-value="@_quantityToAdd" />
                         </div>
                         <div class="col-4">
-                            <a class="btn button-custom-success mt-3" @onclick="() => AddToCart(_quantityToAdd)">Add to Cart</a>
+                            <a class="btn button-custom-success-med mt-4" @onclick="() => AddToCart(_quantityToAdd)">Add to Cart</a>
                         </div>
                         <div class="col-4 text-center">
-                            @* <label>Quantity Available:</label>
-                            <p class="mt-2">@_product.QuantityAvailable</p> *@
-                            @* <p class="mt-4"><i>(@_product.QuantityAvailable available)</i></p> *@
                         </div>
                     </div>
                 </Authorized>
@@ -189,13 +186,13 @@
                 @if (_showDocuments)
                 {
                     <div class="col-5">
-                        <a class="btn button-custom-primary form-control" @onclick="ToogleShowDocuments">Show Images</a>
+                        <a class="btn button-custom-info-med form-control" @onclick="ToogleShowDocuments">Show Images</a>
                     </div>
                 }
                 else
                 {
                     <div class="col-5">
-                        <a class="btn button-custom-primary form-control" @onclick="ToogleShowDocuments">Show Documents</a>
+                        <a class="btn button-custom-info-med form-control" @onclick="ToogleShowDocuments">Show Documents</a>
                     </div>
                 }
             </div>
@@ -219,7 +216,6 @@
                                 <th>File Name</th>
                                 <th>Title</th>
                                 <th></th>
-                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -232,9 +228,6 @@
                                     <td>
                                         <a class="btn button-custom-table-primary" href="@doc.DocumentUrl">View</a>
                                     </td>
-                                    @* <td>
-                                        <a class="btn button-custom-table-danger">Delete</a>
-                                    </td> *@
                                 </tr>
                             }
                         </tbody>

@@ -13,7 +13,7 @@
             <h5 class="text-center mt-2"><b>My Cart</b></h5>
         </div>
         <div class="col-2 offset-2">
-            <a class="btn button-custom-warning form-control" @onclick="Checkout"><i class="bi-lightning-charge"></i> &nbsp; Checkout</a>
+            <a class="btn button-custom-warning-med form-control" @onclick="Checkout"><i class="bi-lightning-charge"></i> &nbsp; Checkout</a>
         </div>
     }
     else
@@ -22,7 +22,7 @@
             <h5 class="text-center mt-2"><b>Checkout</b></h5>
         </div>
         <div class="col-2 offset-2">
-            <a class="btn button-custom-warning form-control" @onclick="BackToCart"><i class="bi-cart2"></i> &nbsp; Back to Cart</a>
+            <a class="btn button-custom-warning-med form-control" @onclick="BackToCart"><i class="bi-cart2"></i> &nbsp; Back to Cart</a>
         </div>
     }
 </div>
@@ -78,16 +78,16 @@ else
                                     }
                                 </td>
                                 <td>
-                                    <a class="btn btn-primary form-control" @onclick="() => Detail(item.ProductId!)"><b><i class="bi-list"></i>&nbsp; Detail</b></a>
+                                    <a class="btn btn-outline-primary form-control" @onclick="() => Detail(item.ProductId!)"><b><i class="bi-list"></i>&nbsp; Detail</b></a>
                                 </td>
                                 <td>
-                                    <a class="btn btn-success form-control" @onclick="() => IncrementAsync(item.AggregateId!)"><b>+</b></a>
+                                    <a class="btn btn-outline-success form-control" @onclick="() => IncrementAsync(item.AggregateId!)"><b>+</b></a>
                                 </td>
                                 <td>
-                                    <a class="btn btn-danger form-control" @onclick="() => DecrementAsync(item.AggregateId!)"><b>-</b></a>
+                                    <a class="btn btn-outline-danger form-control" @onclick="() => DecrementAsync(item.AggregateId!)"><b>-</b></a>
                                 </td>
                                 <td>
-                                    <a class="btn btn-danger form-control" @onclick="() => RemoveItemAsync(item.AggregateId!)"><b><i class="bi-trash"></i>&nbsp; Remove</b></a>
+                                    <a class="btn btn-outline-danger form-control" @onclick="() => RemoveItemAsync(item.AggregateId!)"><b><i class="bi-trash"></i>&nbsp; Remove</b></a>
                                 </td>
                             </tr>
                         }

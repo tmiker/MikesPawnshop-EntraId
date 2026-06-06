@@ -128,28 +128,4 @@
     {
         if (AddToCartCallback.HasDelegate) await AddToCartCallback.InvokeAsync(productId);
     }
-
-    // public List<ProductDTO>? Products;
-    // private void DeleteFullProductsList() => Products = null;
-    // private async Task LoadFullProductsList()
-    // {
-    //     var productsResult = await _readProductsClient.GetProductsAsync();
-    //     if (productsResult.IsSuccess)
-    //     {
-    //         if (productsResult.Products is not null && productsResult.Products.Any())
-    //         {
-    //             Products = productsResult.Products.ToList();
-    //         }
-    //     }
-    //     else await ShowErrorMessage(productsResult.ErrorMessage ?? "An unspecified error occurred.");
-    // }
-
-    // protected override void OnAfterRender(bool isFirstRender)
-    // {
-    //     if (isFirstRender)
-    //     {
-    //         Console.WriteLine($"@@@@@@@@@@ **************** StorefrontProducts.razor OnAfterRender was called. *************** @@@@@@@@@");
-    //         // this.StateHasChanged();
-    //     }
-    // }
 }

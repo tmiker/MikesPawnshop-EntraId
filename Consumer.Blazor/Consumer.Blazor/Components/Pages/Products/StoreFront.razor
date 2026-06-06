@@ -9,25 +9,25 @@
 <PageTitle>Storefront</PageTitle>
 
 <div class="row">
-    <div class="col-3">
+    <div class="col-4">
         <h4><b>STORE FRONT</b></h4>
     </div>
-    <div class="col-3">
+    @* <div class="col-3">
         @if (MyCartData is not null)
         {
             <h6 class="text-secondary"><i>MyCartData.ShowCart: @MyCartData.ShowCart</i></h6>
         }
     </div>
-    <div class="col-4">
+    <div class="col-3">
         @if (MyCartData is not null)
         {
             <input class="bg-dark text-light" type="checkbox" checked="@MyCartData.ShowCart" @bind-value="MyCartData.ShowCart" />
         }
-    </div>
+    </div> *@
     <AuthorizeView>
         <Authorized>
-            <div class="col-2">
-                <a class="btn button-custom-warning form-control" @onclick="ToggleShowCart">@_cartButtonText</a>
+            <div class="col-2 offset-6">
+                <a class="btn button-custom-warning-med form-control" @onclick="ToggleShowCart"><i class="bi-cart2"></i> &nbsp; @_cartButtonText</a>
             </div>
         </Authorized>
     </AuthorizeView>
@@ -193,7 +193,7 @@
         _nameFilter = null;
         _categoryFilter = null;
         _sortColumn = "Name";
-        _pageSize = 8;
+        _pageSize = 4;
         await GetProducts();
     }
 

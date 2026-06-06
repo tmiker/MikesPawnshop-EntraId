@@ -41,7 +41,7 @@ else
                                 <td>@order.Items.Count</td>
                                 <td>@order.Version</td>
                                 <td>
-                                    <a class="btn btn-primary" @onclick="() => Detail(order.Id!)">Detail</a>
+                                    <a class="btn button-custom-table-primary" @onclick="() => Detail(order.Id!)">Detail</a>
                                 </td>
                             </tr>
                         }
@@ -108,17 +108,28 @@ else
     </div>
 }
 
+@if (_thinking)
+{
+    <div class="mx-auto text-center mb-3 mt-3">
+        <div class="spinner-border text-yellow-alt role-status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+
+
 @code {
     private List<OrderDTO>? _orders;
     private PaginationMetadata? _pagingData;
     private OrderDTO? _selectedOrder;
     private void HandleBackToListCallback() => _selectedOrder = null;
+    private bool _thinking = true;
 
     private string? _filter = null;
     private string? _sortColumn = "orderdate";
     private string? _sortOrder = "descending";
     private int _pageNumber = 1;
-    private int _pageSize = 10;
+    private int _pageSize = 5;
 
     // ERROR COMPONENT MESSAGING
     private string? _errorMessage;
@@ -138,7 +149,7 @@ else
         _filter = null;
         _sortColumn = "orderdate"; 
         _sortOrder = "descending";
-        _pageSize = 10;
+        // _pageSize = 5;
         await RefreshData();
     }
 
@@ -171,6 +182,7 @@ else
 
     private async Task RefreshData()
     {
+        _thinking = true;
         var result = await _orderHttpService.GetAllUserOrdersAsync(_filter, _sortColumn, _sortOrder, _pageNumber, _pageSize);
         if (result.IsSuccess)
         {
@@ -178,6 +190,7 @@ else
             _pagingData = result.PagingData;
         }
         else _errorMessage = result.ErrorMessage;
+        _thinking = false;
     }
 
     protected override async Task OnAfterRenderAsync(bool isFirstRender)
@@ -194,6 +207,7 @@ else
             }
             else _errorMessage = result.ErrorMessage;
 
+            _thinking = false;
             this.StateHasChanged();
         }
     }

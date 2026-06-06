@@ -5,8 +5,6 @@ namespace Orders.API.Abstractions
 {
     public interface IOrderService
     {
-        // Task<AccountStatusResponseDTO> GetAccountStatusAsync(string ownerId, CancellationToken cancellationToken);                                               // PRIVATE METHOD
-        // Task<(bool IsSuccess, ReviewOrderResultDTO? ReviewDTO, string? ErrorMessage)> ReviewOrderAsync(string ownerId, CancellationToken cancellationToken);     // DONE ON ORDER SUBMISSION (AddOrderAsync)
         Task<(bool IsSuccess, IEnumerable<OrderDTO>? OrderDTOs, PaginationMetadata? PagingData, string? ErrorMessage)> GetAllUserOrdersAsync(string ownerId, string? filter, int pageNumber, int pageSize, string? sortColumn = null, string? sortOrder = null);
         Task<(bool IsSuccess, OrderDTO? OrderDTO, string? ErrorMessage)> GetOrderByOrderIdAsync(string ownerId, string orderId);
         Task<(bool IsSuccess, string? OrderId, string? ErrorMessage)> AddOrderAsync(string ownerId, AddOrderDTO addOrderDTO, CancellationToken cancellationToken);

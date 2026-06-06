@@ -4,33 +4,31 @@
 @attribute [Authorize(Policy = "IsAdminOrManager")]
 
 <div class="row mt-2">
-    <div class="col-10">
+    <div class="col-8">
         <h4><b>My Account</b></h4>
     </div>
-    @if (_accountInfo is null)
+    <div class="col-2">
+    @if (_accountInfo is null && !_thinking)
     {
-        <div class="col-2">
-            <a class="btn btn-success form-control" @onclick="AddAccount">Add Account Info</a>
-        </div>
+        <a class="btn button-custom-success-med form-control" @onclick="AddAccount">Add Account Info</a>
     }
+    </div>
+    <div class="col-2">
+        @if (_apiHealthCheckResult is null)
+        {
+            <a class="btn button-custom-yellow-med form-control" @onclick="ApiHealthCheck">Accounts API Health</a>
+        }
+        else
+        {
+            <a class="btn button-custom-yellow-med form-control" @onclick="ClearHealthCheckResult">Hide API Health</a>
+        }
+    </div>
 </div>
 
-@* @if (!string.IsNullOrWhiteSpace(_errorMessage))
+@if (_apiHealthCheckResult is not null)
 {
-    <div class="row mt-2">
-        <div class="col-10">
-            <h5 class="text-danger"><b>Error:</b></h5>
-        </div>
-        <div class="col-2">
-            <a class="btn btn-warning form-control" @onclick="ClearErrorMessage">Clear Errors</a>
-        </div>
-    </div>
-    <div class="row mt-2">
-        <div class="col-12 text-center">
-            <textarea rows="2" class="bg-dark text-danger form-control">@_errorMessage</textarea>
-        </div>
-    </div>
-} *@
+    <HealthCheckResult ApiHealthCheckResult="@_apiHealthCheckResult" />
+}
 
 @if (_accountInfo is not null)
 {
@@ -115,7 +113,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var address in _accountInfo.Addresses)    // System.NullReferenceException: 'Object reference not set to an instance of an object.'  address was null.
+                        @foreach (var address in _accountInfo.Addresses)    
                         {
                             <tr>
                                 <td>@address.Street1</td>
@@ -137,13 +135,16 @@
                                     }
                                 </td>
                                 <td colspan="1">
-                                    <a class="btn btn-primary form-control" style="width:100px;">Detail</a>
+                                    @* <a class="btn btn-primary form-control" style="width:100px;">Detail</a> *@
+                                    <span class="text-info-alt" style="cursor:pointer;">Detail</span>
                                 </td>
                                 <td colspan="1">
-                                    <a class="btn btn-success form-control" style="width:100px;">Edit</a>
+                                    @* <a class="btn btn-success form-control" style="width:100px;">Edit</a> *@
+                                    <span class="text-success-alt" style="cursor:pointer;">Edit</span>
                                 </td>
                                 <td colspan="1">
-                                    <a class="btn btn-danger form-control" style="width:100px;">Delete</a>
+                                    @* <a class="btn btn-danger form-control" style="width:100px;">Delete</a> *@
+                                    <span class="text-danger-alt" style="cursor:pointer;">Delete</span>
                                 </td>
                             </tr>
                         }
@@ -154,7 +155,7 @@
             {
                 <div class="row mt-2">
                     <div class="col-4 offset-4 text-center">
-                        <a class="btn btn-success form-control" @onclick="AddAddress">Add Address</a>
+                        <a class="btn button-custom-success-med form-control" @onclick="AddAddress">Add Address</a>
                     </div>
                 </div>
             }
@@ -164,58 +165,15 @@
 }
 else
 {
-    <div class="row mt-2">
-        <div class="col-4 offset-4 text-center">
-            <h4><b><i>Please add your account information!</i></b></h4>
+    @if (!_thinking)
+    {
+        <div class="row mt-2">
+            <div class="col-4 offset-4 text-center">
+                <h4><b><i>Please add your account information!</i></b></h4>
+            </div>
         </div>
-    </div>
+    }
 }
-
-@if (_apiHealthCheckResult is null)
-{
-    <br />
-    <div class="row mt-2">
-        <div class="col-3">
-            <a class="btn btn-primary form-control" @onclick="ApiHealthCheck">Accounts API Health</a>
-        </div>
-    </div>
-}
-else
-{
-    <br />
-    <div class="row mt-2">
-        <div class="col-3">
-            <a class="btn btn-primary form-control" @onclick="ClearHealthCheckResult">Hide API Health</a>
-        </div>
-    </div>
-    <HealthCheckResult ApiHealthCheckResult="@_apiHealthCheckResult" />
-}
-
-@* @if (string.IsNullOrWhiteSpace(_apiHealthCheckResult))
-{
-    <div class="row mt-2">
-        <div class="col-2">
-            <a class="btn btn-primary form-control" @onclick="AccountsApiHealthCheck">Check API Health</a>
-        </div>
-    </div>
-}
-else
-{
-    <br />
-    <div class="row mt-2">
-        <div class="col-10">
-            <h5><b>Health Check Result:</b></h5>
-        </div>
-        <div class="col-2">
-            <a class="btn btn-primary form-control" @onclick="ClearHealthCheckResult">Clear Result</a>
-        </div>
-    </div>
-    <div class="row mt-2">
-        <div class="col-12 text-center">
-            <textarea rows="2" class="bg-dark text-light form-control">@_apiHealthCheckResult</textarea>
-        </div>
-    </div>
-} *@
 
 @if (_thinking)
 {
@@ -237,7 +195,7 @@ else
 @code {
 
     private AccountDTO? _accountInfo;
-    private bool _thinking = false;
+    private bool _thinking = true;
     private string? _errorMessage;
     private void ClearErrorMessage() => _errorMessage = null;
 
@@ -261,6 +219,7 @@ else
     private void CancelAddAccount() => _addAccountDTO = null;
     private async Task SubmitAddAccount()
     {
+        _thinking = true;
         _errorMessage = null;
         if (_addAccountDTO is null)
         {
@@ -273,6 +232,7 @@ else
             if (result.IsSuccess) await ReloadAsync();
         }
         _addAccountDTO = null;
+        _thinking = false;
     }
 
     private AddAddressDTO? _addAddressDTO;
@@ -280,6 +240,7 @@ else
     private void CancelAddAddress() => _addAddressDTO = null;
     private async Task SubmitAddAddress()
     {
+        _thinking = true;
         if (_addAddressDTO is null)
         {
             _errorMessage = $"A new address object was not provided.";
@@ -291,10 +252,12 @@ else
             _addAddressDTO = null;
             if (result.IsSuccess) await ReloadAsync();
         }
+        _thinking = false;
     }
 
     private async Task ReloadAsync()
     {
+        _thinking = true;
         var result = await _accountHttpService.GetAccountAsync();
         if (result.IsSuccess)
         {
@@ -304,6 +267,7 @@ else
         {
             _errorMessage = result.ErrorMessage;
         }
+        _thinking = false;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

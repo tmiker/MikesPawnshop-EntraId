@@ -11,11 +11,11 @@
     <div class="col-2">
         @if (_apiHealthCheckResult is null)
         {
-            <a class="btn btn-primary form-control" @onclick="ApiHealthCheck">Check API Health</a>
+            <a class="btn button-custom-yellow-med form-control" @onclick="ApiHealthCheck">Check API Health</a>
         }
         else
         {
-            <a class="btn btn-primary form-control" @onclick="ClearHealthCheckResult">Hide API Health</a>
+            <a class="btn button-custom-yellow-med form-control" @onclick="ClearHealthCheckResult">Hide API Health</a>
         }
     </div>
 </div>
@@ -29,15 +29,15 @@
 {
     <div class="row mt-2">
         <div class="col-10">
-            <h5 class="text-danger"><b>Error:</b></h5>
+            <h5 class="text-warning-alt"><b>Error:</b></h5>
         </div>
         <div class="col-2">
-            <a class="btn btn-warning form-control" @onclick="ClearErrorMessage">Clear Errors</a>
+            <a class="btn button-custom-warning-med form-control" @onclick="ClearErrorMessage">Clear Errors</a>
         </div>
     </div>
     <div class="row mt-2">
         <div class="col-12 text-center">
-            <textarea rows="2" class="bg-dark text-danger form-control">@_errorMessage</textarea>
+            <textarea rows="2" class="bg-dark text-warning-alt form-control">@_errorMessage</textarea>
         </div>
     </div>
 }

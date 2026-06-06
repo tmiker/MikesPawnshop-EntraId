@@ -14,16 +14,12 @@ namespace Orders.API.Services
         private readonly IEncryptionHelper _encryptionHelper;
         private readonly IMongoCollection<Order> _orders;
         private readonly IInternalAccountsHttpService _internalAccountsHttpService;
-        //private readonly IAesSymmetricEncryptionManager _aesSymmetricEncryptor;
-        //private readonly IRsaAsymmetricEncryptionManager _rsaAsymmetricEncryptor;
         private readonly ILogger<OrderService> _logger;
 
         public OrderService(
             IConfiguration config,
             IEncryptionHelper encryptionHelper,
             IInternalAccountsHttpService internalAccountsHttpService,
-            //IAesSymmetricEncryptionManager aesSymmetricEncryptor,
-            //IRsaAsymmetricEncryptionManager rsaAsymmetricEncryptor,
             ILogger<OrderService> logger)
         {
             _config = config;
@@ -34,40 +30,8 @@ namespace Orders.API.Services
             var database = client.GetDatabase(_config["MONGO_DATABASE"]);
             _orders = database.GetCollection<Order>(_config["MONGO_ORDER_COLLECTION"]);
             _internalAccountsHttpService = internalAccountsHttpService;
-            //_aesSymmetricEncryptor = aesSymmetricEncryptor;
-            //_rsaAsymmetricEncryptor = rsaAsymmetricEncryptor;
             _logger = logger;
         }
-
-        //public async Task<(bool IsSuccess, ReviewOrderResultDTO? ReviewDTO, string? ErrorMessage)> ReviewOrderAsync(string ownerId, CancellationToken cancellationToken)
-        //{
-        //    string errors = string.Empty;
-        //    ReviewOrderResultDTO resultDTO = new ReviewOrderResultDTO();
-
-        //    // ORIGINAL
-        //    // 1. Get account detail dto from internal accounts services - note the http service will add api key for internal account api call and encrypt data
-        //    // var accountResult = await _internalAccountsHttpService.GetAccountDetailsFromInternalApiAsync(ownerId);
-        //    //if (accountResult.IsSuccess)
-        //    //{
-        //    //    resultDTO.AccountOwnerId = accountResult.AccountDetail?.AccountOwnerId;
-        //    //    resultDTO.AccountDetail = accountResult.AccountDetail;
-        //    //}
-        //    // else errors += $"{accountResult.ErrorMessage} \n";
-
-        //    // 2. Get cart from internal cart services - note the http service will add api key for internal cart api call and encrypt data
-
-        //    //var cartResult = await _internalCartsHttpService.GetShoppingCartAsync(ownerId);
-        //    //if (cartResult.IsSuccess)
-        //    //{
-        //    //    resultDTO.ShoppingCart = cartResult.ShoppingCart;
-        //    //}
-        //    //else errors += $"{cartResult.ErrorMessage}";
-
-        //    //if (string.IsNullOrWhiteSpace(errors)) return (true, resultDTO, null);
-        //    //else return (false, resultDTO, errors);
-
-        //    return (true, new ReviewOrderResultDTO() { IsSuccess = true, ErrorMessage = null }, null);
-        //}
 
         public async Task<(bool IsSuccess, string? OrderId, string? ErrorMessage)> AddOrderAsync(string ownerId, AddOrderDTO addOrderDTO, CancellationToken cancellationToken)
         {
