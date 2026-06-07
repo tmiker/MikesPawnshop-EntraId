@@ -33,6 +33,16 @@ namespace Products.Write.Application.CQRS.CommandHandlers
 
             if (success)
             {
+                // invoke domain events to update read side data store
+                if (product.DomainEvents is not null && product.DomainEvents.Any())
+                {
+                    foreach (var domainEvent in product.DomainEvents)
+                    {
+                        // publish the event to the bus
+                        _eventAggregator.Raise(domainEvent);
+                    }
+                }
+
                 // delete image from azure blob storage
                 string containerName = $"product-{command.ProductId}";
                 string fileName = command.FileName;

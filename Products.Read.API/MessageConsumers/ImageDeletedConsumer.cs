@@ -23,8 +23,6 @@ namespace Products.Read.API.MessageConsumers
             _logger.LogInformation("Image Deleted Message Received: VERSION = {version}, AggregateId = {message.AggregateId}, " +
                 "Title = {message.Title}", message.AggregateVersion, message.AggregateId, message.FileName);
 
-            // await _productRepository.DeleteProductDocumentAsync(message);
-
             bool messagesInMessageRecordQueue = await _messageProcessor.ProcessProductMessageAsync(message);
 
             // really want to batch process messages and call the below after processing a batch, or something equivalent
