@@ -48,5 +48,7 @@ namespace Products.Write.Application.Abstractions
             int maxVersion = Int32.MaxValue,
             int pageNumber = 1,
             int pageSize = 10);
+
+        Task<(bool IsSuccess, int EventCount, string? ErrorMessage)> GetEventCountAsync();
     }
 }

@@ -206,5 +206,19 @@ namespace Products.Write.Application.Services
 
             return (true, result, pagingData, null);
         }
+
+        public async Task<(bool IsSuccess, int EventCount, string? ErrorMessage)> GetEventCountAsync()
+        {
+            try
+            {
+                int count = await _db.EventRecords.CountAsync();
+                return (true, count, null);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error counting event records");
+                return (false, 0, "An error occurred connecting with the Products Write-Side Database. Please try again later.");
+            }
+        }
     }
 }

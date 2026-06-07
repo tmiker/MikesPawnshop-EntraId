@@ -39,6 +39,15 @@ namespace Products.Write.API.Controllers
             _logger = logger;
         }
 
+        [HttpGet("eventCount")]
+        [AllowAnonymous]
+        public async Task<ActionResult> GetProductEventCount()
+        {
+            var result = await _devQueryService.GetEventCountAsync();
+            if (result.IsSuccess) return Ok(result.EventCount);
+            return BadRequest(result.ErrorMessage);
+        }
+
         // Claims
         [HttpGet("[action]")]
         [Authorize]

@@ -37,7 +37,7 @@ namespace Products.Read.API.Controllers
             _logger = logger;
         }
 
-        [HttpGet("count")]
+        [HttpGet("productCount")]
         [AllowAnonymous]
         public async Task<ActionResult> GetProductCount()
         {

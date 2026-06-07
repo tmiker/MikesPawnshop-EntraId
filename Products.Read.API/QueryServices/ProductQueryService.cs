@@ -328,5 +328,6 @@ namespace Products.Read.API.QueryServices
                 _logger.LogError(ex, "An error occurred while counting products.");
                 return (false, 0, "An error occurred connecting with the Products Read-Side Database. Please try again later.");
             }
+        }
     }
 }
