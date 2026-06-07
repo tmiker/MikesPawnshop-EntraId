@@ -1,6 +1,7 @@
 ﻿@page "/products/productDetail/{aggregateId}"
 @rendermode InteractiveServer
 @inject IProductsWriteHttpService _writeSideHttpClient
+@inject IToastrService Toastr
 @attribute [Authorize(Policy = "IsAdminOrManager")]
 
 <PageTitle>Manage Products</PageTitle>
@@ -393,7 +394,7 @@
         if (addImageResult.IsSuccess)
         {
             _imageCount++;
-            _successMessage = "Success Adding Image.";
+            await Toastr.ShowToastrSuccess($"Image successfully added.");
         }
         else _errorMessage = addImageResult.ErrorMessage;
         _addImageDTO = null;
@@ -411,7 +412,7 @@
         if (addDocumentResult.IsSuccess)
         {
             _documentCount++;
-            _successMessage = "Success Adding Document.";
+            await Toastr.ShowToastrSuccess($"Document successfully added.");
         }
         else _errorMessage = addDocumentResult.ErrorMessage;
         _addDocumentDTO = null;
@@ -434,7 +435,7 @@
     {
         _cancellationTokenSource = new CancellationTokenSource();
         var result = await _writeSideHttpClient.DeleteProductImageAsync(_deleteImageDTO!);
-        if (result.IsSuccess) _successMessage = "Image successfully deleted.";
+        if (result.IsSuccess) await Toastr.ShowToastrSuccess($"Image successfully deleted.");
         else _errorMessage = result.ErrorMessage;
         _deleteImageDTO = null;
         _cancellationTokenSource = null;
@@ -459,7 +460,7 @@
     {
         _cancellationTokenSource = new CancellationTokenSource();
         var result = await _writeSideHttpClient.DeleteProductDocumentAsync(_deleteDocumentDTO!);
-        if (result.IsSuccess) _successMessage = "Document successfully deleted.";
+        if (result.IsSuccess) await Toastr.ShowToastrSuccess($"Document successfully deleted.");
         else _errorMessage = result.ErrorMessage;
         _deleteDocumentDTO = null;
         _cancellationTokenSource = null;
