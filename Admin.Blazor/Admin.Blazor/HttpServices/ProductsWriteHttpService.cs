@@ -7,7 +7,6 @@ using Admin.Blazor.Client.ErrorHandling;
 using Admin.Blazor.Client.Paging;
 using Admin.Blazor.Client.Utility;
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
@@ -57,6 +56,35 @@ namespace Admin.Blazor.HttpServices
                 _logger.LogError($"ProductsWriteHttpService CheckHealthAsync() at path '{request.RequestUri}' Exception: {ex.Message}");
                 return (false, null, $"Exception: {ex.Message}");
 
+            }
+        }
+
+        public async Task<(bool IsSuccess, int EventCount, string? ErrorMessage)> GetProductEventRecordCountAsync()
+        {
+            string uri = $"{StaticData.ProductsWriteApiService_DevTestsPath}/eventCount";
+            var client = _httpClientFactory.CreateClient(StaticData.ProductsWriteHttpClient_ClientName);
+
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
+
+            // Generate a new Correlation ID and add to headers
+            string correlationId = Guid.NewGuid().ToString();
+            request.Headers.Add("X-Correlation-ID", correlationId);
+
+            HttpResponseMessage response = await client.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                string result = await response.Content.ReadAsStringAsync();
+                if (int.TryParse(result, out int parsedCount))
+                {
+                    return (true, parsedCount, null);
+                }
+                return (true, -1, null);
+            }
+            else
+            {
+                string errorMessage = await GetErrorMessageAsync(response);
+                return (false, 0, errorMessage);
             }
         }
 
