@@ -20,5 +20,7 @@ namespace Products.Read.API.Abstractions
             string? filter, string? category, string? sortColumn, int pageNumber = 1, int pageSize = 10);
 
         Task<GetProductSummaryByIdResult> GetProductSummaryByIdAsync(int id);
+
+        Task<(bool IsSuccess, int ProductCount, string? ErrorMessage)> GetProductCountAsync();
     }
 }

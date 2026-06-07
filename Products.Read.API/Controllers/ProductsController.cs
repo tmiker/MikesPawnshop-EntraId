@@ -37,6 +37,15 @@ namespace Products.Read.API.Controllers
             _logger = logger;
         }
 
+        [HttpGet("count")]
+        [AllowAnonymous]
+        public async Task<ActionResult> GetProductCount()
+        {
+            var result = await _productQueryService.GetProductCountAsync();
+            if (result.IsSuccess) return Ok(result.ProductCount);
+            return BadRequest(result.ErrorMessage);
+        }
+
         [HttpGet("productStream")]
         [AllowAnonymous]
         public async IAsyncEnumerable<Product> StreamProducts()

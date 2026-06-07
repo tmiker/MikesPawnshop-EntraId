@@ -315,5 +315,18 @@ namespace Products.Read.API.QueryServices
             
             return new GetProductSummaryByIdResult(true, dto, null);
         }
+
+        public async Task<(bool IsSuccess, int ProductCount, string? ErrorMessage)> GetProductCountAsync()
+        {
+            try
+            {
+                int count = _db.Products.Count();
+                return (true, count, null);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while counting products.");
+                return (false, 0, "An error occurred connecting with the Products Read-Side Database. Please try again later.");
+            }
     }
 }
