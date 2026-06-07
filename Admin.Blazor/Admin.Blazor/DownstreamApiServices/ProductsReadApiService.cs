@@ -60,6 +60,39 @@ namespace Admin.Blazor.DownstreamApiServices
 
         }
 
+        public async Task<(bool IsSuccess, int ProductCount, string? ErrorMessage)> GetProductCountAsync()
+        {
+            string uri = $"{StaticData.ProductsReadApiService_ProductsPath}/productCount";
+
+            var response = await _downstreamApi.CallApiForUserAsync(
+                serviceName: StaticData.ProductsReadApiService_ServiceName,
+                downstreamApiOptionsOverride: options =>
+                {
+                    options.HttpMethod = "GET";
+                    options.ExtraHeaderParameters = new Dictionary<string, string>
+                    {
+                        { "X-Correlation-ID", Guid.NewGuid().ToString() }
+                    };
+                    options.RelativePath = uri;
+                });
+
+            if (response.IsSuccessStatusCode)
+            {
+                string result = await response.Content.ReadAsStringAsync();
+                if (int.TryParse(result, out int parsedCount))
+                {
+                    return (true, parsedCount, null);
+                }
+                return (true, -1, null);
+            }
+            else
+            {
+                string errorMessage = await GetErrorMessageAsync(response);
+                return (false, 0, errorMessage);
+            }
+        }
+
+
         public async IAsyncEnumerable<ProductDTO> StreamProductsAsync()
         {
             // Note: by default request is configured for HttpCompletionOption.ResponseContentRead - could not determin how to set it to ResponseHeadersRead which is needed for streaming.

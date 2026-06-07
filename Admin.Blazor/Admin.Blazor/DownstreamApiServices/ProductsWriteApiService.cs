@@ -62,6 +62,39 @@ namespace Admin.Blazor.DownstreamApiServices
             }
         }
 
+        public async Task<(bool IsSuccess, int EventCount, string? ErrorMessage)> GetProductEventRecordCountAsync()
+        {
+            string uri = $"{StaticData.ProductsWriteApiService_DevTestsPath}/eventCount";
+
+            var response = await _downstreamApi.CallApiForUserAsync(
+                serviceName: StaticData.ProductsWriteApiService_ServiceName,
+                downstreamApiOptionsOverride: options =>
+                {
+                    options.HttpMethod = "GET";
+                    options.ExtraHeaderParameters = new Dictionary<string, string>
+                    {
+                        { "X-Correlation-ID", Guid.NewGuid().ToString() }
+                    };
+                    options.RelativePath = uri;
+                });
+
+            if (response.IsSuccessStatusCode)
+            {
+                string result = await response.Content.ReadAsStringAsync();
+                if (int.TryParse(result, out int parsedCount))
+                {
+                    return (true, parsedCount, null);
+                }
+                return (true, -1, null);
+            }
+            else
+            {
+                string errorMessage = await GetErrorMessageAsync(response);
+                return (false, 0, errorMessage);
+            }
+        }
+
+
         public async Task<(bool IsSuccess, ApiUserInfoDTO? ApiUserInfo, string? ErrorMessage)> GetProductsWriteApiUserInfoAsync(string? token = null)
         {
             string uri = $"{StaticData.ProductsWriteApiService_DevTestsPath}{StaticData.ProductsWriteApiService_GetApiUserInfoSubpath}";
