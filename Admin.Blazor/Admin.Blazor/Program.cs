@@ -160,6 +160,7 @@ static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
         .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
         .WaitAndRetryAsync(6, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
 }
+builder.Services.AddSingleton<IAzureServicesHttpClient, AzureServicesHttpClient>();
 
 // Services
 builder.Services.AddScoped<IOrderMapper, OrderMapper>();

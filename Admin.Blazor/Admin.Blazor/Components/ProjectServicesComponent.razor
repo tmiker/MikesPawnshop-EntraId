@@ -1,4 +1,5 @@
 ﻿@page "/ping-services"
+@inject IAzureServicesHttpClient AzureServicesClient
 @rendermode InteractiveServer
 
 <PageTitle>Pawnshop Services</PageTitle>
@@ -113,7 +114,7 @@
     }
 </div>
 
-@if (_thinking)
+@if (_thinking || _allThinking)
 {
     <div class="mx-auto text-center mb-3 mt-3">
         <div class="spinner-border text-success role-status">
@@ -123,12 +124,8 @@
 }
 
 @code {
-    [Inject]
-    public IConfiguration Configuration { get; set; } = default!;
-    [Inject]
-    public static HttpClient Client { get; set; } = new HttpClient() { Timeout = TimeSpan.FromMinutes(3) };
-
     private bool _thinking = false;
+    private bool _allThinking = false;
     private string? _accountsApiResponse;
     private string? _cartsApiResponse;
     private string? _ordersApiResponse;
@@ -138,244 +135,126 @@
     private string? _productsWriteSqlResponse;
     private string? _yarpProxyResponse;
     private string? _pingAllResult;
+    private bool _productsReadApiSuccess = false;
+    private bool _productsWriteApiSuccess = false;
 
     private async Task PingAccountsAPI()
     {
         _thinking = true;
-        var baseUrl = Configuration["AccountsApiBaseURL"];
-        try
-        {
-            _accountsApiResponse = "...pinging Accounts API...";
-            using (var response = await Client.GetAsync($"{baseUrl}"))
-            {
-                if (response.IsSuccessStatusCode)
-                {
-                    _accountsApiResponse = await response.Content.ReadAsStringAsync();
-                }
-                else
-                {
-                    _accountsApiResponse = "Failed to reach Accounts API.";
-                }
-                _thinking = false;
-            }
-        }
-        catch (Exception ex)
-        {
-            _accountsApiResponse = $"Accounts API Error: {ex.Message}";
-            _thinking = false;
-        }
+        _accountsApiResponse = "...pinging Accounts API...";
+        var result = await AzureServicesClient.CheckAccountsApiAsync();
+        if (result.IsSuccess) _accountsApiResponse = result.Result;
+        else _accountsApiResponse = result.ErrorMessage;
+        _thinking = false;
     }
     private void ClearAccountsApiResponse() => _accountsApiResponse = null;
 
     private async Task PingCartsAPI()
     {
         _thinking = true;
-        var baseUrl = Configuration["CartsApiBaseURL"];
-        try
-        {
-            _cartsApiResponse = "...pinging Carts API...";
-            using (var response = await Client.GetAsync($"{baseUrl}"))
-            {
-                if (response.IsSuccessStatusCode)
-                {
-                    _cartsApiResponse = await response.Content.ReadAsStringAsync();
-                }
-                else
-                {
-                    _cartsApiResponse = "Failed to reach Carts API.";
-                }
-                _thinking = false;
-            }
-        }
-        catch (Exception ex)
-        {
-            _cartsApiResponse = $"Carts API Error: {ex.Message}";
-            _thinking = false;
-        }
+        _cartsApiResponse = "...pinging Carts API...";
+        var result = await AzureServicesClient.CheckCartsApiAsync();
+        if (result.IsSuccess) _cartsApiResponse = result.Result;
+        else _cartsApiResponse = result.ErrorMessage;
+        _thinking = false;
     }
     private void ClearCartsApiResponse() => _cartsApiResponse = null;
 
     private async Task PingOrdersAPI()
     {
         _thinking = true;
-        var baseUrl = Configuration["OrdersApiBaseURL"];
-        try
-        {
-            _ordersApiResponse = "...pinging Orders API...";
-            using (var response = await Client.GetAsync($"{baseUrl}"))
-            {
-                if (response.IsSuccessStatusCode)
-                {
-                    _ordersApiResponse = await response.Content.ReadAsStringAsync();
-                }
-                else
-                {
-                    _ordersApiResponse = "Failed to reach Orders API.";
-                }
-                _thinking = false;
-            }
-        }
-        catch (Exception ex)
-        {
-            _ordersApiResponse = $"Orders API Error: {ex.Message}";
-            _thinking = false;
-        }
+        _ordersApiResponse = "...pinging Orders API...";
+        var result = await AzureServicesClient.CheckOrdersApiAsync();
+        if (result.IsSuccess) _ordersApiResponse = result.Result;
+        else _ordersApiResponse = result.ErrorMessage;
+        _thinking = false;
     }
     private void ClearOrdersApiResponse() => _ordersApiResponse = null;
 
     private async Task PingProductsReadAPI()
     {
         _thinking = true;
-        var baseUrl = Configuration["ProductsReadApiBaseURL"];
-        try
+        _productsReadApiResponse = "...pinging Products Read API...";
+
+        var result = await AzureServicesClient.CheckProductsReadApiAsync();
+        if (result.IsSuccess) 
         {
-            _productsReadApiResponse = "...pinging Products Read API...";
-            using (var response = await Client.GetAsync($"{baseUrl}"))
-            {
-                if (response.IsSuccessStatusCode)
-                {
-                    _productsReadApiResponse = await response.Content.ReadAsStringAsync();
-                    await PingProductsReadSql();
-                }
-                else
-                {
-                    _productsReadApiResponse = "Failed to reach Products Read API.";
-                }
-                _thinking = false;
-            }
+            _productsReadApiResponse = $"{result.Result} \nChecking database...";
+            _productsReadApiSuccess = true;
         }
-        catch (Exception ex)
+        else _productsReadApiResponse = result.ErrorMessage;
+
+        if (_productsReadApiSuccess)
         {
-            _productsReadApiResponse = $"Products Read API Error: {ex.Message}";
-            _thinking = false;
+            var databaseResult = await AzureServicesClient.CheckProductsReadSqlAsync();
+            if (databaseResult.IsSuccess) _productsReadApiResponse = $"{result.Result} \n{databaseResult.Result}";
+            else _productsReadApiResponse = $"{result.Result} \n{databaseResult.ErrorMessage}";
         }
+
+        _thinking = false;
     }
-    private void ClearProductsReadApiResponse() => _productsReadApiResponse = null;
+    private void ClearProductsReadApiResponse() { _productsReadApiResponse = null; _productsReadApiSuccess = false; }
 
     private async Task PingProductsWriteAPI()
     {
         _thinking = true;
-        var baseUrl = Configuration["ProductsWriteApiBaseURL"];
-        try
+        _productsWriteApiResponse = "...pinging Products Write API...";
+
+        var result = await AzureServicesClient.CheckProductsWriteApiAsync();
+        if (result.IsSuccess) 
         {
-            _productsWriteApiResponse = "...pinging Products Write API...";
-            using (var response = await Client.GetAsync($"{baseUrl}"))
-            {
-                if (response.IsSuccessStatusCode)
-                {
-                    _productsWriteApiResponse = await response.Content.ReadAsStringAsync();
-                    await PingProductsWriteSql();
-                }
-                else
-                {
-                    _productsWriteApiResponse = "Failed to reach Products Write API.";
-                }
-                _thinking = false;
-            }
+            _productsWriteApiResponse = $"{result.Result} \nChecking database...";
+            _productsWriteApiSuccess = true;
         }
-        catch (Exception ex)
+        else _productsWriteApiResponse = result.ErrorMessage;
+
+        if (_productsWriteApiSuccess)
         {
-            _productsWriteApiResponse = $"Products Write API Error: {ex.Message}";
-            _thinking = false;
+            var databaseResult = await AzureServicesClient.CheckProductsWriteSqlAsync();
+            if (databaseResult.IsSuccess) _productsWriteApiResponse = $"{result.Result} \n{databaseResult.Result}";
+            else _productsWriteApiResponse = $"{result.Result} \n{databaseResult.ErrorMessage}";
         }
+
+        _thinking = false;
     }
-    private void ClearProductsWriteApiResponse() => _productsWriteApiResponse = null;
+    private void ClearProductsWriteApiResponse() { _productsWriteApiResponse = null; _productsWriteApiSuccess = false; }
 
     private async Task PingProductsReadSql()
     {
         _thinking = true;
-        var baseUrl = Configuration["ProductsReadApiBaseURL"];
-        var sqlPingUrl = $"{baseUrl}/api/products/productCount";
-        try
-        {
-            _productsReadSqlResponse = $"Pinging {sqlPingUrl}"; // "...pinging Products Read SQL database...";
-            using (var response = await Client.GetAsync($"{sqlPingUrl}"))
-            {
-                if (response.IsSuccessStatusCode)
-                {
-                    string countResult = await response.Content.ReadAsStringAsync();
-                    _productsReadSqlResponse = $"Product Read Side database is running. Product Count: {countResult}";
-                }
-                else
-                {
-                    _productsReadSqlResponse = "Failed to reach Products Read SQL database.";
-                }
-
-                _productsReadApiResponse += $"\n{_productsReadSqlResponse}";
-                _thinking = false;
-            }
-        }
-        catch (Exception ex)
-        {
-            _productsReadSqlResponse = $"Products Read SQL Error: {ex.Message}";
-            _thinking = false;
-        }
+        _productsReadSqlResponse = "...pinging Products Read SQL database...";
+        var result = await AzureServicesClient.CheckProductsReadSqlAsync();
+        if (result.IsSuccess) _productsReadSqlResponse = result.Result;
+        else _productsReadSqlResponse = result.ErrorMessage;
+        _thinking = false;
     }
     private void ClearProductsReadSqlResponse() => _productsReadSqlResponse = null;
 
     private async Task PingProductsWriteSql()
     {
         _thinking = true;
-        var baseUrl = Configuration["ProductsWriteApiBaseURL"];
-        var sqlPingUrl = $"{baseUrl}/dev/productsManagement/eventCount";
-        try
-        {
-            _productsWriteSqlResponse = "...pinging Products Write SQL database...";
-            using (var response = await Client.GetAsync($"{sqlPingUrl}"))
-            {
-                if (response.IsSuccessStatusCode)
-                {
-                    string countResult = await response.Content.ReadAsStringAsync();
-                    _productsWriteSqlResponse = $"Product Write Side database is running. Event Count: {countResult}";
-                }
-                else
-                {
-                    _productsWriteSqlResponse = "Failed to reach Products Write SQL database.";
-                }
-
-                _productsWriteApiResponse += $"\n{_productsWriteSqlResponse}";
-                _thinking = false;
-            }
-        }
-        catch (Exception ex)
-        {
-            _productsWriteSqlResponse = $"Products Write SQL Error: {ex.Message}";
-            _thinking = false;
-        }
+        _productsWriteSqlResponse = "...pinging Products Write SQL database...";
+        var result = await AzureServicesClient.CheckProductsWriteSqlAsync();
+        if (result.IsSuccess) _productsWriteSqlResponse = result.Result;
+        else _productsWriteSqlResponse = result.ErrorMessage;
+        _thinking = false;
     }
     private void ClearProductsWriteSqlResponse() => _productsWriteSqlResponse = null;
 
     private async Task PingYarpProxy()
     {
         _thinking = true;
-        var baseUrl = Configuration["YarpProxyBaseURL"];
-        try
-        {
-            _yarpProxyResponse = "...pinging YARP Proxy...";
-            using (var response = await Client.GetAsync($"{baseUrl}"))
-            {
-                if (response.IsSuccessStatusCode)
-                {
-                    _yarpProxyResponse = await response.Content.ReadAsStringAsync();
-                }
-                else
-                {
-                    _yarpProxyResponse = "Failed to reach YARP Proxy.";
-                }
-                _thinking = false;
-            }
-        }
-        catch (Exception ex)
-        {
-            _yarpProxyResponse = $"YARP Proxy Error: {ex.Message}";
-            _thinking = false;
-        }
+        _yarpProxyResponse = "...pinging YARP Proxy...";
+        var result = await AzureServicesClient.CheckYarpProxyAsync();
+        if (result.IsSuccess) _yarpProxyResponse = result.Result;
+        else _yarpProxyResponse = result.ErrorMessage;
+        _thinking = false;
     }
     private void ClearYarpProxyResponse() => _yarpProxyResponse = null;
 
     private async Task PingAllPawnshopEndpoints()
     {
-        _thinking = true;
+        _allThinking = true;
         var tasks = new List<Task>
         {
             PingAccountsAPI(),
@@ -386,8 +265,14 @@
             PingYarpProxy()
         };
         await Task.WhenAll(tasks);
-        _pingAllResult = "Finished pinging all endpoints.";
-        _thinking = false;
+        // var databaseTasks = new List<Task>
+        // {
+        //     PingProductsReadSql(),
+        //     PingProductsWriteSql()
+        // };
+        // await Task.WhenAll(databaseTasks);
+        _pingAllResult = "Finished pinging all resources.";
+        _allThinking = false;
     }
     private void ClearPingAllPawnshopEndpointsResult()
     {
@@ -401,6 +286,10 @@
         _productsWriteSqlResponse = null;
         _yarpProxyResponse = null;
         _pingAllResult = null;
+        _productsReadApiSuccess = false;
+        _productsWriteApiSuccess = false;
+        _thinking = false;
+        _allThinking = false;
     }
 
     
