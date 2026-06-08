@@ -17,6 +17,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.TokenCacheProviders.Distributed;
 using Microsoft.IdentityModel.JsonWebTokens;
+using Polly;
+using Polly.Extensions.Http;
 using Serilog.Sinks.Console.LogThemes;
 using System.Net.Http.Headers;
 using System.Security.Claims;
@@ -148,14 +150,16 @@ builder.Services.AddHttpClient(name: StaticData.ProductsReadHttpClient_ClientNam
 });  // PUBLIC HTTP CLIENT - NOT CONFIGURED TO PASS TOKENS  // .AddUserAccessTokenHandler(); 
 builder.Services.AddSingleton<IPublicProductsReadHttpService, ProductsReadHttpService>();
 
-//// Http Client for checking status of or waking API and database resources
-//builder.Services.AddHttpClient(name: StaticData.PawnshopServiceStatusHttpClient_ClientName, configureClient: config =>
-//{
-//    // base address will vary
-//    config.DefaultRequestHeaders.Clear();
-//    config.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-//    config.Timeout = TimeSpan.FromSeconds(180);    
-//});  // PUBLIC HTTP CLIENT - NOT CONFIGURED TO PASS TOKENS  // .AddUserAccessTokenHandler(); 
+//// Http Client for checking status of or waking deployed API and database resources 
+builder.Services.AddHttpClient(name: StaticData.AzureServicesHttpClient_ClientName)
+    .AddPolicyHandler(GetRetryPolicy());
+static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+{
+    return HttpPolicyExtensions
+        .HandleTransientHttpError()
+        .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
+        .WaitAndRetryAsync(6, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+}
 
 // Services
 builder.Services.AddScoped<IOrderMapper, OrderMapper>();
@@ -261,3 +265,4 @@ public partial class Program
         return uri;
     }
 }
+

@@ -49,7 +49,7 @@
 
 
         // Standard Http Clients
-        // public const string PawnshopServiceStatusHttpClient_ClientName = "PawnshopServiceStatusHttpClient";
+        public const string AzureServicesHttpClient_ClientName = "AzureServiceStatusHttpClient";
 
         public const string ProductsWriteHttpClient_ClientName = "ProductsWriteHttpClient";
         // public const string ProductsWriteHttpClient_BaseURL = "https://localhost:7213";              // local direct
