@@ -3,7 +3,7 @@
 
 <PageTitle>Pawnshop Services</PageTitle>
 
-<h5 class="mt-2">Check Pawnshop Service Status</h5>
+<h6 class="mt-2">Check Pawnshop API Resource and Reverse Proxy Status</h6>
 
 <div class="row mt-4">
     <div class="col-3">
@@ -64,48 +64,70 @@
         </div>
     }
 </div>
+<div class="row mt-1">
+    <div class="col-7 offset-3">
+        <input type="text" class="bg-dark text-light form-control" @bind-value=_productsReadSqlResponse" />
+    </div>
+    @if (!string.IsNullOrEmpty(_productsReadSqlResponse))
+    {
+        <div class="col-2">
+            <a class="btn button-custom-secondary-med form-control" @onclick=ClearProductsReadSqlResponse>Clear</a>
+        </div>
+    }
+</div>
 
 <div class="row mt-4">
     <div class="col-3">
         <a class="btn button-custom-primary-med form-control" @onclick="PingProductsWriteAPI">Ping Products Write API</a>
     </div>
     <div class="col-7">
-        <input type="text" class="bg-dark text-light form-control" @bind-value=_proeductsWriteApiResponse" />
+        <input type="text" class="bg-dark text-light form-control" @bind-value=_productsWriteApiResponse" />
     </div>
-    @if (!string.IsNullOrEmpty(_proeductsWriteApiResponse))
+    @if (!string.IsNullOrEmpty(_productsWriteApiResponse))
     {
         <div class="col-2">
             <a class="btn button-custom-secondary-med form-control" @onclick=ClearProductsWriteApiResponse>Clear</a>
         </div>
     }
 </div>
-
-@* <div class="row mt-4">
-    <div class="col-3">
-        <a class="btn button-custom-primary-med form-control" @onclick="PingConsumerClient">Ping Consumer Client</a>
+<div class="row mt-1">
+    <div class="col-7 offset-3">
+        <input type="text" class="bg-dark text-light form-control" @bind-value=_productsWriteSqlResponse" />
     </div>
-    <div class="col-7">
-        <input type="text" class="bg-dark text-light form-control" @bind-value=_consumerClientResponse" />
-    </div>
-    @if (!string.IsNullOrEmpty(_consumerClientResponse))
+    @if (!string.IsNullOrEmpty(_productsWriteSqlResponse))
     {
         <div class="col-2">
-            <a class="btn button-custom-secondary-med form-control" @onclick=ClearConsumerClientResponse>Clear</a>
+            <a class="btn button-custom-secondary-med form-control" @onclick=ClearProductsWriteSqlResponse>Clear</a>
         </div>
     }
-</div> *@
+</div>
 
 @* <div class="row mt-4">
     <div class="col-3">
-        <a class="btn button-custom-primary-med form-control" @onclick="PingAdminClient">Ping Admin Client</a>
+        <a class="btn button-custom-primary-med form-control" @onclick="PingProductsReadSql">Ping Products Read SQL</a>
     </div>
     <div class="col-7">
-        <input type="text" class="bg-dark text-light form-control" @bind-value=_adminClientResponse" />
+        <input type="text" class="bg-dark text-light form-control" @bind-value=_productsReadSqlResponse" />
     </div>
-    @if (!string.IsNullOrEmpty(_adminClientResponse))
+    @if (!string.IsNullOrEmpty(_productsReadSqlResponse))
     {
         <div class="col-2">
-            <a class="btn button-custom-secondary-med form-control" @onclick=ClearAdminClientResponse>Clear</a>
+            <a class="btn button-custom-secondary-med form-control" @onclick=ClearProductsReadSqlResponse>Clear</a>
+        </div>
+    }
+</div>
+
+<div class="row mt-4">
+    <div class="col-3">
+        <a class="btn button-custom-primary-med form-control" @onclick="PingProductsWriteSql">Ping Products Write SQL</a>
+    </div>
+    <div class="col-7">
+        <input type="text" class="bg-dark text-light form-control" @bind-value=_productsWriteSqlResponse" />
+    </div>
+    @if (!string.IsNullOrEmpty(_productsWriteSqlResponse))
+    {
+        <div class="col-2">
+            <a class="btn button-custom-secondary-med form-control" @onclick=ClearProductsWriteSqlResponse>Clear</a>
         </div>
     }
 </div> *@
@@ -162,9 +184,9 @@
     private string? _cartsApiResponse;
     private string? _ordersApiResponse;
     private string? _productsReadApiResponse;
-    private string? _proeductsWriteApiResponse;
-    // private string? _consumerClientResponse;
-    // private string? _adminClientResponse;
+    private string? _productsWriteApiResponse;
+    private string? _productsReadSqlResponse;
+    private string? _productsWriteSqlResponse;
     private string? _yarpProxyResponse;
     private string? _pingAllResult;
 
@@ -174,7 +196,7 @@
         var baseUrl = Configuration["AccountsApiBaseURL"];
         try
         {
-            _accountsApiResponse = "...pinging Accounts API..."; 
+            _accountsApiResponse = "...pinging Accounts API...";
             using (var response = await Client.GetAsync($"{baseUrl}"))
             {
                 if (response.IsSuccessStatusCode)
@@ -264,6 +286,7 @@
                 if (response.IsSuccessStatusCode)
                 {
                     _productsReadApiResponse = await response.Content.ReadAsStringAsync();
+                    await PingProductsReadSql();
                 }
                 else
                 {
@@ -286,27 +309,88 @@
         var baseUrl = Configuration["ProductsWriteApiBaseURL"];
         try
         {
-            _proeductsWriteApiResponse = "...pinging Products Write API...";
+            _productsWriteApiResponse = "...pinging Products Write API...";
             using (var response = await Client.GetAsync($"{baseUrl}"))
             {
                 if (response.IsSuccessStatusCode)
                 {
-                    _proeductsWriteApiResponse = await response.Content.ReadAsStringAsync();
+                    _productsWriteApiResponse = await response.Content.ReadAsStringAsync();
+                    await PingProductsWriteSql();
                 }
                 else
                 {
-                    _proeductsWriteApiResponse = "Failed to reach Products Write API.";
+                    _productsWriteApiResponse = "Failed to reach Products Write API.";
                 }
                 _thinking = false;
             }
         }
         catch (Exception ex)
         {
-            _proeductsWriteApiResponse = $"Products Write API Error: {ex.Message}";
+            _productsWriteApiResponse = $"Products Write API Error: {ex.Message}";
             _thinking = false;
         }
     }
-    private void ClearProductsWriteApiResponse() => _proeductsWriteApiResponse = null;
+    private void ClearProductsWriteApiResponse() => _productsWriteApiResponse = null;
+
+    private async Task PingProductsReadSql()
+    {
+        _thinking = true;
+        var baseUrl = Configuration["ProductsReadApiBaseURL"];
+        var sqlPingUrl = $"{baseUrl}/api/products/productCount";
+        try
+        {
+            _productsReadSqlResponse = $"Pinging {sqlPingUrl}"; // "...pinging Products Read SQL database...";
+            using (var response = await Client.GetAsync($"{sqlPingUrl}"))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    string countResult = await response.Content.ReadAsStringAsync();
+                    _productsReadSqlResponse = $"Product Read Side database is running. Product Count: {countResult}";
+                }
+                else
+                {
+                    _productsReadSqlResponse = "Failed to reach Products Read SQL database.";
+                }
+                _thinking = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            _productsReadSqlResponse = $"Products Read SQL Error: {ex.Message}";
+            _thinking = false;
+        }
+    }
+    private void ClearProductsReadSqlResponse() => _productsReadSqlResponse = null;
+
+    private async Task PingProductsWriteSql()
+    {
+        _thinking = true;
+        var baseUrl = Configuration["ProductsWriteApiBaseURL"];
+        var sqlPingUrl = $"{baseUrl}/dev/productsManagment/eventCount";
+        try
+        {
+            _productsWriteSqlResponse = "...pinging Products Write SQL database...";
+            using (var response = await Client.GetAsync($"{sqlPingUrl}"))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    string countResult = await response.Content.ReadAsStringAsync();
+                    _productsWriteSqlResponse = $"Product Write Side database is running. Event Count: {countResult}";
+                }
+                else
+                {
+                    _productsWriteSqlResponse = "Failed to reach Products Write SQL database.";
+                }
+                _thinking = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            _productsWriteSqlResponse = $"Products Write SQL Error: {ex.Message}";
+            _thinking = false;
+        }
+    }
+    private void ClearProductsWriteSqlResponse() => _productsWriteSqlResponse = null;
 
     private async Task PingYarpProxy()
     {
@@ -336,67 +420,6 @@
     }
     private void ClearYarpProxyResponse() => _yarpProxyResponse = null;
 
-    // private async Task PingAdminClient()
-    // {
-    //     _thinking = true;
-    //     var baseUrl = Configuration["BlazorAdminClientBaseURL"];
-    //     try
-    //     {
-    //         _adminClientResponse = "...pinging Blazor Admin Client...";
-    //         using (var response = await Client.GetAsync($"{baseUrl}"))
-    //         {
-    //             if (response.IsSuccessStatusCode)
-    //             {
-    //                 _adminClientResponse = await response.Content.ReadAsStringAsync();
-    //             }
-    //             else
-    //             {
-    //                 _adminClientResponse = "Failed to reach Blazor Admin Client.";
-    //             }
-    //             _thinking = false;
-    //         }
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         _adminClientResponse = $"Admin Client Error: {ex.Message}";
-    //         _thinking = false;
-    //     }
-    // }
-    // private void ClearAdminClientResponse() => _adminClientResponse = null;
-
-    // private async Task PingConsumerClient()
-    // {
-    //     _thinking = true;
-    //     var baseUrl = Configuration["BlazorConsumerClientBaseURL"];
-    //     if (WebHostEnv.EnvironmentName == "Development")
-    //     {
-    //         baseUrl = "https:localhost:7217";
-    //     }
-    //     var pingUrl = $"{baseUrl}/ping";
-    //     try
-    //     {
-    //         _consumerClientResponse = "...pinging Blazor Consumer Client...";
-    //         using (var response = await Client.GetAsync($"{pingUrl}"))
-    //         {
-    //             if (response.IsSuccessStatusCode)
-    //             {
-    //                 _consumerClientResponse = await response.Content.ReadAsStringAsync();
-    //             }
-    //             else
-    //             {
-    //                 _consumerClientResponse = "Failed to reach Blazor Consumer Client.";
-    //             }
-    //             _thinking = false;
-    //         }
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         _consumerClientResponse = $"Consumer Client Error: {ex.Message}";
-    //         _thinking = false;
-    //     }
-    // }
-    // private void ClearConsumerClientResponse() => _consumerClientResponse = null;
-
     private async Task PingAllPawnshopEndpoints()
     {
         _thinking = true;
@@ -414,16 +437,16 @@
         _pingAllResult = "Finished pinging all endpoints.";
         _thinking = false;
     }
-    private void ClearPingAllPawnshopEndpointsResult() 
+    private void ClearPingAllPawnshopEndpointsResult()
     {
         _pingAllResult = null;
         _accountsApiResponse = null;
         _cartsApiResponse = null;
         _ordersApiResponse = null;
         _productsReadApiResponse = null;
-        _proeductsWriteApiResponse = null;
-        //_consumerClientResponse = null;
-        // _adminClientResponse = null;
+        _productsWriteApiResponse = null;
+        _productsReadSqlResponse = null;
+        _productsWriteSqlResponse = null;
         _yarpProxyResponse = null;
         _pingAllResult = null;
     }
