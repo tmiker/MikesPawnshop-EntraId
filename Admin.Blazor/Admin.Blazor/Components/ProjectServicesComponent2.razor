@@ -1,4 +1,4 @@
-﻿@page "/ping-services"
+﻿@page "/ping-services-2"
 @rendermode InteractiveServer
 
 <PageTitle>Pawnshop Services</PageTitle>
@@ -65,6 +65,17 @@
         </div>
     }
 </div>
+@* <div class="row mt-1">
+    <div class="col-7 offset-3">
+        <input type="text" class="bg-dark text-light form-control" @bind-value="_productsReadSqlResponse" />
+    </div>
+    @if (!string.IsNullOrEmpty(_productsReadSqlResponse))
+    {
+        <div class="col-2">
+            <a class="btn button-custom-secondary-med form-control" @onclick="ClearProductsReadSqlResponse">Clear</a>
+        </div>
+    }
+</div> *@
 
 <div class="row mt-4">
     <div class="col-3">
@@ -74,7 +85,7 @@
         @* <input type="text" class="bg-dark text-light form-control" @bind-value="_productsWriteApiResponse" /> *@
         <textarea class="bg-dark text-light form-control" rows="2">@_productsWriteApiResponse</textarea>
     </div>
-
+    
     @if (!string.IsNullOrEmpty(_productsWriteApiResponse))
     {
         <div class="col-2">
@@ -82,6 +93,47 @@
         </div>
     }
 </div>
+@* <div class="row mt-1">
+    <div class="col-7 offset-3">
+        <input type="text" class="bg-dark text-light form-control" @bind-value="_productsWriteSqlResponse" />
+    </div>
+    @if (!string.IsNullOrEmpty(_productsWriteSqlResponse))
+    {
+        <div class="col-2">
+            <a class="btn button-custom-secondary-med form-control" @onclick="ClearProductsWriteSqlResponse">Clear</a>
+        </div>
+    }
+</div> *@
+
+@* <div class="row mt-4">
+    <div class="col-3">
+        <a class="btn button-custom-primary-med form-control" @onclick="PingProductsReadSql">Ping Products Read SQL</a>
+    </div>
+    <div class="col-7">
+        <input type="text" class="bg-dark text-light form-control" @bind-value=_productsReadSqlResponse" />
+    </div>
+    @if (!string.IsNullOrEmpty(_productsReadSqlResponse))
+    {
+        <div class="col-2">
+            <a class="btn button-custom-secondary-med form-control" @onclick=ClearProductsReadSqlResponse>Clear</a>
+        </div>
+    }
+</div>
+
+<div class="row mt-4">
+    <div class="col-3">
+        <a class="btn button-custom-primary-med form-control" @onclick="PingProductsWriteSql">Ping Products Write SQL</a>
+    </div>
+    <div class="col-7">
+        <input type="text" class="bg-dark text-light form-control" @bind-value=_productsWriteSqlResponse" />
+    </div>
+    @if (!string.IsNullOrEmpty(_productsWriteSqlResponse))
+    {
+        <div class="col-2">
+            <a class="btn button-custom-secondary-med form-control" @onclick=ClearProductsWriteSqlResponse>Clear</a>
+        </div>
+    }
+</div> *@
 
 <div class="row mt-4">
     <div class="col-3">
@@ -402,6 +454,4 @@
         _yarpProxyResponse = null;
         _pingAllResult = null;
     }
-
-    
 }

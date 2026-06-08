@@ -139,8 +139,7 @@ builder.Services.AddScoped<IAccountsHttpService, AccountsApiService>();
 builder.Services.AddScoped<IOrdersHttpService, OrdersApiService>();
 builder.Services.AddScoped<IClaimsHttpService, ClaimsApiService>();
 
-// HTTP Clients - for using HttpClientFactory to create HttpClients to call downstream APIs
-// without the user being logged in
+// HTTP Clients - for using HttpClientFactory to create HttpClients to call API Resources without the user being logged in
 builder.Services.AddHttpClient(name: StaticData.ProductsReadHttpClient_ClientName, configureClient: config =>
 {
     config.BaseAddress = new Uri(yarpProxyBaseUrl);
@@ -148,6 +147,15 @@ builder.Services.AddHttpClient(name: StaticData.ProductsReadHttpClient_ClientNam
     config.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 });  // PUBLIC HTTP CLIENT - NOT CONFIGURED TO PASS TOKENS  // .AddUserAccessTokenHandler(); 
 builder.Services.AddSingleton<IPublicProductsReadHttpService, ProductsReadHttpService>();
+
+//// Http Client for checking status of or waking API and database resources
+//builder.Services.AddHttpClient(name: StaticData.PawnshopServiceStatusHttpClient_ClientName, configureClient: config =>
+//{
+//    // base address will vary
+//    config.DefaultRequestHeaders.Clear();
+//    config.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+//    config.Timeout = TimeSpan.FromSeconds(180);    
+//});  // PUBLIC HTTP CLIENT - NOT CONFIGURED TO PASS TOKENS  // .AddUserAccessTokenHandler(); 
 
 // Services
 builder.Services.AddScoped<IOrderMapper, OrderMapper>();

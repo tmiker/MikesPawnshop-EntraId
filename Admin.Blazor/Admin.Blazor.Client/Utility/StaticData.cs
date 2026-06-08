@@ -47,7 +47,10 @@
         public const string OrdersApiService_DevTestsPath = "/api/orders/devTests";
         public const string OrdersApiService_GetApiUserInfoSubpath = "/getApiUserInfo";
 
-        // Http Services
+
+        // Standard Http Clients
+        // public const string PawnshopServiceStatusHttpClient_ClientName = "PawnshopServiceStatusHttpClient";
+
         public const string ProductsWriteHttpClient_ClientName = "ProductsWriteHttpClient";
         // public const string ProductsWriteHttpClient_BaseURL = "https://localhost:7213";              // local direct
         public const string ProductsWriteHttpClient_BaseURL = "https://localhost:7245";                 // local YARP
