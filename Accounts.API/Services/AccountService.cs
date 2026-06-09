@@ -25,6 +25,21 @@ namespace Accounts.API.Services
             _logger = logger;
         }
 
+        public async Task<(bool IsSuccess, int AccountCount, string? ErrorMessage)> GetAccountCountAsync()
+        {
+            try
+            {
+                var filter = Builders<Account>.Filter.Empty;
+                CountOptions countOptions = new CountOptions() { Hint = "_id_" };
+                int count = (int)await _accounts.CountDocumentsAsync(filter, countOptions);
+                return (true, count, null);
+            } 
+            catch (Exception ex)
+            {
+                return (false, -1, ex.Message);
+            }
+        }
+
         public async Task<(bool IsSuccess, AccountDTO? Account, string? ErrorMessage)> GetAccountByOwnerIdAsync(string ownerId)
         {
             Account? account = await _accounts.Find(a => a.OwnerId == ownerId).FirstOrDefaultAsync();

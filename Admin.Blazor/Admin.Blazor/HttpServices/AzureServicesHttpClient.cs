@@ -40,6 +40,33 @@ namespace Admin.Blazor.HttpServices
             }
         }
 
+        public async Task<(bool IsSuccess, string? Count, string? ErrorMessage)> CheckAccountsMongoAsync()
+        {
+            var baseUrl = _config["AccountsApiBaseURL"];
+            var countUrl = $"{baseUrl}/api/accounts/count";
+            var client = _httpClientFactory.CreateClient(StaticData.AzureServicesHttpClient_ClientName);
+
+            try
+            {
+                using (var response = await client.GetAsync($"{countUrl}"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string count = await response.Content.ReadAsStringAsync();
+                        return (true, count, null);
+                    }
+                    else
+                    {
+                        return (false, null, "Failed to reach Accounts Mongo database.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return (false, null, $"Accounts API Error: {ex.Message}");
+            }
+        }
+
         public async Task<(bool IsSuccess, string? Result, string? ErrorMessage)> CheckCartsApiAsync()
         {
             var baseUrl = _config["CartsApiBaseURL"];

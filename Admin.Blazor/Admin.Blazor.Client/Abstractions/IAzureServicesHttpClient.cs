@@ -3,6 +3,7 @@
     public interface IAzureServicesHttpClient
     {
         Task<(bool IsSuccess, string? Result, string? ErrorMessage)> CheckAccountsApiAsync();
+        Task<(bool IsSuccess, string? Count, string? ErrorMessage)> CheckAccountsMongoAsync();
         Task<(bool IsSuccess, string? Result, string? ErrorMessage)> CheckCartsApiAsync();
         Task<(bool IsSuccess, string? Result, string? ErrorMessage)> CheckOrdersApiAsync();
         Task<(bool IsSuccess, string? Result, string? ErrorMessage)> CheckProductsReadApiAsync();

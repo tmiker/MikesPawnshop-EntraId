@@ -23,6 +23,15 @@ namespace Accounts.API.Controllers
             _mapper = mapper;
         }
 
+        [HttpGet("count")]
+        [AllowAnonymous]
+        public async Task<ActionResult<bool>> GetAccountCount()
+        {
+            var result = await _accountService.GetAccountCountAsync();
+            if (result.IsSuccess) return Ok(result.AccountCount);
+            return BadRequest();
+        }
+
         [HttpGet("accountEstablished")]
         [Authorize]
         public async Task<ActionResult<bool>> AccountIsEstablished()

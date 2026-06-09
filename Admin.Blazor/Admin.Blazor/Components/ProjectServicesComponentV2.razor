@@ -16,7 +16,7 @@
 
 @if (_resourceDTOs is not null)
 {
-    <table class="table table-bordered table-dark text-center">
+    <table class="table table-bordered table-dark text-center mt-4">
         <thead>
             <tr>
                 <th>Name</th>
@@ -114,16 +114,25 @@
     {
         _thinking = true;
         _accountsApiResourceDTO.Reset();
-        _accountsApiResourceDTO.Progress = "...pinging Accounts API...";
+        _accountsApiResourceDTO.Progress = "...checking Accounts API...";
         var result = await AzureServicesClient.CheckAccountsApiAsync();
         if (result.IsSuccess)
         {
             _accountsApiResourceDTO.ServiceAvailable = true;
             _accountsApiResourceDTO.Message = "API success.";   // result.Result;
             // check Mongo Database
-            _accountsApiResourceDTO.Progress = "...pinging Accounts Database...";
-            Thread.Sleep(2000);
-            _accountsApiResourceDTO.Message = "Simulated Mongo DB check";
+            _accountsApiResourceDTO.Progress = "...checking Accounts Database...";
+            var mongoResult = await AzureServicesClient.CheckAccountsMongoAsync();
+            if (mongoResult.IsSuccess)
+            {
+                _accountsApiResourceDTO.DatabaseAvailable = true;
+                _accountsApiResourceDTO.Message = $"Success. {result.Result}";
+            }
+            else
+            {
+                _accountsApiResourceDTO.DatabaseAvailable = false;
+                _accountsApiResourceDTO.Message = $"Database error. Please try again.";
+            }
         }
         else 
         {
@@ -249,6 +258,7 @@
         _thinking = true;
         _yarpResourceDTO.Reset();
         _yarpResourceDTO.Progress = "...pinging YARP Proxy...";
+        _yarpResourceDTO.DatabaseAvailable = true;
         var result = await AzureServicesClient.CheckYarpProxyAsync();
         if (result.IsSuccess)
         {
