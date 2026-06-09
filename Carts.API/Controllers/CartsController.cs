@@ -27,6 +27,16 @@ namespace Carts.API.Controllers
             _logger = logger;
         }
 
+        [HttpGet("count")]
+        [AllowAnonymous]
+        public async Task<ActionResult<bool>> GetCartCount()
+        {
+            var result = await _cartService.GetCartCountAsync();
+            if (result.IsSuccess) return Ok(result.CartCount);
+            return BadRequest();
+        }
+
+
         [HttpPost("items")]
         [Authorize]
         public async Task<ActionResult<int>> AddNewCartItem(AddShoppingCartItemDTO addShoppingCartItemDTO)

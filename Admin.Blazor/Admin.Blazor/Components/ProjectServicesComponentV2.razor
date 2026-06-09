@@ -35,12 +35,12 @@
                     <td>@resource.ResourceName</td>
                     <td>@if (resource.ServiceAvailable)
                         {
-                            <p class="text-success-alt m-0">X</p>
+                            <p class="text-success-alt m-0">&#10004</p>
                         }
                     </td>
                     <td>@if (resource.DatabaseAvailable)
                         {
-                            <p class="text-success-alt m-0">X</p>
+                            <p class="text-success-alt m-0">&#x2714</p>
                         }
                     </td>
                     <td>@resource.Message</td>
@@ -73,21 +73,6 @@
         <a class="btn button-custom-primary-med form-control" @onclick="PingYarpProxy">Ping YARP Proxy</a>
     </div>
 </div>
-
-@* <div class="row mt-4">
-    <div class="col-3">
-        <a class="btn button-custom-success-med form-control" @onclick="PingAllPawnshopEndpoints">Ping All Endpoints</a>
-    </div>
-    <div class="col-7">
-        <input type="text" class="bg-dark text-light form-control" @bind-value="_pingAllResult" />
-    </div>
-    @if (!string.IsNullOrEmpty(_pingAllResult))
-    {
-        <div class="col-2">
-            <a class="btn button-custom-secondary-med form-control" @onclick="ClearPingAllPawnshopEndpointsResult">Clear</a>
-        </div>
-    }
-</div> *@
 
 @if (_thinking || _allThinking)
 {
@@ -143,36 +128,77 @@
         _accountsApiResourceDTO.Progress = "Complete";
         _thinking = false;
     }
-    // private void ClearAccountsApiResponse() => _accountsApiResponse = null;
 
     private async Task PingCartsAPI()
     {
-        // _thinking = true;
-        // _cartsApiResourceDTO.Progress = "...pinging Carts API...";
-        // var result = await AzureServicesClient.CheckCartsApiAsync();
-        // if (result.IsSuccess) 
-        // {
-        //     _cartsApiResponse = result.Result;
-        // }
-        // else _cartsApiResponse = result.ErrorMessage;
-        // _thinking = false;
+        _thinking = true;
+        _cartsApiResourceDTO.Reset();
+        _cartsApiResourceDTO.Progress = "...checking Carts API...";
+        var result = await AzureServicesClient.CheckCartsApiAsync();
+        if (result.IsSuccess)
+        {
+            _cartsApiResourceDTO.ServiceAvailable = true;
+            _cartsApiResourceDTO.Message = "API success.";   // result.Result;
+            // check Mongo Database
+            _cartsApiResourceDTO.Progress = "...checking Carts Database...";
+            var mongoResult = await AzureServicesClient.CheckCartsMongoAsync();
+            if (mongoResult.IsSuccess)
+            {
+                _cartsApiResourceDTO.DatabaseAvailable = true;
+                _cartsApiResourceDTO.Message = $"Success. {result.Result}";
+            }
+            else
+            {
+                _cartsApiResourceDTO.DatabaseAvailable = false;
+                _cartsApiResourceDTO.Message = $"Database error. Please try again.";
+            }
+        }
+        else
+        {
+            _cartsApiResourceDTO.ServiceAvailable = false;
+            _cartsApiResourceDTO.Message = $"Carts API unavailable. Please try again.";
+            _cartsApiResourceDTO.DatabaseAvailable = false;
+        }
+        _cartsApiResourceDTO.Progress = "Complete";
+        _thinking = false;
     }
-    // private void ClearCartsApiResponse() => _cartsApiResponse = null;
 
     private async Task PingOrdersAPI()
     {
-        // _thinking = true;
-        // _ordersApiResponse = "...pinging Orders API...";
-        // var result = await AzureServicesClient.CheckOrdersApiAsync();
-        // if (result.IsSuccess) _ordersApiResponse = result.Result;
-        // else _ordersApiResponse = result.ErrorMessage;
-        // _thinking = false;
+        _thinking = true;
+        _ordersApiResourceDTO.Reset();
+        _ordersApiResourceDTO.Progress = "...checking Orders API...";
+        var result = await AzureServicesClient.CheckOrdersApiAsync();
+        if (result.IsSuccess)
+        {
+            _ordersApiResourceDTO.ServiceAvailable = true;
+            _ordersApiResourceDTO.Message = "API success.";   // result.Result;
+            // check Mongo Database
+            _ordersApiResourceDTO.Progress = "...checking Orders Database...";
+            var mongoResult = await AzureServicesClient.CheckOrdersMongoAsync();
+            if (mongoResult.IsSuccess)
+            {
+                _ordersApiResourceDTO.DatabaseAvailable = true;
+                _ordersApiResourceDTO.Message = $"Success. {result.Result}";
+            }
+            else
+            {
+                _ordersApiResourceDTO.DatabaseAvailable = false;
+                _ordersApiResourceDTO.Message = $"Database error. Please try again.";
+            }
+        }
+        else
+        {
+            _ordersApiResourceDTO.ServiceAvailable = false;
+            _ordersApiResourceDTO.Message = $"Orders API unavailable. Please try again.";
+            _ordersApiResourceDTO.DatabaseAvailable = false;
+        }
+        _ordersApiResourceDTO.Progress = "Complete";
+        _thinking = false;
     }
-    // private void ClearOrdersApiResponse() => _ordersApiResponse = null;
 
     private async Task PingProductsReadAPI()
     {
-
         _thinking = true;
         _productsReadApiResourceDTO.Reset();
         _productsReadApiResourceDTO.Progress = "...checking API...";
@@ -205,53 +231,41 @@
         _productsReadApiResourceDTO.Progress = "Complete";
         _thinking = false;
     }
-    // private void ClearProductsReadApiResponse() { _productsReadApiResponse = null; _productsReadApiSuccess = false; }
 
     private async Task PingProductsWriteAPI()
     {
-        // _thinking = true;
-        // _productsWriteApiResponse = "...pinging Products Write API...";
+        _thinking = true;
+        _productsWriteApiResourceDTO.Reset();
+        _productsWriteApiResourceDTO.Progress = "...checking API...";
+        var result = await AzureServicesClient.CheckProductsWriteApiAsync();
+        if (result.IsSuccess)
+        {
+            _productsWriteApiResourceDTO.ServiceAvailable = true;
+            _productsWriteApiResourceDTO.Message = "API success.";   // result.Result;
+            // check Sql Database
+            _productsWriteApiResourceDTO.Progress = "...checking Database...";
+            var databaseResult = await AzureServicesClient.CheckProductsWriteSqlAsync();
+            if (databaseResult.IsSuccess)
+            {
+                _productsWriteApiResourceDTO.DatabaseAvailable = true;
+                _productsWriteApiResourceDTO.Message = $"Success. {result.Result}";
+            }
+            else
+            {
+                _productsWriteApiResourceDTO.DatabaseAvailable = false;
+                _productsWriteApiResourceDTO.Message = $"Database error. Please try again.";
+            }
+        }
+        else
+        {
+            _productsWriteApiResourceDTO.ServiceAvailable = false;
+            _productsWriteApiResourceDTO.Message = $"API error. Please try again.";
+            _productsWriteApiResourceDTO.DatabaseAvailable = false;
+        }
 
-        // var result = await AzureServicesClient.CheckProductsWriteApiAsync();
-        // if (result.IsSuccess)
-        // {
-        //     _productsWriteApiResponse = $"{result.Result} \nChecking database...";
-        //     _productsWriteApiSuccess = true;
-        // }
-        // else _productsWriteApiResponse = result.ErrorMessage;
-
-        // if (_productsWriteApiSuccess)
-        // {
-        //     var databaseResult = await AzureServicesClient.CheckProductsWriteSqlAsync();
-        //     if (databaseResult.IsSuccess) _productsWriteApiResponse = $"{result.Result} \n{databaseResult.Result}";
-        //     else _productsWriteApiResponse = $"{result.Result} \n{databaseResult.ErrorMessage}";
-        // }
-
-        // _thinking = false;
+        _productsWriteApiResourceDTO.Progress = "Complete";
+        _thinking = false;
     }
-    // private void ClearProductsWriteApiResponse() { _productsWriteApiResponse = null; _productsWriteApiSuccess = false; }
-
-    private async Task PingProductsReadSql()
-    {
-        // _thinking = true;
-        // _productsReadSqlResponse = "...pinging Products Read SQL database...";
-        // var result = await AzureServicesClient.CheckProductsReadSqlAsync();
-        // if (result.IsSuccess) _productsReadSqlResponse = result.Result;
-        // else _productsReadSqlResponse = result.ErrorMessage;
-        // _thinking = false;
-    }
-    // private void ClearProductsReadSqlResponse() => _productsReadSqlResponse = null;
-
-    private async Task PingProductsWriteSql()
-    {
-        // _thinking = true;
-        // _productsWriteSqlResponse = "...pinging Products Write SQL database...";
-        // var result = await AzureServicesClient.CheckProductsWriteSqlAsync();
-        // if (result.IsSuccess) _productsWriteSqlResponse = result.Result;
-        // else _productsWriteSqlResponse = result.ErrorMessage;
-        // _thinking = false;
-    }
-    // private void ClearProductsWriteSqlResponse() => _productsWriteSqlResponse = null;
 
     private async Task PingYarpProxy()
     {

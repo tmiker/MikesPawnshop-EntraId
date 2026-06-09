@@ -23,6 +23,22 @@ namespace Carts.API.Services
             _logger = logger;
         }
 
+        public async Task<(bool IsSuccess, int CartCount, string? ErrorMessage)> GetCartCountAsync()
+        {
+            try
+            {
+                var filter = Builders<ShoppingCart>.Filter.Empty;
+                CountOptions countOptions = new CountOptions() { Hint = "_id_" };
+                int count = (int)await _carts.CountDocumentsAsync(filter, countOptions);
+                return (true, count, null);
+            }
+            catch (Exception ex)
+            {
+                return (false, -1, ex.Message);
+            }
+        }
+
+
         private async Task<ShoppingCart> EnsureCartExistsAsync(string ownerId)
         {
             ShoppingCart? cart = await _carts.Find(c => c.OwnerId == ownerId).FirstOrDefaultAsync();

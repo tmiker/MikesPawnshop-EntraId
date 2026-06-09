@@ -33,6 +33,22 @@ namespace Orders.API.Services
             _logger = logger;
         }
 
+        public async Task<(bool IsSuccess, int OrderCount, string? ErrorMessage)> GetOrderCountAsync()
+        {
+            try
+            {
+                var filter = Builders<Order>.Filter.Empty;
+                CountOptions countOptions = new CountOptions() { Hint = "_id_" };
+                int count = (int)await _orders.CountDocumentsAsync(filter, countOptions);
+                return (true, count, null);
+            }
+            catch (Exception ex)
+            {
+                return (false, -1, ex.Message);
+            }
+        }
+
+
         public async Task<(bool IsSuccess, string? OrderId, string? ErrorMessage)> AddOrderAsync(string ownerId, AddOrderDTO addOrderDTO, CancellationToken cancellationToken)
         {
             // 1. Check Account Status and get Shipping and Billing Address, return with errors if any

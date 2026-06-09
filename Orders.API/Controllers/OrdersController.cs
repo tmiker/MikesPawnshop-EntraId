@@ -21,6 +21,16 @@ namespace Orders.API.Controllers
             _tokenDecoder = tokenDecoder;
         }
 
+        [HttpGet("count")]
+        [AllowAnonymous]
+        public async Task<ActionResult<bool>> GetOrderCount()
+        {
+            var result = await _orderService.GetOrderCountAsync();
+            if (result.IsSuccess) return Ok(result.OrderCount);
+            return BadRequest();
+        }
+
+
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> PostOrder(AddOrderDTO addOrderDTO)

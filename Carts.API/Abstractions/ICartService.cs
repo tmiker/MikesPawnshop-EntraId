@@ -4,6 +4,7 @@ namespace Carts.API.Abstractions
 {
     public interface ICartService
     {
+        Task<(bool IsSuccess, int CartCount, string? ErrorMessage)> GetCartCountAsync();
         Task<bool> CreateCartAsync(string ownerId);
         Task<ShoppingCartDTO> GetCartAsync(string ownerId);
         Task<bool> RemoveCartAsync(string ownerId);

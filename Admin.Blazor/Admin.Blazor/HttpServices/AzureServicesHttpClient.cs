@@ -93,6 +93,33 @@ namespace Admin.Blazor.HttpServices
             }
         }
 
+        public async Task<(bool IsSuccess, string? Count, string? ErrorMessage)> CheckCartsMongoAsync()
+        {
+            var baseUrl = _config["CartsApiBaseURL"];
+            var countUrl = $"{baseUrl}/api/carts/count";
+            var client = _httpClientFactory.CreateClient(StaticData.AzureServicesHttpClient_ClientName);
+
+            try
+            {
+                using (var response = await client.GetAsync($"{countUrl}"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string count = await response.Content.ReadAsStringAsync();
+                        return (true, count, null);
+                    }
+                    else
+                    {
+                        return (false, null, "Failed to reach Carts Mongo database.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return (false, null, $"Carts API Error: {ex.Message}");
+            }
+        }
+
         public async Task<(bool IsSuccess, string? Result, string? ErrorMessage)> CheckOrdersApiAsync()
         {
             var baseUrl = _config["OrdersApiBaseURL"];
@@ -110,6 +137,33 @@ namespace Admin.Blazor.HttpServices
                     else
                     {
                         return (false, null, "Failed to reach Orders API.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return (false, null, $"Orders API Error: {ex.Message}");
+            }
+        }
+
+        public async Task<(bool IsSuccess, string? Count, string? ErrorMessage)> CheckOrdersMongoAsync()
+        {
+            var baseUrl = _config["OrdersApiBaseURL"];
+            var countUrl = $"{baseUrl}/api/orders/count";
+            var client = _httpClientFactory.CreateClient(StaticData.AzureServicesHttpClient_ClientName);
+
+            try
+            {
+                using (var response = await client.GetAsync($"{countUrl}"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string count = await response.Content.ReadAsStringAsync();
+                        return (true, count, null);
+                    }
+                    else
+                    {
+                        return (false, null, "Failed to reach Orders Mongo database.");
                     }
                 }
             }
