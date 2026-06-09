@@ -1,0 +1,295 @@
+﻿@page "/ping-services-2"
+@inject IAzureServicesHttpClient AzureServicesClient
+@rendermode InteractiveServer
+
+<PageTitle>Pawnshop Services</PageTitle>
+
+
+<div class="row mt-4">
+    <div class="col-10">
+        <h6 class="mt-2">Check Pawnshop API Resource and Reverse Proxy Status</h6>
+    </div>
+    <div class="col-2">
+        <a class="btn button-custom-success-med form-control" @onclick="PingAllPawnshopEndpoints">Ping All</a>
+    </div>
+</div>
+
+@if (_resourceDTOs is not null)
+{
+    <table class="table table-bordered table-dark text-center">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>API Status</th>
+                <th>DB Status</th>
+                <th>Results</th>
+                <th>Progress</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var resource in _resourceDTOs)
+            {
+                <tr>
+                    <td>@resource.ResourceName</td>
+                    <td>@if (resource.ServiceAvailable)
+                        {
+                            <p class="text-success-alt m-0">X</p>
+                        }
+                    </td>
+                    <td>@if (resource.DatabaseAvailable)
+                        {
+                            <p class="text-success-alt m-0">X</p>
+                        }
+                    </td>
+                    <td>@resource.Message</td>
+                    <td>@resource.Progress</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<div class="row mt-4">
+    <div class="col-2">
+        <a class="btn button-custom-primary-med form-control" @onclick="PingAccountsAPI">Ping Accounts</a>
+    </div>
+    <div class="col-2">
+        <a class="btn button-custom-primary-med form-control" @onclick="PingCartsAPI">Ping Carts</a>
+    </div>
+    <div class="col-2">
+        <a class="btn button-custom-primary-med form-control" @onclick="PingOrdersAPI">Ping Orders</a>
+    </div>
+    <div class="col-2">
+        <a class="btn button-custom-primary-med form-control" @onclick="PingProductsReadAPI">Ping Products Read</a>
+    </div>
+    <div class="col-2">
+        <a class="btn button-custom-primary-med form-control" @onclick="PingProductsWriteAPI">Ping Products Write</a>
+    </div>
+    <div class="col-2">
+        <a class="btn button-custom-primary-med form-control" @onclick="PingYarpProxy">Ping YARP Proxy</a>
+    </div>
+</div>
+
+@* <div class="row mt-4">
+    <div class="col-3">
+        <a class="btn button-custom-success-med form-control" @onclick="PingAllPawnshopEndpoints">Ping All Endpoints</a>
+    </div>
+    <div class="col-7">
+        <input type="text" class="bg-dark text-light form-control" @bind-value="_pingAllResult" />
+    </div>
+    @if (!string.IsNullOrEmpty(_pingAllResult))
+    {
+        <div class="col-2">
+            <a class="btn button-custom-secondary-med form-control" @onclick="ClearPingAllPawnshopEndpointsResult">Clear</a>
+        </div>
+    }
+</div> *@
+
+@if (_thinking || _allThinking)
+{
+    <div class="mx-auto text-center mb-3 mt-3">
+        <div class="spinner-border text-success role-status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+
+@code {
+    private ResourceStatusDTO _accountsApiResourceDTO = new ResourceStatusDTO { ResourceName = "Accounts API" };
+    private ResourceStatusDTO _cartsApiResourceDTO = new ResourceStatusDTO { ResourceName = "Carts API" };
+    private ResourceStatusDTO _ordersApiResourceDTO = new ResourceStatusDTO { ResourceName = "Orders API" };
+    private ResourceStatusDTO _productsReadApiResourceDTO = new ResourceStatusDTO { ResourceName = "Products Read API" };
+    private ResourceStatusDTO _productsWriteApiResourceDTO = new ResourceStatusDTO { ResourceName = "Products Write API" };
+    private ResourceStatusDTO _yarpResourceDTO = new ResourceStatusDTO { ResourceName = "Yarp Proxy" };
+    private List<ResourceStatusDTO>? _resourceDTOs;
+
+    private bool _thinking = false;
+    private bool _allThinking = false;
+
+    private async Task PingAccountsAPI()
+    {
+        _thinking = true;
+        _accountsApiResourceDTO.Reset();
+        _accountsApiResourceDTO.Progress = "...pinging Accounts API...";
+        var result = await AzureServicesClient.CheckAccountsApiAsync();
+        if (result.IsSuccess)
+        {
+            _accountsApiResourceDTO.ServiceAvailable = true;
+            _accountsApiResourceDTO.Message = "API success.";   // result.Result;
+            // check Mongo Database
+            _accountsApiResourceDTO.Progress = "...pinging Accounts Database...";
+            Thread.Sleep(2000);
+            _accountsApiResourceDTO.Message = "Simulated Mongo DB check";
+        }
+        else 
+        {
+            _accountsApiResourceDTO.ServiceAvailable = false;
+            _accountsApiResourceDTO.Message = $"Accounts API unavailable. Please try again.";
+            _accountsApiResourceDTO.DatabaseAvailable = false;
+        }
+        _accountsApiResourceDTO.Progress = "Complete";
+        _thinking = false;
+    }
+    // private void ClearAccountsApiResponse() => _accountsApiResponse = null;
+
+    private async Task PingCartsAPI()
+    {
+        // _thinking = true;
+        // _cartsApiResourceDTO.Progress = "...pinging Carts API...";
+        // var result = await AzureServicesClient.CheckCartsApiAsync();
+        // if (result.IsSuccess) 
+        // {
+        //     _cartsApiResponse = result.Result;
+        // }
+        // else _cartsApiResponse = result.ErrorMessage;
+        // _thinking = false;
+    }
+    // private void ClearCartsApiResponse() => _cartsApiResponse = null;
+
+    private async Task PingOrdersAPI()
+    {
+        // _thinking = true;
+        // _ordersApiResponse = "...pinging Orders API...";
+        // var result = await AzureServicesClient.CheckOrdersApiAsync();
+        // if (result.IsSuccess) _ordersApiResponse = result.Result;
+        // else _ordersApiResponse = result.ErrorMessage;
+        // _thinking = false;
+    }
+    // private void ClearOrdersApiResponse() => _ordersApiResponse = null;
+
+    private async Task PingProductsReadAPI()
+    {
+
+        _thinking = true;
+        _productsReadApiResourceDTO.Reset();
+        _productsReadApiResourceDTO.Progress = "...checking API...";
+        var result = await AzureServicesClient.CheckProductsReadApiAsync();
+        if (result.IsSuccess)
+        {
+            _productsReadApiResourceDTO.ServiceAvailable = true;
+            _productsReadApiResourceDTO.Message = "API success.";   // result.Result;
+            // check Sql Database
+            _productsReadApiResourceDTO.Progress = "...checking Database...";
+            var databaseResult = await AzureServicesClient.CheckProductsReadSqlAsync();
+            if (databaseResult.IsSuccess)
+            {
+                _productsReadApiResourceDTO.DatabaseAvailable = true;
+                _productsReadApiResourceDTO.Message = $"Success. {result.Result}";
+            }
+            else
+            {
+                _productsReadApiResourceDTO.DatabaseAvailable = false;
+                _productsReadApiResourceDTO.Message = $"Database error. Please try again.";
+            }
+        }
+        else
+        {
+            _productsReadApiResourceDTO.ServiceAvailable = false;
+            _productsReadApiResourceDTO.Message = $"API error. Please try again.";
+            _productsReadApiResourceDTO.DatabaseAvailable = false;
+        }
+
+        _productsReadApiResourceDTO.Progress = "Complete";
+        _thinking = false;
+    }
+    // private void ClearProductsReadApiResponse() { _productsReadApiResponse = null; _productsReadApiSuccess = false; }
+
+    private async Task PingProductsWriteAPI()
+    {
+        // _thinking = true;
+        // _productsWriteApiResponse = "...pinging Products Write API...";
+
+        // var result = await AzureServicesClient.CheckProductsWriteApiAsync();
+        // if (result.IsSuccess)
+        // {
+        //     _productsWriteApiResponse = $"{result.Result} \nChecking database...";
+        //     _productsWriteApiSuccess = true;
+        // }
+        // else _productsWriteApiResponse = result.ErrorMessage;
+
+        // if (_productsWriteApiSuccess)
+        // {
+        //     var databaseResult = await AzureServicesClient.CheckProductsWriteSqlAsync();
+        //     if (databaseResult.IsSuccess) _productsWriteApiResponse = $"{result.Result} \n{databaseResult.Result}";
+        //     else _productsWriteApiResponse = $"{result.Result} \n{databaseResult.ErrorMessage}";
+        // }
+
+        // _thinking = false;
+    }
+    // private void ClearProductsWriteApiResponse() { _productsWriteApiResponse = null; _productsWriteApiSuccess = false; }
+
+    private async Task PingProductsReadSql()
+    {
+        // _thinking = true;
+        // _productsReadSqlResponse = "...pinging Products Read SQL database...";
+        // var result = await AzureServicesClient.CheckProductsReadSqlAsync();
+        // if (result.IsSuccess) _productsReadSqlResponse = result.Result;
+        // else _productsReadSqlResponse = result.ErrorMessage;
+        // _thinking = false;
+    }
+    // private void ClearProductsReadSqlResponse() => _productsReadSqlResponse = null;
+
+    private async Task PingProductsWriteSql()
+    {
+        // _thinking = true;
+        // _productsWriteSqlResponse = "...pinging Products Write SQL database...";
+        // var result = await AzureServicesClient.CheckProductsWriteSqlAsync();
+        // if (result.IsSuccess) _productsWriteSqlResponse = result.Result;
+        // else _productsWriteSqlResponse = result.ErrorMessage;
+        // _thinking = false;
+    }
+    // private void ClearProductsWriteSqlResponse() => _productsWriteSqlResponse = null;
+
+    private async Task PingYarpProxy()
+    {
+        _thinking = true;
+        _yarpResourceDTO.Reset();
+        _yarpResourceDTO.Progress = "...pinging YARP Proxy...";
+        var result = await AzureServicesClient.CheckYarpProxyAsync();
+        if (result.IsSuccess)
+        {
+            _yarpResourceDTO.ServiceAvailable = true;
+            _yarpResourceDTO.Message = result.Result;
+        }
+        else
+        {
+            _yarpResourceDTO.ServiceAvailable = false;
+            _yarpResourceDTO.Message = $"YARP Proxy unavailable. Please try again.";
+            _yarpResourceDTO.DatabaseAvailable = false;
+        }
+        _yarpResourceDTO.Progress = "Complete";
+        _thinking = false;
+    }
+    // private void ClearYarpProxyResponse() => _yarpProxyResponse = null;
+
+    private async Task PingAllPawnshopEndpoints()
+    {
+        _allThinking = true;
+        var tasks = new List<Task>
+        {
+            PingAccountsAPI(),
+            PingCartsAPI(),
+            PingOrdersAPI(),
+            PingProductsReadAPI(),
+            PingProductsWriteAPI(),
+            PingYarpProxy()
+        };
+        await Task.WhenAll(tasks);
+
+        _allThinking = false;
+    }
+
+    protected override void OnInitialized()
+    {
+        _resourceDTOs = new List<ResourceStatusDTO>()
+        {
+            _accountsApiResourceDTO, _cartsApiResourceDTO, _ordersApiResourceDTO, 
+            _productsReadApiResourceDTO, _productsWriteApiResourceDTO, _yarpResourceDTO
+        };
+        base.OnInitialized();
+    }
+}
