@@ -19,12 +19,11 @@
     <table class="table table-bordered table-dark text-center mt-4">
         <thead>
             <tr>
-                <th>Name</th>
+                <th>Resource Name</th>
                 <th>API Status</th>
                 <th>DB Status</th>
                 <th>Results</th>
                 <th>Progress</th>
-                <th></th>
                 <th></th>
             </tr>
         </thead>
@@ -40,20 +39,21 @@
                     </td>
                     <td>@if (resource.DatabaseAvailable)
                         {
-                            <p class="text-success-alt m-0">&#x2714</p>
+                            <p class="text-success-alt m-0">&#10004</p>
                         }
                     </td>
                     <td>@resource.Message</td>
                     <td>@resource.Progress</td>
-                    <td></td>
-                    <td></td>
+                    <td>
+                        <a class="btn button-custom-table-primary" @onclick="(() => PingResource(resource.ResourceName))">Ping</a>
+                    </td>
                 </tr>
             }
         </tbody>
     </table>
 }
 
-<div class="row mt-4">
+@* <div class="row mt-4">
     <div class="col-2">
         <a class="btn button-custom-primary-med form-control" @onclick="PingAccountsAPI">Ping Accounts</a>
     </div>
@@ -72,6 +72,21 @@
     <div class="col-2">
         <a class="btn button-custom-primary-med form-control" @onclick="PingYarpProxy">Ping YARP Proxy</a>
     </div>
+</div> *@
+
+<div class="row mt-4">
+    <div class="col-2">
+        <a class="btn button-custom-primary-med form-control" @onclick="PingYarpProxy">Ping YARP Proxy</a>
+    </div>
+    <div class="col-8">
+        <input type="text" class="bg-dark text-light form-control" @bind-value="_yarpProxyResponse" />
+    </div>
+    @if (!string.IsNullOrEmpty(_yarpProxyResponse))
+    {
+        <div class="col-2">
+            <a class="btn button-custom-secondary-med form-control" @onclick="ClearYarpProxyResponse">Clear</a>
+        </div>
+    }
 </div>
 
 @if (_thinking || _allThinking)
@@ -89,11 +104,37 @@
     private ResourceStatusDTO _ordersApiResourceDTO = new ResourceStatusDTO { ResourceName = "Orders API" };
     private ResourceStatusDTO _productsReadApiResourceDTO = new ResourceStatusDTO { ResourceName = "Products Read API" };
     private ResourceStatusDTO _productsWriteApiResourceDTO = new ResourceStatusDTO { ResourceName = "Products Write API" };
-    private ResourceStatusDTO _yarpResourceDTO = new ResourceStatusDTO { ResourceName = "Yarp Proxy" };
+    // private ResourceStatusDTO _yarpResourceDTO = new ResourceStatusDTO { ResourceName = "Yarp Proxy" };
     private List<ResourceStatusDTO>? _resourceDTOs;
 
+    private string? _yarpProxyResponse;
+    private string? _consumerClientResponse;
     private bool _thinking = false;
     private bool _allThinking = false;
+
+    private async Task PingResource(string? resourceName)
+    {
+        if (string.IsNullOrWhiteSpace(resourceName)) return;
+        switch (resourceName)
+        {
+            case "Accounts API":
+                await PingAccountsAPI();
+                break;
+            case "Carts API":
+                await PingCartsAPI();
+                break;
+            case "Orders API":
+                await PingOrdersAPI();
+                break;
+            case "Products Read API":
+                await PingProductsReadAPI();
+                break;
+            case "Products Write API":
+                await PingProductsWriteAPI();
+                break;
+            default: return;
+        }
+    }
 
     private async Task PingAccountsAPI()
     {
@@ -111,7 +152,7 @@
             if (mongoResult.IsSuccess)
             {
                 _accountsApiResourceDTO.DatabaseAvailable = true;
-                _accountsApiResourceDTO.Message = $"Success. {result.Result}";
+                _accountsApiResourceDTO.Message = $"{result.Result}";
             }
             else
             {
@@ -145,7 +186,7 @@
             if (mongoResult.IsSuccess)
             {
                 _cartsApiResourceDTO.DatabaseAvailable = true;
-                _cartsApiResourceDTO.Message = $"Success. {result.Result}";
+                _cartsApiResourceDTO.Message = $"{result.Result}";
             }
             else
             {
@@ -179,7 +220,7 @@
             if (mongoResult.IsSuccess)
             {
                 _ordersApiResourceDTO.DatabaseAvailable = true;
-                _ordersApiResourceDTO.Message = $"Success. {result.Result}";
+                _ordersApiResourceDTO.Message = $"{result.Result}";
             }
             else
             {
@@ -213,7 +254,7 @@
             if (databaseResult.IsSuccess)
             {
                 _productsReadApiResourceDTO.DatabaseAvailable = true;
-                _productsReadApiResourceDTO.Message = $"Success. {result.Result}";
+                _productsReadApiResourceDTO.Message = $"{result.Result}";
             }
             else
             {
@@ -248,7 +289,7 @@
             if (databaseResult.IsSuccess)
             {
                 _productsWriteApiResourceDTO.DatabaseAvailable = true;
-                _productsWriteApiResourceDTO.Message = $"Success. {result.Result}";
+                _productsWriteApiResourceDTO.Message = $"{result.Result}";
             }
             else
             {
@@ -267,28 +308,38 @@
         _thinking = false;
     }
 
+    // private async Task PingYarpProxy()
+    // {
+    //     _thinking = true;
+    //     _yarpResourceDTO.Reset();
+    //     _yarpResourceDTO.Progress = "...pinging YARP Proxy...";
+    //     _yarpResourceDTO.DatabaseAvailable = true;
+    //     var result = await AzureServicesClient.CheckYarpProxyAsync();
+    //     if (result.IsSuccess)
+    //     {
+    //         _yarpResourceDTO.ServiceAvailable = true;
+    //         _yarpResourceDTO.Message = result.Result;
+    //     }
+    //     else
+    //     {
+    //         _yarpResourceDTO.ServiceAvailable = false;
+    //         _yarpResourceDTO.Message = $"YARP Proxy unavailable. Please try again.";
+    //         _yarpResourceDTO.DatabaseAvailable = false;
+    //     }
+    //     _yarpResourceDTO.Progress = "Complete";
+    //     _thinking = false;
+    // }
+
     private async Task PingYarpProxy()
     {
         _thinking = true;
-        _yarpResourceDTO.Reset();
-        _yarpResourceDTO.Progress = "...pinging YARP Proxy...";
-        _yarpResourceDTO.DatabaseAvailable = true;
+        _yarpProxyResponse = "...pinging YARP Proxy...";
         var result = await AzureServicesClient.CheckYarpProxyAsync();
-        if (result.IsSuccess)
-        {
-            _yarpResourceDTO.ServiceAvailable = true;
-            _yarpResourceDTO.Message = result.Result;
-        }
-        else
-        {
-            _yarpResourceDTO.ServiceAvailable = false;
-            _yarpResourceDTO.Message = $"YARP Proxy unavailable. Please try again.";
-            _yarpResourceDTO.DatabaseAvailable = false;
-        }
-        _yarpResourceDTO.Progress = "Complete";
+        if (result.IsSuccess) _yarpProxyResponse = result.Result;
+        else _yarpProxyResponse = result.ErrorMessage;
         _thinking = false;
     }
-    // private void ClearYarpProxyResponse() => _yarpProxyResponse = null;
+    private void ClearYarpProxyResponse() => _yarpProxyResponse = null;
 
     private async Task PingAllPawnshopEndpoints()
     {
@@ -312,7 +363,7 @@
         _resourceDTOs = new List<ResourceStatusDTO>()
         {
             _accountsApiResourceDTO, _cartsApiResourceDTO, _ordersApiResourceDTO, 
-            _productsReadApiResourceDTO, _productsWriteApiResourceDTO, _yarpResourceDTO
+            _productsReadApiResourceDTO, _productsWriteApiResourceDTO, // _yarpResourceDTO
         };
         base.OnInitialized();
     }
