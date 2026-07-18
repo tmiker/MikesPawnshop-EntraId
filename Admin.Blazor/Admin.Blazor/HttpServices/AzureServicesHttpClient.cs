@@ -225,58 +225,122 @@ namespace Admin.Blazor.HttpServices
             }
         }
 
-        public async Task<(bool IsSuccess, string? Result, string? ErrorMessage)> CheckProductsReadSqlAsync() 
+        public async Task<(bool IsSuccess, string? Result, string? ErrorMessage)> CheckProductsReadSqlAsync(CancellationToken? cancellationToken = null) 
         {
             var baseUrl = _config["ProductsReadApiBaseURL"];
             var productCountUrl = $"{baseUrl}/api/products/productCount";
             var client = _httpClientFactory.CreateClient(StaticData.AzureServicesHttpClient_ClientName);
+            int count = 0;
 
             try
             {
-                using (var response = await client.GetAsync($"{productCountUrl}"))
+                do
                 {
-                    if (response.IsSuccessStatusCode)
+                    if (cancellationToken is not null && cancellationToken.Value.IsCancellationRequested) break;
+                    count++;
+                    Console.WriteLine($"AzureServicesHttpClient.CheckProductsReadSqlAsync(): querying Products Read SQL database, attempt {count} ...");
+
+                    using (var response = await client.GetAsync($"{productCountUrl}"))
                     {
-                        string countResult = await response.Content.ReadAsStringAsync();
-                        return (true, $"Product Read Side SQL database is running. Product Count: {countResult}", null);
+                        if (response.IsSuccessStatusCode)
+                        {
+                            string countResult = await response.Content.ReadAsStringAsync();
+                            Console.WriteLine($"... Products Read SQL database connection success on attempt {count}.");
+                            return (true, $"Product Read Side SQL database is running. Product Count: {countResult}", null);
+                        }
                     }
-                    else
-                    {
-                        return (false, null, "Failed to reach Products Read SQL databasse.");
-                    }
+
                 }
+                while (count < 3);
+
+                Console.WriteLine($"AzureServicesHttpClient.CheckProductsReadSqlAsync(): Failed to reach Products Read SQL database in {count} attemps.");
+                return (false, null, $"Failed to reach Products Read SQL database after {count} attempts.");
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Exception: {ex.Message}");
                 return (false, null, $"Products Read SQL Error: {ex.Message}");
             }
+
+            //try
+            //{
+            //    using (var response = await client.GetAsync($"{productCountUrl}"))
+            //    {
+            //        if (response.IsSuccessStatusCode)
+            //        {
+            //            string countResult = await response.Content.ReadAsStringAsync();
+            //            return (true, $"Product Read Side SQL database is running. Product Count: {countResult}", null);
+            //        }
+            //        else
+            //        {
+            //            return (false, null, "Failed to reach Products Read SQL databasse.");
+            //        }
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    return (false, null, $"Products Read SQL Error: {ex.Message}");
+            //}
         }
 
-        public async Task<(bool IsSuccess, string? Result, string? ErrorMessage)> CheckProductsWriteSqlAsync()
+        public async Task<(bool IsSuccess, string? Result, string? ErrorMessage)> CheckProductsWriteSqlAsync(CancellationToken? cancellationToken = null)
         {
             var baseUrl = _config["ProductsWriteApiBaseURL"];
             var eventCountUrl = $"{baseUrl}/dev/productsManagement/eventCount";
             var client = _httpClientFactory.CreateClient(StaticData.AzureServicesHttpClient_ClientName);
-
+            int count = 0;
             try
             {
-                using (var response = await client.GetAsync($"{eventCountUrl}"))
+                do
                 {
-                    if (response.IsSuccessStatusCode)
+                    if (cancellationToken is not null && cancellationToken.Value.IsCancellationRequested) break;
+                    count++;
+                    Console.WriteLine($"AzureServicesHttpClient.CheckProductsWriteSqlAsync(): querying Products Write SQL database, attempt {count} ...");
+
+                    using (var response = await client.GetAsync($"{eventCountUrl}"))
                     {
-                        string countResult = await response.Content.ReadAsStringAsync();
-                        return (true, $"Product Write Side SQL database is running. Event Count: {countResult}", null);
-                    }
-                    else
-                    {
-                        return (false, null, "Failed to reach Products Write SQL databasse.");
+                        if (response.IsSuccessStatusCode)
+                        {
+                            string countResult = await response.Content.ReadAsStringAsync();
+                            Console.WriteLine($"... Products Write SQL database connection success on attempt {count}.");
+                            return (true, $"Product Write Side SQL database is running. Event Count: {countResult}", null);
+                        }
                     }
                 }
+                while (count < 3);
+
+                Console.WriteLine($"Failed to reach Products Write SQL database after {count} attempts.");
+                return (false, null, $"Failed to reach Products Write SQL database after {count} attempts.");
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Exception: {ex.Message}");
                 return (false, null, $"Products Write SQL Error: {ex.Message}");
             }
+
+            //var baseUrl = _config["ProductsWriteApiBaseURL"];
+            //var eventCountUrl = $"{baseUrl}/dev/productsManagement/eventCount";
+            //var client = _httpClientFactory.CreateClient(StaticData.AzureServicesHttpClient_ClientName);
+
+            //try
+            //{
+            //    using (var response = await client.GetAsync($"{eventCountUrl}"))
+            //    {
+            //        if (response.IsSuccessStatusCode)
+            //        {
+            //            string countResult = await response.Content.ReadAsStringAsync();
+            //            return (true, $"Product Write Side SQL database is running. Event Count: {countResult}", null);
+            //        }
+            //        else
+            //        {
+            //            return (false, null, "Failed to reach Products Write SQL databasse.");
+            //        }
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    return (false, null, $"Products Write SQL Error: {ex.Message}");
+            //}
         }
 
         public async Task<(bool IsSuccess, string? Result, string? ErrorMessage)> CheckYarpProxyAsync()

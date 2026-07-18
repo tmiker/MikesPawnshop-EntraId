@@ -9,9 +9,9 @@
         Task<(bool IsSuccess, string? Result, string? ErrorMessage)> CheckOrdersApiAsync();
         Task<(bool IsSuccess, string? Count, string? ErrorMessage)> CheckOrdersMongoAsync();
         Task<(bool IsSuccess, string? Result, string? ErrorMessage)> CheckProductsReadApiAsync();
-        Task<(bool IsSuccess, string? Result, string? ErrorMessage)> CheckProductsReadSqlAsync();
+        Task<(bool IsSuccess, string? Result, string? ErrorMessage)> CheckProductsReadSqlAsync(CancellationToken? cancellationToken = null);
         Task<(bool IsSuccess, string? Result, string? ErrorMessage)> CheckProductsWriteApiAsync();
-        Task<(bool IsSuccess, string? Result, string? ErrorMessage)> CheckProductsWriteSqlAsync();
+        Task<(bool IsSuccess, string? Result, string? ErrorMessage)> CheckProductsWriteSqlAsync(CancellationToken? cancellationToken = null);
         Task<(bool IsSuccess, string? Result, string? ErrorMessage)> CheckYarpProxyAsync();
     }
 }

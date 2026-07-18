@@ -1,16 +1,44 @@
 ﻿@page "/ping-services-2"
 @inject IAzureServicesHttpClient AzureServicesClient
 @rendermode InteractiveServer
+@implements IDisposable
 
 <PageTitle>Pawnshop Services</PageTitle>
 
 
 <div class="row mt-4">
-    <div class="col-10">
-        <h6 class="mt-2">Check Pawnshop API Resource and Reverse Proxy Status</h6>
+    @* <div class="col-4">
+        <h6 class="mt-2">Check Pawnshop API Resources and Reverse Proxy Status</h6>
     </div>
     <div class="col-2">
         <a class="btn button-custom-success-med form-control" @onclick="PingAllPawnshopEndpoints">Ping All</a>
+    </div> *@
+    <div class="col-4">
+        <h5>Check Mike's Pawnshop Status</h5>
+    </div>
+    <div class="col-2">
+        <label class="text-info-alt">
+            <input type="checkbox" id="domainInfo" class="form-check-input bg-dark border-secondary toolbar-checkbox-custom "
+                   @bind-value="@_checkMongoDatabases" checked="@_checkMongoDatabases" />
+            Check Mongo
+        </label>
+    </div>
+    <div class="col-2">
+        <label class="text-info-alt">
+            <input type="checkbox" id="domainInfo" class="form-check-input bg-dark border-secondary toolbar-checkbox-custom "
+                   @bind-value="@_checkSqlDatabases" checked="@_checkSqlDatabases" />
+            Check SQL
+        </label>
+    </div>
+    <div class="col-2 offset-2">
+        @if (_accountsThinking || _cartsThinking || _ordersThinking || _productsReadThinking || _productsWriteThinking || _yarpThinking)
+        {
+            <a class="btn button-custom-danger-med form-control mb-4" @onclick="PingAllPawnshopEndpoints">Cancel</a>
+        }
+        else
+        {
+            <a class="btn button-custom-success-med form-control mb-4" @onclick="PingAllPawnshopEndpoints">Ping All</a>
+        }
     </div>
 </div>
 
@@ -44,8 +72,18 @@
                     </td>
                     <td>@resource.Message</td>
                     <td>@resource.Progress</td>
-                    <td>
+                    @* <td>
                         <a class="btn button-custom-table-primary" @onclick="(() => PingResource(resource.ResourceName))">Ping</a>
+                    </td> *@
+                    <td>
+                        @if (resource.Progress is not null && resource.Progress.Contains("Database"))
+                        {
+                            <a class="btn button-custom-table-danger" @onclick="CancelOperationAsync">Cancel</a>
+                        }
+                        else
+                        {
+                            <a class="btn button-custom-table-primary" @onclick="(() => PingResource(resource.ResourceName))">Ping</a>
+                        }
                     </td>
                 </tr>
             }
@@ -89,7 +127,7 @@
     }
 </div>
 
-@if (_thinking || _allThinking)
+@if (_accountsThinking || _cartsThinking || _ordersThinking || _productsReadThinking || _productsWriteThinking || _yarpThinking)
 {
     <div class="mx-auto text-center mb-3 mt-3">
         <div class="spinner-border text-success role-status">
@@ -109,8 +147,17 @@
 
     private string? _yarpProxyResponse;
     private string? _consumerClientResponse;
-    private bool _thinking = false;
-    private bool _allThinking = false;
+    private bool _yarpThinking = false;
+    private bool _accountsThinking = false;
+    private bool _cartsThinking = false;
+    private bool _ordersThinking = false;
+    private bool _productsWriteThinking = false;
+    private bool _productsReadThinking = false;
+    private bool _checkMongoDatabases = false;
+    private bool _checkSqlDatabases = false;
+
+    private CancellationTokenSource? _cancellationTokenSource = new CancellationTokenSource();
+    private async Task CancelOperationAsync() => await _cancellationTokenSource!.CancelAsync();
 
     private async Task PingResource(string? resourceName)
     {
@@ -138,60 +185,66 @@
 
     private async Task PingAccountsAPI()
     {
-        _thinking = true;
+        _accountsThinking = true;
         _accountsApiResourceDTO.Reset();
         _accountsApiResourceDTO.Progress = "...checking Accounts API...";
         var result = await AzureServicesClient.CheckAccountsApiAsync();
         if (result.IsSuccess)
         {
             _accountsApiResourceDTO.ServiceAvailable = true;
-            _accountsApiResourceDTO.Message = "API success.";   // result.Result;
+            _accountsApiResourceDTO.Message = "API success";   // result.Result;
             // check Mongo Database
-            _accountsApiResourceDTO.Progress = "...checking Accounts Database...";
-            var mongoResult = await AzureServicesClient.CheckAccountsMongoAsync();
-            if (mongoResult.IsSuccess)
+            if (_checkMongoDatabases)
             {
-                _accountsApiResourceDTO.DatabaseAvailable = true;
-                _accountsApiResourceDTO.Message = $"{result.Result}";
-            }
-            else
-            {
-                _accountsApiResourceDTO.DatabaseAvailable = false;
-                _accountsApiResourceDTO.Message = $"Database error. Please try again.";
+                _accountsApiResourceDTO.Progress = "...checking Accounts Database...";
+                var mongoResult = await AzureServicesClient.CheckAccountsMongoAsync();
+                if (mongoResult.IsSuccess)
+                {
+                    _accountsApiResourceDTO.DatabaseAvailable = true;
+                    _accountsApiResourceDTO.Message = $"{result.Result}";
+                }
+                else
+                {
+                    _accountsApiResourceDTO.DatabaseAvailable = false;
+                    _accountsApiResourceDTO.Message = $"Database error. Please try again.";
+                }
             }
         }
-        else 
+        else
         {
             _accountsApiResourceDTO.ServiceAvailable = false;
             _accountsApiResourceDTO.Message = $"Accounts API unavailable. Please try again.";
             _accountsApiResourceDTO.DatabaseAvailable = false;
         }
         _accountsApiResourceDTO.Progress = "Complete";
-        _thinking = false;
+        _accountsThinking = false;
     }
 
     private async Task PingCartsAPI()
     {
-        _thinking = true;
+        _cartsThinking = true;
         _cartsApiResourceDTO.Reset();
         _cartsApiResourceDTO.Progress = "...checking Carts API...";
         var result = await AzureServicesClient.CheckCartsApiAsync();
         if (result.IsSuccess)
         {
             _cartsApiResourceDTO.ServiceAvailable = true;
-            _cartsApiResourceDTO.Message = "API success.";   // result.Result;
-            // check Mongo Database
-            _cartsApiResourceDTO.Progress = "...checking Carts Database...";
-            var mongoResult = await AzureServicesClient.CheckCartsMongoAsync();
-            if (mongoResult.IsSuccess)
+            _cartsApiResourceDTO.Message = "API success";   // result.Result;
+            if (_checkMongoDatabases)
             {
-                _cartsApiResourceDTO.DatabaseAvailable = true;
-                _cartsApiResourceDTO.Message = $"{result.Result}";
-            }
-            else
-            {
-                _cartsApiResourceDTO.DatabaseAvailable = false;
-                _cartsApiResourceDTO.Message = $"Database error. Please try again.";
+                // check Mongo Database
+                _cartsApiResourceDTO.Progress = "...checking Carts Database...";
+                var mongoResult = await AzureServicesClient.CheckCartsMongoAsync();
+                if (mongoResult.IsSuccess)
+                {
+                    _cartsApiResourceDTO.DatabaseAvailable = true;
+                    _cartsApiResourceDTO.Message = $"{result.Result}";
+                }
+                else
+                {
+                    _cartsApiResourceDTO.DatabaseAvailable = false;
+                    _cartsApiResourceDTO.Message = $"Database error. Please try again.";
+                }
             }
         }
         else
@@ -201,31 +254,34 @@
             _cartsApiResourceDTO.DatabaseAvailable = false;
         }
         _cartsApiResourceDTO.Progress = "Complete";
-        _thinking = false;
+        _cartsThinking = false;
     }
 
     private async Task PingOrdersAPI()
     {
-        _thinking = true;
+        _ordersThinking = true;
         _ordersApiResourceDTO.Reset();
         _ordersApiResourceDTO.Progress = "...checking Orders API...";
         var result = await AzureServicesClient.CheckOrdersApiAsync();
         if (result.IsSuccess)
         {
             _ordersApiResourceDTO.ServiceAvailable = true;
-            _ordersApiResourceDTO.Message = "API success.";   // result.Result;
-            // check Mongo Database
-            _ordersApiResourceDTO.Progress = "...checking Orders Database...";
-            var mongoResult = await AzureServicesClient.CheckOrdersMongoAsync();
-            if (mongoResult.IsSuccess)
+            _ordersApiResourceDTO.Message = "API success";   // result.Result;
+            if (_checkMongoDatabases)
             {
-                _ordersApiResourceDTO.DatabaseAvailable = true;
-                _ordersApiResourceDTO.Message = $"{result.Result}";
-            }
-            else
-            {
-                _ordersApiResourceDTO.DatabaseAvailable = false;
-                _ordersApiResourceDTO.Message = $"Database error. Please try again.";
+                // check Mongo Database
+                _ordersApiResourceDTO.Progress = "...checking Orders Database...";
+                var mongoResult = await AzureServicesClient.CheckOrdersMongoAsync();
+                if (mongoResult.IsSuccess)
+                {
+                    _ordersApiResourceDTO.DatabaseAvailable = true;
+                    _ordersApiResourceDTO.Message = $"{result.Result}";
+                }
+                else
+                {
+                    _ordersApiResourceDTO.DatabaseAvailable = false;
+                    _ordersApiResourceDTO.Message = $"Database error. Please try again.";
+                }
             }
         }
         else
@@ -235,31 +291,35 @@
             _ordersApiResourceDTO.DatabaseAvailable = false;
         }
         _ordersApiResourceDTO.Progress = "Complete";
-        _thinking = false;
+        _ordersThinking = false;
     }
 
     private async Task PingProductsReadAPI()
     {
-        _thinking = true;
+        _productsReadThinking = true;
         _productsReadApiResourceDTO.Reset();
         _productsReadApiResourceDTO.Progress = "...checking API...";
         var result = await AzureServicesClient.CheckProductsReadApiAsync();
         if (result.IsSuccess)
         {
             _productsReadApiResourceDTO.ServiceAvailable = true;
-            _productsReadApiResourceDTO.Message = "API success.";   // result.Result;
-            // check Sql Database
-            _productsReadApiResourceDTO.Progress = "...checking Database...";
-            var databaseResult = await AzureServicesClient.CheckProductsReadSqlAsync();
-            if (databaseResult.IsSuccess)
+            _productsReadApiResourceDTO.Message = "API success";   // result.Result;
+            if (_checkSqlDatabases)
             {
-                _productsReadApiResourceDTO.DatabaseAvailable = true;
-                _productsReadApiResourceDTO.Message = $"{result.Result}";
-            }
-            else
-            {
-                _productsReadApiResourceDTO.DatabaseAvailable = false;
-                _productsReadApiResourceDTO.Message = $"Database error. Please try again.";
+                // check Sql Database
+                _productsReadApiResourceDTO.Progress = "...checking Database...";
+                StateHasChanged();
+                var databaseResult = await AzureServicesClient.CheckProductsReadSqlAsync(_cancellationTokenSource!.Token);
+                if (databaseResult.IsSuccess)
+                {
+                    _productsReadApiResourceDTO.DatabaseAvailable = true;
+                    _productsReadApiResourceDTO.Message = $"{result.Result}";
+                }
+                else
+                {
+                    _productsReadApiResourceDTO.DatabaseAvailable = false;
+                    _productsReadApiResourceDTO.Message = $"Database error. Please try again.";
+                }
             }
         }
         else
@@ -270,31 +330,35 @@
         }
 
         _productsReadApiResourceDTO.Progress = "Complete";
-        _thinking = false;
+        _productsReadThinking = false;
     }
 
     private async Task PingProductsWriteAPI()
     {
-        _thinking = true;
+        _productsWriteThinking = true;
         _productsWriteApiResourceDTO.Reset();
         _productsWriteApiResourceDTO.Progress = "...checking API...";
         var result = await AzureServicesClient.CheckProductsWriteApiAsync();
         if (result.IsSuccess)
         {
             _productsWriteApiResourceDTO.ServiceAvailable = true;
-            _productsWriteApiResourceDTO.Message = "API success.";   // result.Result;
-            // check Sql Database
-            _productsWriteApiResourceDTO.Progress = "...checking Database...";
-            var databaseResult = await AzureServicesClient.CheckProductsWriteSqlAsync();
-            if (databaseResult.IsSuccess)
+            _productsWriteApiResourceDTO.Message = "API success";   // result.Result;
+            if (_checkSqlDatabases)
             {
-                _productsWriteApiResourceDTO.DatabaseAvailable = true;
-                _productsWriteApiResourceDTO.Message = $"{result.Result}";
-            }
-            else
-            {
-                _productsWriteApiResourceDTO.DatabaseAvailable = false;
-                _productsWriteApiResourceDTO.Message = $"Database error. Please try again.";
+                // check Sql Database
+                _productsWriteApiResourceDTO.Progress = "...checking Database...";
+                StateHasChanged();
+                var databaseResult = await AzureServicesClient.CheckProductsWriteSqlAsync(_cancellationTokenSource!.Token);
+                if (databaseResult.IsSuccess)
+                {
+                    _productsWriteApiResourceDTO.DatabaseAvailable = true;
+                    _productsWriteApiResourceDTO.Message = $"{result.Result}";
+                }
+                else
+                {
+                    _productsWriteApiResourceDTO.DatabaseAvailable = false;
+                    _productsWriteApiResourceDTO.Message = $"Database error. Please try again.";
+                }
             }
         }
         else
@@ -305,7 +369,7 @@
         }
 
         _productsWriteApiResourceDTO.Progress = "Complete";
-        _thinking = false;
+        _productsWriteThinking = false;
     }
 
     // private async Task PingYarpProxy()
@@ -332,18 +396,17 @@
 
     private async Task PingYarpProxy()
     {
-        _thinking = true;
+        _yarpThinking = true;
         _yarpProxyResponse = "...pinging YARP Proxy...";
         var result = await AzureServicesClient.CheckYarpProxyAsync();
         if (result.IsSuccess) _yarpProxyResponse = result.Result;
         else _yarpProxyResponse = result.ErrorMessage;
-        _thinking = false;
+        _yarpThinking = false;
     }
     private void ClearYarpProxyResponse() => _yarpProxyResponse = null;
 
     private async Task PingAllPawnshopEndpoints()
     {
-        _allThinking = true;
         var tasks = new List<Task>
         {
             PingAccountsAPI(),
@@ -354,8 +417,6 @@
             PingYarpProxy()
         };
         await Task.WhenAll(tasks);
-
-        _allThinking = false;
     }
 
     protected override void OnInitialized()
@@ -366,5 +427,12 @@
             _productsReadApiResourceDTO, _productsWriteApiResourceDTO, // _yarpResourceDTO
         };
         base.OnInitialized();
+    }
+
+    public void Dispose()
+    {
+        _cancellationTokenSource?.Cancel();
+        _cancellationTokenSource?.Dispose();
+        _cancellationTokenSource = null;
     }
 }
