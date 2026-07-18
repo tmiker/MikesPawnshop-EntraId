@@ -283,7 +283,7 @@ app.UseAuthorization();
 
 // app.MapControllers();
 
-app.MapGet("/", () => "YARP Reverse Proxy is up and running! Last Build: 14 Jun 2026 @ 12:40 CST");
+app.MapGet("/", () => "YARP Reverse Proxy is up and running! Last Build: 18 Jul 2026 @ 18:20 CST");
 
 app.MapReverseProxy();  // .RequireAuthorization(); would require authentication for all proxied requests
 
