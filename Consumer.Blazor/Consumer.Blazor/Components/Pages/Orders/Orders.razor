@@ -3,110 +3,7 @@
 @inject IOrdersHttpService _orderHttpService
 @attribute [Authorize]
 
-@if (_selectedOrder is not null)
-{
-    <OrderDetail OrderDTO="@_selectedOrder" BackToListCallback="HandleBackToListCallback" />
-}
-else
-{
-    <h3>My Orders</h3>
-
-    <ErrorComponent SuccessMessage="@_successMessage" ErrorMessage="@_errorMessage" ClearSuccessCallback="ClearSuccessMessage" ClearErrorCallback="ClearErrorMessage" />
-
-    <div class="row">
-        <div class="col-12">
-
-            @if (_orders is not null && _orders.Any())
-            {
-                <table class="table table-dark table-bordered text-center">
-                    <thead class="bg-primary text-light">
-                        <tr>
-                            <th>Id</th>
-                            <th>Order Id</th>
-                            <th>Order Date</th>
-                            <th>Status</th>
-                            <th>Item Count</th>
-                            <th>Version</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var order in _orders)
-                        {
-                            <tr>
-                                <td>@order.Id</td>
-                                <td>@order.OrderId</td>
-                                <td>@order.OrderDate.ToShortDateString()</td>
-                                <td>@order.Status</td>
-                                <td>@order.Items.Count</td>
-                                <td>@order.Version</td>
-                                <td>
-                                    <a class="btn button-custom-table-primary" @onclick="() => Detail(order.Id!)">Detail</a>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            }
-            else
-            {
-                <h5 class="text-center">No orders were found.</h5>
-            }
-        </div>
-    </div>
-
-    <div class="toolbar-paging">
-        @if (_pagingData is not null)
-        {
-            <div class="row p-4">
-                <div class="col-8">
-                    <ul class="pagination">
-                        <li class="page-item">
-                            <a class="btn button-custom-paging-arrow" role="button" @onclick="PageBackward">
-                                <i class="bi-chevron-double-left text-primary-alt"></i>
-                            </a>
-                        </li>
-                        @for (int i = 1; i <= _pagingData.TotalPageCount; i++)
-                        {
-                            int page = i;
-                            if (page == _pagingData.CurrentPage)
-                            {
-                                <li class="page-item active">
-                                    <a class="btn button-custom-paging-current" role="button" @onclick="(() => PageTo(page))">
-                                        <span class="text-info-alt">@i</span>
-                                    </a>
-                                </li>
-                            }
-                            else
-                            {
-                                <li class="page-item">
-                                    <a class="btn button-custom-paging-page" role="button" @onclick="(() => PageTo(page))">
-                                        <span class="text-primary-alt">@i</span>
-                                    </a>
-                                </li>
-                            }
-                        }
-                        <li class="page-item">
-                            <a class="btn button-custom-paging-arrow" role="button" @onclick="PageForward">
-                                <i class="bi-chevron-double-right text-primary-alt"></i>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-                <div class="col-4 ">
-                    <div class="row ">
-                        <div class="col-6 text-center ">
-                            <span class="text-primary-alt"><i>Page Size: @_pagingData.PageSize</i></span>
-                        </div>
-                        <div class="col-6 text-center ">
-                            <span class="text-primary-alt"><i>Item Count: @_pagingData.TotalItemCount</i></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
-}
+<h3>My Orders</h3>
 
 @if (_thinking)
 {
@@ -116,10 +13,115 @@ else
         </div>
     </div>
 }
+else
+{
+    @if (_selectedOrder is not null)
+    {
+        <OrderDetail OrderDTO="@_selectedOrder" BackToListCallback="HandleBackToListCallback" />
+    }
+    else
+    {
+        <ErrorComponent SuccessMessage="@_successMessage" ErrorMessage="@_errorMessage" ClearSuccessCallback="ClearSuccessMessage" ClearErrorCallback="ClearErrorMessage" />
 
+        <div class="row">
+            <div class="col-12">
+
+                @if (_orders is not null && _orders.Any())
+                {
+                    <table class="table table-dark table-bordered text-center">
+                        <thead class="bg-primary text-light">
+                            <tr>
+                                <th>Id</th>
+                                <th>Order Id</th>
+                                <th>Order Date</th>
+                                <th>Status</th>
+                                <th>Item Count</th>
+                                <th>Version</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in _orders)
+                            {
+                                <tr>
+                                    <td>@order.Id</td>
+                                    <td>@order.OrderId</td>
+                                    <td>@order.OrderDate.ToShortDateString()</td>
+                                    <td>@order.Status</td>
+                                    <td>@order.Items.Count</td>
+                                    <td>@order.Version</td>
+                                    <td>
+                                        <a class="btn button-custom-table-primary" @onclick="() => Detail(order.Id!)">Detail</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <h5 class="text-center">No orders were found.</h5>
+                }
+            </div>
+        </div>
+
+        <div class="toolbar-paging">
+            @if (_pagingData is not null)
+            {
+                <div class="row p-4">
+                    <div class="col-8">
+                        <ul class="pagination">
+                            <li class="page-item">
+                                <a class="btn button-custom-paging-arrow" role="button" @onclick="PageBackward">
+                                    <i class="bi-chevron-double-left text-primary-alt"></i>
+                                </a>
+                            </li>
+                            @for (int i = 1; i <= _pagingData.TotalPageCount; i++)
+                            {
+                                int page = i;
+                                if (page == _pagingData.CurrentPage)
+                                {
+                                    <li class="page-item active">
+                                        <a class="btn button-custom-paging-current" role="button" @onclick="(() => PageTo(page))">
+                                            <span class="text-info-alt">@i</span>
+                                        </a>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li class="page-item">
+                                        <a class="btn button-custom-paging-page" role="button" @onclick="(() => PageTo(page))">
+                                            <span class="text-primary-alt">@i</span>
+                                        </a>
+                                    </li>
+                                }
+                            }
+                            <li class="page-item">
+                                <a class="btn button-custom-paging-arrow" role="button" @onclick="PageForward">
+                                    <i class="bi-chevron-double-right text-primary-alt"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-4 ">
+                        <div class="row ">
+                            <div class="col-6 text-center ">
+                                <span class="text-primary-alt"><i>Page Size: @_pagingData.PageSize</i></span>
+                            </div>
+                            <div class="col-6 text-center ">
+                                <span class="text-primary-alt"><i>Item Count: @_pagingData.TotalItemCount</i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+}
 
 @code {
     private List<OrderDTO>? _orders;
+    private string? _noOrdersText;
     private PaginationMetadata? _pagingData;
     private OrderDTO? _selectedOrder;
     private void HandleBackToListCallback() => _selectedOrder = null;
@@ -197,17 +199,18 @@ else
     {
         if (isFirstRender)
         {
-            Console.WriteLine($"@@@@@@@@@@ **************** Orders.razor OnAfterRender was called. *************** @@@@@@@@@");
+            // var result = await _orderHttpService.GetAllUserOrdersAsync(_filter, _sortColumn, _sortOrder, _pageNumber, _pageSize);
+            // if (result.IsSuccess)
+            // {
+            //     _orders = result.OrderDTOs?.ToList();
+            //     _pagingData = result.PagingData;
+            // }
+            // else _errorMessage = result.ErrorMessage;
 
-            var result = await _orderHttpService.GetAllUserOrdersAsync(_filter, _sortColumn, _sortOrder, _pageNumber, _pageSize);
-            if (result.IsSuccess)
-            {
-                _orders = result.OrderDTOs?.ToList();
-                _pagingData = result.PagingData;
-            }
-            else _errorMessage = result.ErrorMessage;
+            // _thinking = false;
 
-            _thinking = false;
+            await RefreshData();
+
             this.StateHasChanged();
         }
     }

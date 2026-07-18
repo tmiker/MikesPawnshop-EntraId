@@ -20,6 +20,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notes", "Notes", "{02EA681E
 		git_notes.txt = git_notes.txt
 		healthchecks_notes.txt = healthchecks_notes.txt
 		mediatr_notes.txt = mediatr_notes.txt
+		nuget_notes.txt = nuget_notes.txt
 		problem_details.txt = problem_details.txt
 		scratchpad.txt = scratchpad.txt
 		serilog_notes.txt = serilog_notes.txt

@@ -1,0 +1,5 @@
+Microsoft.OpenApi transitive package (from parent Microsoft.AspNetCore.OpenApi)
+	transitive version was 2.0.0 with vulnerabilities
+	installed it and upgraded to 2.11.0 
+	DO NOT UPGRADE TO v3 !!!!
+	see issue @ http s://github.com/dotnet/aspnetcore/issues/67505
