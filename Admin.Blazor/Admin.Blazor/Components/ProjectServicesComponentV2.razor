@@ -153,8 +153,8 @@
     private bool _ordersThinking = false;
     private bool _productsWriteThinking = false;
     private bool _productsReadThinking = false;
-    private bool _checkMongoDatabases = false;
-    private bool _checkSqlDatabases = false;
+    private bool _checkMongoDatabases = true;
+    private bool _checkSqlDatabases = true;
 
     private CancellationTokenSource? _cancellationTokenSource = new CancellationTokenSource();
     private async Task CancelOperationAsync() => await _cancellationTokenSource!.CancelAsync();
