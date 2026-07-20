@@ -60,6 +60,55 @@ h1:focus {
     border-color: #929292;
 }
 
+/* product cards */
+.product-section {
+    display: grid;
+    grid-template-columns: repeat(4, 25%);
+    grid-auto-rows: 6rem;
+    gap: 2rem;
+}
+
+.product-card {
+    padding: 1.4rem;
+    background-color: #252b43;
+    color: white;
+    border-radius: 5px;
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: space-between;
+    align-content: space-between;
+}
+
+.product-image {
+    background-color: #252b43;
+    justify-self: end;
+}
+
+.product-description {
+    font-size: 0.7rem;
+}
+
+.product-name {
+    opacity: 0.6;
+    font-size: 1.0rem;
+    background-color: #252b43;
+}
+
+.product-price {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #37a890;
+    background-color: #252b43;
+    /*    margin-bottom: -5px;*/
+}
+
+.product-uom {
+    font-size: 0.6rem;
+    color: #37a890;
+    background-color: #252b43;
+    align-self: end;
+}
+
 /* TEXT */
 
 .text-primary-alt {

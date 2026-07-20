@@ -6,10 +6,35 @@
         </div>
         <div class="card-body bg-dark text-light">
             <div class="row">
-                <div class="col-6">
+                @* <div class="col-6">
                     <span class="product-price">$@Product.Price</span>
                     <span class="product-uom">@Product.UOM</span>
+                </div> *@
+
+                <div class="col-6">
+                    <div class="row">
+                        <div class="col-12">
+                            <span class="product-price">$@Product.Price</span>
+                            <span class="product-uom">@Product.UOM</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <AuthorizeView>
+                                <Authorized>
+                                    <a class="btn button-custom-table-primary" @onclick="ProductDetail">View</a>
+                                    <a class="btn button-custom-table-primary" @onclick="AddToCart">Buy</a>
+                                </Authorized>
+                                <NotAuthorized>
+                                    <a class="btn button-custom-table-primary" @onclick="ProductDetail">View</a>
+                                </NotAuthorized>
+                            </AuthorizeView>
+                            
+                        </div>
+                    </div>
                 </div>
+
+
                 <div class="col-6">
                     <div class="text-end">
                         @if (Product.DefaultImageUri is not null)
@@ -24,10 +49,10 @@
                 </div>
             </div>
             <div class="row mt-2">
-                <textarea rows="2" class="bg-dark text-light product-description">@Product.Description</textarea>
+                <textarea rows="2" class="bg-dark text-light product-description small">@Product.Description</textarea>
             </div>
         </div>
-        <div class="card-footer bg-dark text-light text-center">
+        @* <div class="card-footer bg-dark text-light text-center">
             <AuthorizeView>
                 <Authorized>
                     <a class="btn btn-primary btn-sm" style="width:120px" @onclick="ProductDetail">Details</a>
@@ -37,8 +62,7 @@
                     <a class="btn btn-primary btn-sm" style="width:120px" @onclick="ProductDetail">Details</a>
                 </NotAuthorized>
             </AuthorizeView>
-
-        </div>
+        </div> *@
     </div>
 }
 else

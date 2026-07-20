@@ -88,7 +88,7 @@
     <div class="col-2">
         <a class="btn button-custom-yellow-med form-control mt-4" @onclick="ClearFilters">Reset</a>
     </div>
-    @if (!string.IsNullOrWhiteSpace(_successMessage) || !string.IsNullOrWhiteSpace(_successMessage))
+    @if (!string.IsNullOrWhiteSpace(_successMessage) || !string.IsNullOrWhiteSpace(_errorMessage))
     {
         <div class="col-2">
             <a class="btn button-custom-warning-med form-control mt-4" @onclick="ClearMessages">Clear Messages</a>
@@ -279,9 +279,7 @@
         _cancellationTokenSource = new CancellationTokenSource();
         if (_addProductDTO is null) return;
         var result = await _writeSideHttpClient.AddProductAsync(_addProductDTO!, _cancellationTokenSource.Token);
-        if (result.IsSuccess) _successMessage = "Successfully added product.";
-        // need to get product from id on write side and add a dto for it
-        else _errorMessage = result.ErrorMessage;
+        if (!result.IsSuccess) _errorMessage = result.ErrorMessage;
         _cancellationTokenSource = new CancellationTokenSource();
         _addProductDTO = null;
         await RefreshData();
