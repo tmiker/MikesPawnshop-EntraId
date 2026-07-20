@@ -141,18 +141,6 @@ try
         });
     });
 
-    //// Add database context and cache - moved to CompositionRoot.cs
-    //if (builder.Environment.IsDevelopment())
-    //{
-    //    builder.Services.AddDbContext<ProductsReadDbContext>(options =>
-    //        options.UseSqlServer(builder.Configuration["LOCAL_SQL_CONNECTIONSTRING"]));
-    //}
-    //else
-    //{
-    //    builder.Services.AddDbContext<ProductsReadDbContext>(options =>
-    //        options.UseSqlServer(builder.Configuration["AZURE_SQL_READ_CONNECTIONSTRING"]));
-    //}
-
     //// CONFIGURE AMQP / MASS TRANSIT 
     string amqpUrl = builder.Configuration["CLOUD_AMQP_SETTINGS_URL"] ?? throw new ArgumentNullException("Invalid Cloud AMQP URL configuration.");
     string amqpUsername = builder.Configuration["CLOUD_AMQP_SETTINGS_USERVHOST"] ?? throw new ArgumentNullException("Invalid Cloud AMQP User VHost configuration.");
@@ -196,8 +184,8 @@ try
 
                 // Robustness: retry with jitter + immediate faults to _error queue if exhausted
                 e.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));
-                e.PrefetchCount = 4;    // 16;    // 16;
-                e.ConcurrentMessageLimit = 1;   // 8;  // 8;
+                e.PrefetchCount = 4;    
+                e.ConcurrentMessageLimit = 1;   
             });
         });
     });
