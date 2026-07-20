@@ -120,7 +120,8 @@ namespace Products.Read.API.Controllers
         }
 
         [HttpPost("deleteReadSideProduct")]
-        [Authorize(Policy = "IsAdmin")]
+        // [Authorize(Policy = "IsAdmin")]
+        [AllowAnonymous]
         public async Task<IActionResult> DeleteProductById(Guid aggregateId, CancellationToken cancellationToken)
         {
 
