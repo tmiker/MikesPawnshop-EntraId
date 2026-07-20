@@ -9,5 +9,6 @@ namespace Products.Read.API.Abstractions
         Task AddProductImageAsync(ImageAddedMessage message);
         Task AddProductDocumentAsync(DocumentAddedMessage message);
         Task<bool> PurgeAsync();
+        Task<bool> DeleteProductByAggregateIdAsync(Guid aggregateId);
     }
 }

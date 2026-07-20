@@ -70,5 +70,7 @@ namespace Admin.Blazor.Client.Abstractions
         Task<(bool IsSuccess, string? ErrorMessage)> ThrowExceptionForTestingAsync(ThrowExceptionDTO throwExceptionDTO, CancellationToken cancellationToken);
         Task<(bool IsSuccess, string? Value, string? ErrorMessage)> GetCloudAmqpSettingsTestingDummyValueAsync(CancellationToken cancellationToken);
         Task<(bool IsSuccess, string? ErrorMessage)> PurgeDataAsync(PurgeDataDTO purgeDataDTO, CancellationToken cancellationToken);
+
+        Task<(bool IsSuccess, string? ErrorMessage)> DeleteProductByIdAsync(Guid aggregateId, CancellationToken cancellationToken);
     }
 }

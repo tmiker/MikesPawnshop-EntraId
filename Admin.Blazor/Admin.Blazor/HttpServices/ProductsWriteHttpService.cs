@@ -595,6 +595,26 @@ namespace Admin.Blazor.HttpServices
             }
         }
 
+        public async Task<(bool IsSuccess, string? ErrorMessage)> DeleteProductByIdAsync(Guid aggregateId, CancellationToken cancellationToken)
+        {
+            string uri = $"{StaticData.ProductsWriteHttpClient_DevTestsPath}/permanentlyDeleteProduct?aggregateId={aggregateId}";
+
+            var client = _httpClientFactory.CreateClient(StaticData.ProductsWriteHttpClient_ClientName);
+
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, uri);
+
+            string correlationId = Guid.NewGuid().ToString();
+            request.Headers.Add("X-Correlation-ID", correlationId);
+
+            HttpResponseMessage response = await client.SendAsync(request);
+            if (response.IsSuccessStatusCode) return (true, null);
+            else
+            {
+                string errorMessage = await GetErrorMessageAsync(response);
+                return (false, errorMessage);
+            }
+        }
+
         private async Task<string> GetErrorMessageAsync(HttpResponseMessage response)
         {
             if (response.Content.Headers.ContentType?.MediaType == "application/problem+json")

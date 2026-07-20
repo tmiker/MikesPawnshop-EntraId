@@ -157,6 +157,7 @@ try
         x.AddConsumer<DocumentDeletedConsumer>();
         x.AddConsumer<ImageDeletedConsumer>();
         x.AddConsumer<DataPurgedConsumer>();
+        x.AddConsumer<ProductDeletedConsumer>();
 
         x.UsingRabbitMq((context, cfg) =>
         {
@@ -181,6 +182,7 @@ try
                 e.ConfigureConsumer<DocumentDeletedConsumer>(context);
                 e.ConfigureConsumer<ImageDeletedConsumer>(context);
                 e.ConfigureConsumer<DataPurgedConsumer>(context);
+                e.ConfigureConsumer<ProductDeletedConsumer>(context);
 
                 // Robustness: retry with jitter + immediate faults to _error queue if exhausted
                 e.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));

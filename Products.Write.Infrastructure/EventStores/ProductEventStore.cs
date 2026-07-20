@@ -12,7 +12,6 @@ namespace Products.Write.Infrastructure.EventStores
 {
     public class ProductEventStore : IProductEventStore
     {
-        // private readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings() { TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Full };
         private readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.None };
 
         private readonly EventStoreDbContext _eventStoreDbContext;
@@ -177,43 +176,18 @@ namespace Products.Write.Infrastructure.EventStores
             _eventStoreDbContext.OutboxRecords.RemoveRange(outbox);
             bool success = await _eventStoreDbContext.SaveChangesAsync() > 0;
             return success;
-
-            //var eventResult = await _eventStoreDbContext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE EventRecord");
-            //var outboxResult = await _eventStoreDbContext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE OutboxRecord");
-            //bool success = eventResult > 0 && outboxResult > 0;
-            //return success;
         }
 
-        //public async Task<bool> SaveAsEventRecordAsync(IDomainEvent @event)
-        //{
-        //    // THIS SHOULD ACTUALLY PROCCESS ALL EVENTS AND COMMIT ALL IN A SINGLE TRANSACTION SO WILL ROLL BACK IF ANY FAIL
-        //    // THE BOOL SUCCESS SHOULD APPLY TO ALL EVENTS IN THE BATCH
-        //    EventRecord eventRecord = new EventRecord(
-        //        @event.AggregateId,
-        //        @event.AggregateType,
-        //        @event.AggregateVersion,
-        //        @event.GetType().AssemblyQualifiedName ?? throw new InvalidDataException("Invalid Event Type"),
-        //        JsonConvert.SerializeObject(@event, _jsonSettings),
-        //        @event.OccurredAt,
-        //        @event.CorrelationId); 
-
-        //    _eventStoreDbContext.EventRecords.Add(eventRecord);
-        //    // create outbox record from event record and add to outbox records - retain atomicity without using UOW - do individually for each event vs batch
-        //    _eventStoreDbContext.OutboxRecords.Add(new OutboxRecord(eventRecord));
-
-        //    bool success = await _eventStoreDbContext.SaveChangesAsync() > 0;
-
-        //    // consider what to do on error - how to maintain consistency 
-        //    if (success) _logger.LogInformation("Event saved as event record along with an outbox record. Aggregate Type: {agg_type}, " +
-        //        "Aggregate Id: {agg_id}, Correlation Id {corr_id}", @event.AggregateType, @event.AggregateId, @event.CorrelationId);
-        //    else
-        //    {
-        //        _logger.LogError("Error saving event as event record along with an outbox record. Aggregate Type: {agg_type}, " +
-        //            "Aggregate Id: {agg_id}, Correlation Id {corr_id}", @event.AggregateType, @event.AggregateId, @event.CorrelationId);
-        //        throw new ProductEventStoreException("Error saving event as event record. Contact support with CorrelationId.");
-        //    }
-
-        //    return success;
-        //}
+        public async Task<bool> DeleteProductByIdAsync(Guid aggregateId)
+        {
+            var snapshots = await _eventStoreDbContext.SnapshotRecords.Where(s => s.AggregateId == aggregateId).ToListAsync();
+            var events = await _eventStoreDbContext.EventRecords.Where(s => s.AggregateId == aggregateId).ToListAsync();
+            var outbox = await _eventStoreDbContext.OutboxRecords.Where(s => s.AggregateId == aggregateId).ToListAsync();
+            if (snapshots is not null && snapshots.Any()) _eventStoreDbContext.SnapshotRecords.RemoveRange(snapshots);
+            if (events is not null && events.Any()) _eventStoreDbContext.EventRecords.RemoveRange(events);
+            if (outbox is not null && outbox.Any()) _eventStoreDbContext.OutboxRecords.RemoveRange(outbox);
+            bool success = await _eventStoreDbContext.SaveChangesAsync() > 0;
+            return success;
+        }
     }
 }

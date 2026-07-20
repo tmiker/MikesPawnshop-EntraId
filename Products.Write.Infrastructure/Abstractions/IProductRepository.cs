@@ -9,12 +9,12 @@ namespace Products.Write.Infrastructure.Abstractions
         Task<Product> GetProductByIdAndVersionAsync(Guid aggregateId, int minVersion, int maxVersion);
 
         // SNAPSHOTS
-
         Task<Product?> GetProductByIdUsingSnapshotsAsync(Guid aggregateId);
 
         // DEV / ADMIN
         Task<IEnumerable<Product>> GetAllProductsAsync();
         Task<string?> GetSnapshotJsonAsync(Guid projectId);
         Task<bool> PurgeAsync();
+        Task<bool> DeleteProductByIdAsync(Guid aggregateId);
     }
 }

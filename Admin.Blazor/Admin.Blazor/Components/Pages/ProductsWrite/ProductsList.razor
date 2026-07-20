@@ -126,6 +126,7 @@
                         <th>Documents</th>
                         <th>Version</th>
                         <th></th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -144,7 +145,9 @@
                             <td>
                                 <a class="btn button-custom-table-primary" @onclick="() => Detail(product.Id.ToString())">Manage</a>
                             </td>
-
+                            <td>
+                                <a class="btn button-custom-table-danger" @onclick="() => DeleteProduct(product.Id)">Delete</a>
+                            </td>
                         </tr>
                     }
                 </tbody>
@@ -218,6 +221,11 @@
 @if (_purgeDataDTO is not null)
 {
     <PurgeDataConfirmationModal ModalTitle="Confirm Purge Data" SubmitButtonTitle="Purge Data" PurgeDataDTO="@_purgeDataDTO" Submit="SubmitPurgeData" CancelPurgeData="CancelPurgeData" />
+}
+
+@if (_deleteProductDTO is not null)
+{
+    <DeleteProductModal ProductToDelete="@_deleteProductDTO" ModalTitle="Confirm Permanently Delete Product!" SubmitButtonTitle="Delete" Submit="SubmitDeleteProduct" Cancel="CancelDeleteProduct" />
 }
 
 @code {
@@ -298,6 +306,36 @@
         else _errorMessage = result.ErrorMessage;
         _cancellationTokenSource = new CancellationTokenSource();
         _purgeDataDTO = null;
+        await RefreshData();
+    }
+
+    //// ****************** DELETe PRODUCT *****************
+    private DeleteProductDTO? _deleteProductDTO = null;
+    private Guid? _productToDeleteAggregateId;
+    private void DeleteProduct(Guid aggregateId) 
+    {
+        ProductSnapshotDTO? snapshot = _products?.FirstOrDefault(p => p.Id == aggregateId);
+        if (snapshot is not null)
+        {
+            _deleteProductDTO = new DeleteProductDTO() { AggregateId = aggregateId.ToString(), Name = snapshot.Name };
+            _productToDeleteAggregateId = aggregateId;
+        }
+    }
+    private void CancelDeleteProduct() 
+    {
+        _deleteProductDTO = null;
+        _productToDeleteAggregateId = null;
+    }
+    private async Task SubmitDeleteProduct()
+    {
+        _cancellationTokenSource = new CancellationTokenSource();
+        if (_productToDeleteAggregateId is null) { _errorMessage = $"The Aggregate Id of the product was null."; return; }
+        var result = await _writeSideHttpClient.DeleteProductByIdAsync(_productToDeleteAggregateId.Value, _cancellationTokenSource.Token);
+        if (result.IsSuccess) _successMessage = "Product successfully deleted.";
+        else _errorMessage = result.ErrorMessage;
+        _cancellationTokenSource = new CancellationTokenSource();
+        _deleteProductDTO = null;
+        _productToDeleteAggregateId = null;
         await RefreshData();
     }
 

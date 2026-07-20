@@ -3,6 +3,7 @@ using Products.Write.Application.Abstractions;
 
 namespace Products.Write.Application.CQRS.Dispatchers
 {
+    // Initial Dev Only - replaced with Mediatr
     public class CommandDispatcher : ICommandDispatcher
     {
         private readonly IServiceProvider _serviceProvider;

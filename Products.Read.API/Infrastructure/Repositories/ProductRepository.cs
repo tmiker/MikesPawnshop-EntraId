@@ -208,5 +208,23 @@ namespace Products.Read.API.Infrastructure.Repositories
             bool success = await _db.SaveChangesAsync() > 0;
             return success;
         }
+
+        public async Task<bool> DeleteProductByAggregateIdAsync(Guid aggregateId)
+        {
+            Product? product = await _db.Products.FirstOrDefaultAsync(p => p.AggregateId == aggregateId);
+            if (product is not null)
+            {
+                var images = await _db.ImageData.Where(i => i.ProductId == product.Id).ToListAsync();
+                var documents = await _db.DocumentData.Where(d => d.ProductId == product.Id).ToListAsync();
+                var messageRecords = await _db.ProductMessageRecords.Where(d => d.AggregateId == aggregateId).ToListAsync();
+                if (images is not null && images.Any()) _db.ImageData.RemoveRange(images);
+                if (documents is not null && documents.Any()) _db.DocumentData.RemoveRange(documents);
+                if (messageRecords is not null && messageRecords.Any()) _db.ProductMessageRecords.RemoveRange(messageRecords);
+                _db.Products.Remove(product);
+                bool success = await _db.SaveChangesAsync() > 0;
+                return success;
+            }
+            else return false;            
+        }
     }
 }

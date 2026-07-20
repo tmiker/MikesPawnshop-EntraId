@@ -238,5 +238,17 @@ namespace Products.Write.API.Controllers
             if (result.IsSuccess) return Ok();
             return BadRequest(result.ErrorMessage);
         }
+
+        [HttpDelete("permanentlyDeleteProduct")]
+        [Authorize(Policy = "IsAdmin")]
+        public async Task<IActionResult> DeleteProductById(Guid aggregateId, CancellationToken cancellationToken)
+        {
+
+            var correlationId = HttpContext.Request.Headers["X-Correlation-ID"];
+            DeleteProduct command = new DeleteProduct(aggregateId, correlationId);
+            DeleteProductResult result = await _sender.Send(command, cancellationToken);
+            if (result.IsSuccess) return Ok();
+            return BadRequest(result.ErrorMessage);
+        }
     }
 }

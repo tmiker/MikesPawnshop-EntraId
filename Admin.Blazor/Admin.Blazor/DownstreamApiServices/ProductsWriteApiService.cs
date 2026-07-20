@@ -703,6 +703,30 @@ namespace Admin.Blazor.DownstreamApiServices
             }
         }
 
+        public async Task<(bool IsSuccess, string? ErrorMessage)> DeleteProductByIdAsync(Guid aggregateId, CancellationToken cancellationToken)
+        {
+            string uri = $"{StaticData.ProductsWriteApiService_DevTestsPath}/permanentlyDeleteProduct?aggregateId={aggregateId}";
+
+            var response = await _downstreamApi.CallApiForUserAsync(
+                serviceName: StaticData.ProductsWriteApiService_ServiceName,
+                downstreamApiOptionsOverride: options =>
+                {
+                    options.HttpMethod = "DELETE";
+                    options.ExtraHeaderParameters = new Dictionary<string, string>
+                    {
+                        { "X-Correlation-ID", Guid.NewGuid().ToString() }
+                    };
+                    options.RelativePath = uri;
+                });
+
+            if (response.IsSuccessStatusCode) return (true, null);
+            else
+            {
+                string errorMessage = await GetErrorMessageAsync(response);
+                return (false, errorMessage);
+            }
+        }
+
         private async Task<string> GetErrorMessageAsync(HttpResponseMessage response)
         {
             if (response.Content.Headers.ContentType?.MediaType == "application/problem+json")

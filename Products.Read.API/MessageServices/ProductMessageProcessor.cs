@@ -112,7 +112,6 @@ namespace Products.Read.API.MessageServices
             product!.DeleteDocument(message.FileName, message.AggregateVersion);
         }
 
-        
         private void HandleProductStateSynchronizationError(string messageType, Guid aggregateId, string correlationId, Exception? ex)
         {
             _logger.LogError("Error synchronizing product state from Write Side synchronization message. " +

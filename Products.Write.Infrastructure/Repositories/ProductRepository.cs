@@ -141,5 +141,11 @@ namespace Products.Write.Infrastructure.Repositories
             bool success = await _eventStore.PurgeAsync();
             return success;
         }
+
+        public async Task<bool> DeleteProductByIdAsync(Guid aggregateId)
+        {
+            bool success = await _eventStore.DeleteProductByIdAsync(aggregateId);
+            return success;
+        }
     }
 }
