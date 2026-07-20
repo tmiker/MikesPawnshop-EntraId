@@ -251,7 +251,7 @@ namespace Admin.Blazor.HttpServices
                     }
 
                 }
-                while (count < 3);
+                while (count < 4);
 
                 Console.WriteLine($"AzureServicesHttpClient.CheckProductsReadSqlAsync(): Failed to reach Products Read SQL database in {count} attemps.");
                 return (false, null, $"Failed to reach Products Read SQL database after {count} attempts.");
@@ -261,26 +261,6 @@ namespace Admin.Blazor.HttpServices
                 Console.WriteLine($"Exception: {ex.Message}");
                 return (false, null, $"Products Read SQL Error: {ex.Message}");
             }
-
-            //try
-            //{
-            //    using (var response = await client.GetAsync($"{productCountUrl}"))
-            //    {
-            //        if (response.IsSuccessStatusCode)
-            //        {
-            //            string countResult = await response.Content.ReadAsStringAsync();
-            //            return (true, $"Product Read Side SQL database is running. Product Count: {countResult}", null);
-            //        }
-            //        else
-            //        {
-            //            return (false, null, "Failed to reach Products Read SQL databasse.");
-            //        }
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    return (false, null, $"Products Read SQL Error: {ex.Message}");
-            //}
         }
 
         public async Task<(bool IsSuccess, string? Result, string? ErrorMessage)> CheckProductsWriteSqlAsync(CancellationToken? cancellationToken = null)
@@ -307,7 +287,7 @@ namespace Admin.Blazor.HttpServices
                         }
                     }
                 }
-                while (count < 3);
+                while (count < 4);
 
                 Console.WriteLine($"Failed to reach Products Write SQL database after {count} attempts.");
                 return (false, null, $"Failed to reach Products Write SQL database after {count} attempts.");
@@ -317,30 +297,6 @@ namespace Admin.Blazor.HttpServices
                 Console.WriteLine($"Exception: {ex.Message}");
                 return (false, null, $"Products Write SQL Error: {ex.Message}");
             }
-
-            //var baseUrl = _config["ProductsWriteApiBaseURL"];
-            //var eventCountUrl = $"{baseUrl}/dev/productsManagement/eventCount";
-            //var client = _httpClientFactory.CreateClient(StaticData.AzureServicesHttpClient_ClientName);
-
-            //try
-            //{
-            //    using (var response = await client.GetAsync($"{eventCountUrl}"))
-            //    {
-            //        if (response.IsSuccessStatusCode)
-            //        {
-            //            string countResult = await response.Content.ReadAsStringAsync();
-            //            return (true, $"Product Write Side SQL database is running. Event Count: {countResult}", null);
-            //        }
-            //        else
-            //        {
-            //            return (false, null, "Failed to reach Products Write SQL databasse.");
-            //        }
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    return (false, null, $"Products Write SQL Error: {ex.Message}");
-            //}
         }
 
         public async Task<(bool IsSuccess, string? Result, string? ErrorMessage)> CheckYarpProxyAsync()
