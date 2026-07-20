@@ -39,8 +39,6 @@ namespace Products.Write.API
             //    config.GetSection(nameof(AzureSettings)).Bind(options);
             //});
 
-            
-
             // Register Class Library services
             services.RegisterInfrastructureServices();
             services.RegisterApplicationServices();
