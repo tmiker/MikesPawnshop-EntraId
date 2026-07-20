@@ -20,5 +20,6 @@ namespace Admin.Blazor.Client.Abstractions
         // Dev Tests
         // Task<(bool IsSuccess, string? ErrorMessage)> ThrowExceptionForTestingAsync(ThrowExceptionDTO throwExceptionDTO, CancellationToken cancellationToken);
         Task<(bool IsSuccess, string? Value, string? ErrorMessage)> GetCloudAmqpSettingsTestingDummyValueAsync(CancellationToken cancellationToken);
+        Task<(bool IsSuccess, string? ErrorMessage)> DeleteReadSideProductByAggregateIdAsync(Guid aggregateId);
     }
 }

@@ -21,7 +21,7 @@
                     <thead class="bg-primary text-light">
                         <tr>
                             <th>Id</th>
-                            <th>Aggregate Id</th>
+                            @* <th>Aggregate Id</th> *@
                             <th>Name</th>
                             <th>Category</th>
                             <th>Price</th>
@@ -35,6 +35,7 @@
                             <th>Available</th>
                             <th></th>
                             <th></th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -42,7 +43,7 @@
                         {
                             <tr>
                                 <td>@product.Id</td>
-                                <td>@product.AggregateId.ToString()[0..8]-...</td>
+                                @* <td>@product.AggregateId.ToString()[0..8]-...</td> *@
                                 <td>@product.Name</td>
                                 <td>@product.Category</td>
                                 <td>@product.Price</td>
@@ -59,6 +60,9 @@
                                 </td>
                                 <td>
                                     <a class="btn btn-outline-success btn-sm" style="width:100px" @onclick="() => AddToCart(product.AggregateId)">Add to Cart</a>
+                                </td>
+                                <td>
+                                    <a class="btn btn-outline-success btn-sm" style="width:100px" @onclick="() => DeleteReadSideProduct(product.AggregateId)">Delete</a>
                                 </td>
                             </tr>
                         }
@@ -201,5 +205,12 @@ else
     private async Task AddToCart(Guid productId)
     {
         if (AddToCartCallback.HasDelegate) await AddToCartCallback.InvokeAsync(productId);
+    }
+
+    private async Task DeleteReadSideProduct(Guid productId)
+    {
+        var result = await _readProductsClient.DeleteReadSideProductByAggregateIdAsync(productId);
+        if (result.IsSuccess) await ShowSuccessMessage($"Product successfully deleted from Read Side. Reload data to see changes.");
+        else await ShowErrorMessage($"Error deleting product from Read Side.  {result.ErrorMessage}");
     }
 }

@@ -19,12 +19,14 @@ namespace Products.Read.API.Controllers
     [ApiController]
     public class DevTestsController : ControllerBase
     {
+        private readonly IProductRepository _productRepository;
         private readonly IOptions<CloudAMQPSettings> _cloudAmqpSettings;
         private readonly ITokenDecoder _tokenDecoder;
         private readonly ILogger<DevTestsController> _logger;
 
-        public DevTestsController(IOptions<CloudAMQPSettings> cloudAmqpSettings, ITokenDecoder tokenDecoder, ILogger<DevTestsController> logger)
+        public DevTestsController(IProductRepository productRepository, IOptions<CloudAMQPSettings> cloudAmqpSettings, ITokenDecoder tokenDecoder, ILogger<DevTestsController> logger)
         {
+            _productRepository = productRepository;
             _cloudAmqpSettings = cloudAmqpSettings;
             _tokenDecoder = tokenDecoder;
             _logger = logger;
@@ -115,6 +117,16 @@ namespace Products.Read.API.Controllers
             string? value = _cloudAmqpSettings.Value.TestingDummyValue;
             if (!string.IsNullOrWhiteSpace(value)) return Ok(value);
             return BadRequest("Unable to find the CloudAMQPSettings TestingDummyValue.");
+        }
+
+        [HttpPost("deleteReadSideProduct")]
+        [Authorize(Policy = "IsAdmin")]
+        public async Task<IActionResult> DeleteProductById(Guid aggregateId, CancellationToken cancellationToken)
+        {
+
+            bool success = await _productRepository.DeleteProductByAggregateIdAsync(aggregateId);
+            if (success) return Ok();
+            return BadRequest($"An error occurred deleting the product with Aggregate Id {aggregateId}");
         }
     }
 }
