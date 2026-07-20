@@ -7,7 +7,6 @@ using Products.Read.API.Configuration;
 using Products.Read.API.Infrastructure.Data;
 using Products.Read.API.Infrastructure.Repositories;
 using Products.Read.API.MessageConsumers;
-using Products.Read.API.MessageQueues;
 using Products.Read.API.MessageServices;
 using Products.Read.API.QueryServices;
 using Products.Read.Validators;
@@ -40,7 +39,6 @@ namespace Products.Read.API
             // Register FluentValidation validators
             services.AddValidatorsFromAssemblyContaining<ThrowExceptionDtoValidator>();
 
-            //services.AddScoped<IMessageQueue, ProductMessageQueue>();
             services.AddScoped<IProductMessageProcessor, ProductMessageProcessor>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IProductQueryService, ProductQueryService>();
