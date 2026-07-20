@@ -433,13 +433,18 @@
     private void CancelDeleteImage() => _deleteImageDTO = null;
     private async Task SubmitDeleteImage()
     {
-        _cancellationTokenSource = new CancellationTokenSource();
-        var result = await _writeSideHttpClient.DeleteProductImageAsync(_deleteImageDTO!);
-        if (result.IsSuccess) await Toastr.ShowToastrSuccess($"Image successfully deleted.");
-        else _errorMessage = result.ErrorMessage;
-        _deleteImageDTO = null;
-        _cancellationTokenSource = null;
-        await ReloadAsync();
+        try
+        {
+            var result = await _writeSideHttpClient.DeleteProductImageAsync(_deleteImageDTO!);
+            if (result.IsSuccess) await Toastr.ShowToastrSuccess($"Image successfully deleted.");
+            else _errorMessage = result.ErrorMessage;
+            _deleteImageDTO = null;
+            await ReloadAsync();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = ex.Message;
+        }
     }
 
     private DeleteDocumentDTO? _deleteDocumentDTO;
@@ -458,13 +463,18 @@
     private void CancelDeleteDocument() => _deleteDocumentDTO = null;
     private async Task SubmitDeleteDocument()
     {
-        _cancellationTokenSource = new CancellationTokenSource();
-        var result = await _writeSideHttpClient.DeleteProductDocumentAsync(_deleteDocumentDTO!);
-        if (result.IsSuccess) await Toastr.ShowToastrSuccess($"Document successfully deleted.");
-        else _errorMessage = result.ErrorMessage;
-        _deleteDocumentDTO = null;
-        _cancellationTokenSource = null;
-        await ReloadAsync();
+        try
+        {
+            var result = await _writeSideHttpClient.DeleteProductDocumentAsync(_deleteDocumentDTO!);
+            if (result.IsSuccess) await Toastr.ShowToastrSuccess($"Document successfully deleted.");
+            else _errorMessage = result.ErrorMessage;
+            _deleteDocumentDTO = null;
+            await ReloadAsync();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = ex.Message;
+        }
     }
 
     private async Task ReloadAsync()
@@ -476,15 +486,17 @@
             if (_product is not null)
             {
                 _productAggregateId = _product.Id.ToString();
-                if (_product.Images is not null)
+                if (_product.Images is not null && _product.Images.Any())
                 {
                     _primaryImage = _product.Images[0];
                     _imageCount = _product.Images.Count;
                 }
-                if (_product.Documents is not null)
+                else _imageCount = 0;
+                if (_product.Documents is not null && _product.Documents.Any())
                 {
                     _documentCount = _product.Documents.Count;
                 }
+                else _documentCount = 0;
             }
         }
         else _errorMessage = result.ErrorMessage;
