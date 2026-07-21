@@ -21,7 +21,7 @@ Adding a Use Case
 		API
 			Add Message Consumer
 			Register message consumer in CompositionRoot messaging configuration
-			Add Message processing method for the message type in the ProductMessageProcessor 
+			Add Message processing method for the message type in the ProductMessageProcessor - if applicable 
 
 
 ---------------- DEV NOTES ---------------

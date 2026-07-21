@@ -35,7 +35,7 @@
                             <th>Available</th>
                             <th></th>
                             <th></th>
-                            <th></th>
+                            @* <th></th> *@
                         </tr>
                     </thead>
                     <tbody>
@@ -61,9 +61,9 @@
                                 <td>
                                     <a class="btn btn-outline-success btn-sm" style="width:100px" @onclick="() => AddToCart(product.AggregateId)">Add to Cart</a>
                                 </td>
-                                <td>
+                                @* <td>
                                     <a class="btn btn-outline-success btn-sm" style="width:100px" @onclick="() => DeleteReadSideProduct(product.AggregateId)">Delete</a>
-                                </td>
+                                </td> *@
                             </tr>
                         }
                     </tbody>
@@ -207,10 +207,10 @@ else
         if (AddToCartCallback.HasDelegate) await AddToCartCallback.InvokeAsync(productId);
     }
 
-    private async Task DeleteReadSideProduct(Guid productId)
-    {
-        var result = await _readProductsClient.DeleteReadSideProductByAggregateIdAsync(productId);
-        if (result.IsSuccess) await ShowSuccessMessage($"Product successfully deleted from Read Side. Reload data to see changes.");
-        else await ShowErrorMessage($"Error deleting product from Read Side.  {result.ErrorMessage}");
-    }
+    // private async Task DeleteReadSideProduct(Guid productId)
+    // {
+    //     var result = await _readProductsClient.DeleteReadSideProductByAggregateIdAsync(productId);
+    //     if (result.IsSuccess) await ShowSuccessMessage($"Product successfully deleted from Read Side. Reload data and await cache refresh to see changes.");
+    //     else await ShowErrorMessage($"Error deleting product from Read Side.  {result.ErrorMessage}");
+    // }
 }

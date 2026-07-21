@@ -435,11 +435,13 @@
     {
         try
         {
-            var result = await _writeSideHttpClient.DeleteProductImageAsync(_deleteImageDTO!);
-            if (result.IsSuccess) await Toastr.ShowToastrSuccess($"Image successfully deleted.");
-            else _errorMessage = result.ErrorMessage;
-            _deleteImageDTO = null;
-            await ReloadAsync();
+            // var result = await _writeSideHttpClient.DeleteProductImageAsync(_deleteImageDTO!);
+            // if (result.IsSuccess) await Toastr.ShowToastrSuccess($"Image successfully deleted.");
+            // else _errorMessage = result.ErrorMessage;
+            // _deleteImageDTO = null;
+            // await ReloadAsync();
+
+            await Toastr.ShowToastrInfo($"Contact the application owner to enable this feature.");
         }
         catch (Exception ex)
         {
@@ -465,11 +467,13 @@
     {
         try
         {
-            var result = await _writeSideHttpClient.DeleteProductDocumentAsync(_deleteDocumentDTO!);
-            if (result.IsSuccess) await Toastr.ShowToastrSuccess($"Document successfully deleted.");
-            else _errorMessage = result.ErrorMessage;
-            _deleteDocumentDTO = null;
-            await ReloadAsync();
+            // var result = await _writeSideHttpClient.DeleteProductDocumentAsync(_deleteDocumentDTO!);
+            // if (result.IsSuccess) await Toastr.ShowToastrSuccess($"Document successfully deleted.");
+            // else _errorMessage = result.ErrorMessage;
+            // _deleteDocumentDTO = null;
+            // await ReloadAsync();
+
+            await Toastr.ShowToastrInfo($"Contact the application owner to enable this feature.");
         }
         catch (Exception ex)
         {
