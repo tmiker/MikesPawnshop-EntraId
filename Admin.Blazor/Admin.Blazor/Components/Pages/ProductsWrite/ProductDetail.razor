@@ -6,26 +6,7 @@
 
 <PageTitle>Manage Products</PageTitle>
 
-@if (!string.IsNullOrWhiteSpace(_errorMessage))
-{
-    <div class="row mt-2">
-        <div class="col-10">
-            <h5 class="text-danger"><b>Error:</b></h5>
-        </div>
-        <div class="col-2">
-            <a class="btn button-custom-warning-med form-control" @onclick="ClearErrorMessage">Clear Errors</a>
-        </div>
-    </div>
-    <div class="row mt-2">
-        <div class="col-12 text-center">
-            <textarea rows="2" class="bg-dark text-danger form-control">@_errorMessage</textarea>
-        </div>
-    </div>
-}
-@if (!string.IsNullOrWhiteSpace(_successMessage))
-{
-    <h4 class="text-success"><b>@_successMessage</b></h4>
-}
+<ErrorComponent ErrorMessage="@_errorMessage" SuccessMessage="@_successMessage" ClearErrorCallback="ClearErrorMessage" ClearSuccessCallback="ClearSuccessMessage" />
 
 <div class="row mt-2">
     <div class="col-6">
@@ -52,9 +33,7 @@
 {
     <div class="row mt-2">
         <div class="col-6">
-            
             <!-- COLUMN 1 START-->
-            
             <div class="form-group row">
                 <div class="col-3">
                     <label for="aggId">Aggregate Id:</label>
@@ -368,9 +347,10 @@
     private bool _azureStorageConnected = false;
 
     private string? _errorMessage;
-    private void ClearErrorMessage() => _errorMessage = null;
     private string? _successMessage;
-
+    private void ClearErrorMessage() => _errorMessage = null;
+    private void ClearSuccessMessage() => _successMessage = null;
+    
     // private bool _showAddImageView { get; set; }
     private ImageDataSnapshotDTO? _primaryImage { get; set; }
 
@@ -445,10 +425,9 @@
             // var result = await _writeSideHttpClient.DeleteProductImageAsync(_deleteImageDTO!);
             // if (result.IsSuccess) await Toastr.ShowToastrSuccess($"Image successfully deleted.");
             // else _errorMessage = result.ErrorMessage;
-            // _deleteImageDTO = null;
-            // await ReloadAsync();
-
+            _deleteImageDTO = null;
             await Toastr.ShowToastrInfo($"Contact the application owner to enable this feature.");
+            // await ReloadAsync();
         }
         catch (Exception ex)
         {
@@ -477,10 +456,9 @@
             // var result = await _writeSideHttpClient.DeleteProductDocumentAsync(_deleteDocumentDTO!);
             // if (result.IsSuccess) await Toastr.ShowToastrSuccess($"Document successfully deleted.");
             // else _errorMessage = result.ErrorMessage;
-            // _deleteDocumentDTO = null;
-            // await ReloadAsync();
-
+            _deleteDocumentDTO = null;
             await Toastr.ShowToastrInfo($"Contact the application owner to enable this feature.");
+            // await ReloadAsync();
         }
         catch (Exception ex)
         {
