@@ -119,15 +119,15 @@ namespace Products.Read.API.Controllers
             return BadRequest("Unable to find the CloudAMQPSettings TestingDummyValue.");
         }
 
-        [HttpPost("deleteReadSideProduct")]
-        // [Authorize(Policy = "IsAdmin")]
-        [AllowAnonymous]
-        public async Task<IActionResult> DeleteProductById(Guid aggregateId, CancellationToken cancellationToken)
-        {
+        //[HttpPost("deleteReadSideProduct")]
+        //[Authorize(Policy = "IsAdmin")]
+        //// [AllowAnonymous]
+        //public async Task<IActionResult> DeleteProductById(Guid aggregateId, CancellationToken cancellationToken)
+        //{
 
-            bool success = await _productRepository.DeleteProductByAggregateIdAsync(aggregateId);
-            if (success) return Ok();
-            return BadRequest($"An error occurred deleting the product with Aggregate Id {aggregateId}");
-        }
+        //    bool success = await _productRepository.DeleteProductByAggregateIdAsync(aggregateId);
+        //    if (success) return Ok();
+        //    return BadRequest($"An error occurred deleting the product with Aggregate Id {aggregateId}");
+        //}
     }
 }
