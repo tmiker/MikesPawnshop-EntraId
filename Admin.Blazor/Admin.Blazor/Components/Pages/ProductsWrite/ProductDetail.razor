@@ -28,17 +28,22 @@
 }
 
 <div class="row mt-2">
-    <div class="col-9">
+    <div class="col-6">
         <h3><b>Manage Product</b></h3>
     </div>
-    <div class="col-3 text-end mt-2">
-        @if (_azureStorageStatus)
+    <div class="col-5 text-end">Azure Blob Storage:</div>
+    <div class="col-1 text-start">
+        @if (!_azureStorageWasChecked)
         {
-            <h6 class="text-secondary">Azure Storage Status: <i class="bi-circle-fill text-success-alt m-3"></i></h6>
+            <i class="bi-circle-fill text-secondary-alt mx-2 mt-2" title="Check Azure Storage connection." style="cursor:pointer;" @onclick="CheckAzureStorageStatus"></i>
+        }
+        else if (_azureStorageConnected)
+        {
+            <i class="bi-circle-fill text-success-alt mx-2 mt-2" title="Check Azure Storage connection. Last check OK." style="cursor:pointer;" @onclick="CheckAzureStorageStatus"></i>
         }
         else
         {
-            <h6 class="text-secondary">Azure Storage Status: <i class="bi-circle-fill text-danger-alt m-3"></i></h6>
+            <i class="bi-circle-fill text-danger-alt mx-2 mt-2" title="Check Azure Storage connection. Last check faied." style="cursor:pointer;" @onclick="CheckAzureStorageStatus"></i>
         }
     </div>
 </div>
@@ -358,7 +363,9 @@
     private int _imageCount;
     private int _documentCount;
 
-    private bool _azureStorageStatus;
+    // private bool _azureStorageStatus;
+    private bool _azureStorageWasChecked = false;
+    private bool _azureStorageConnected = false;
 
     private string? _errorMessage;
     private void ClearErrorMessage() => _errorMessage = null;
@@ -509,12 +516,9 @@
     private async Task CheckAzureStorageStatus()
     {
         var pingResult = await _writeSideHttpClient.CheckAzureStorageStatusAsync();
-        if (pingResult.IsSuccess) _azureStorageStatus = true;
-        else
-        {
-            _azureStorageStatus = false;
-            _errorMessage = pingResult.ErrorMessage;
-        }
+        if (pingResult.IsSuccess) _azureStorageConnected = true;       
+        else _azureStorageConnected = false;
+        _azureStorageWasChecked = true;
     }
 
     protected override async Task OnAfterRenderAsync(bool isFirstRender)
@@ -538,7 +542,7 @@
                         _documentCount = _product.Documents.Count;
                     }
                 }
-                await CheckAzureStorageStatus();
+                // await CheckAzureStorageStatus();
             }
             else _errorMessage = result.ErrorMessage;
             this.StateHasChanged();

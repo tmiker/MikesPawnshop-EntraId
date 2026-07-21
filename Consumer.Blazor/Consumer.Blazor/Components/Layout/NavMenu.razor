@@ -19,7 +19,7 @@
                     </NavLink>
                 </li>
 
-                <li class="nav-item px-3 dropdown">
+                @* <li class="nav-item px-3 dropdown">
                     <NavLink class="nav-link dropdown-toggle" href="store" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                         <i class="bi-shop"></i> &nbsp; Store
                     </NavLink>
@@ -28,11 +28,16 @@
                             <i class="bi bi-list-nested-nav-menu"></i> &nbsp; Storefront
                         </NavLink>
                     </div>
+                </li> *@
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="store/storefront" Match="NavLinkMatch.All">
+                        <i class="bi-shop"></i> &nbsp; Storefront
+                    </NavLink>
                 </li>
 
                 <AuthorizeView>
                     <Authorized>
-                        <li class="nav-item px-3 dropdown">
+                        @* <li class="nav-item px-3 dropdown">
                             <NavLink class="nav-link dropdown-toggle" href="orders" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                 <i class="bi-mailbox-flag"></i> &nbsp; Orders
                             </NavLink>
@@ -41,8 +46,14 @@
                                     <i class="bi bi-list-nested-nav-menu"></i> &nbsp; My Orders
                                 </NavLink>
                             </div>
+                        </li> *@
+                        <li class="nav-item px-3">
+                            <NavLink class="nav-link" href="orders/myOrders" Match="NavLinkMatch.All">
+                                <i class="bi-mailbox-flag"></i> &nbsp; My Orders
+                            </NavLink>
                         </li>
-                        <li class="nav-item px-3 dropdown">
+
+                        @* <li class="nav-item px-3 dropdown">
                             <NavLink class="nav-link dropdown-toggle" href="account" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                 <i class="bi-currency-dollar"></i> &nbsp; Account
                             </NavLink>
@@ -51,25 +62,20 @@
                                     <i class="bi bi-list-nested-nav-menu"></i> &nbsp; My Account
                                 </NavLink>
                             </div>
+                        </li> *@
+                        <li class="nav-item px-3">
+                            <NavLink class="nav-link" href="account/myAccount" Match="NavLinkMatch.All">
+                                <i class="bi-currency-dollar"></i> &nbsp; My Account
+                            </NavLink>
                         </li>
                     </Authorized>
                 </AuthorizeView>
 
                 <AuthorizeView Policy="IsAdminOrManager">
                     <Authorized>
-                        @* <li class="nav-item px-3 dropdown">
-                            <NavLink class="nav-link dropdown-toggle" href="products" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                <i class="bi-tornado"></i> &nbsp; Products
-                            </NavLink>
-                            <div class="dropdown-menu dropdown-menu-dark">
-                                <NavLink class="dropdown-item" href="products/productsRead" Match="NavLinkMatch.All">
-                                    <i class="bi bi-list-nested-nav-menu"></i> &nbsp; Products Read
-                                </NavLink>
-                            </div>
-                        </li> *@
                         <li class="nav-item px-3 dropdown">
                             <NavLink class="nav-link dropdown-toggle" href="claims" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                <i class="bi-person-fill"></i> &nbsp; Claims
+                                <i class="bi-person-fill"></i> &nbsp; User Claims
                             </NavLink>
                             <div class="dropdown-menu dropdown-menu-dark">
                                 <NavLink class="dropdown-item" href="claims/accountsApiClaims" Match="NavLinkMatch.All">
@@ -93,7 +99,7 @@
                         </li>
                         <li class="nav-item px-3 dropdown">
                             <NavLink class="nav-link dropdown-toggle" href="dev" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                <i class="bi-code-slash"></i> &nbsp; Development
+                                <i class="bi-code-slash"></i> &nbsp; Developers
                             </NavLink>
                             <div class="dropdown-menu dropdown-menu-dark">
                                 <NavLink class="dropdown-item" href="dev/testProductsReadApi" Match="NavLinkMatch.All">
@@ -103,14 +109,14 @@
                                 <NavLink class="dropdown-item" href="dev/testAccessDeniedRouting" Match="NavLinkMatch.All">
                                     <i class="bi-emoji-astonished-fill"></i> &nbsp; Test Access Denied Routing
                                 </NavLink>
-                                <div class="dropdown-divider"></div>
+                                @* <div class="dropdown-divider"></div>
                                 <NavLink class="dropdown-item" href="dev/toastr-demo-server" Match="NavLinkMatch.All">
                                     <i class="bi-info-circle"></i> &nbsp; Toastr Server
                                 </NavLink>
                                 <div class="dropdown-divider"></div>
                                 <NavLink class="dropdown-item" href="dev/toastr-demo-client" Match="NavLinkMatch.All">
                                     <i class="bi-info-circle"></i> &nbsp; Toastr Client
-                                </NavLink>
+                                </NavLink> *@
                             </div>
                         </li>
                     </Authorized>
