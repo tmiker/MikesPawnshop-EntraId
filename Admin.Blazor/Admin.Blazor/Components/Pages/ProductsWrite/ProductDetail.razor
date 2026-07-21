@@ -66,89 +66,101 @@
                     <InputTextArea rows="4" class="bg-dark text-light form-control " id="description" @bind-Value="@_product.Description" />
                 </div>
             </div>
-            <div class="form-group row">
-                <div class="col-3">
-                    <label for="price">Price:</label>
+
+
+            <div class="row m-0 p-0">
+                <div class="col-6">
+                    <div class="form-group row">
+                        <div class="col-3">
+                            <label for="price">Price:</label>
+                        </div>
+                        <div class="col-8">
+                            <InputNumber class="bg-dark text-light form-control " id="price" @bind-Value="@_product.Price" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-3">
+                            <label for="status">Status:</label>
+                        </div>
+                        <div class="col-8">
+                            <InputText class="bg-dark text-light form-control" id="status" @bind-Value="@_product.Status" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <label for="qoh">On Hand:</label>
+                        </div>
+                        <div class="col-8">
+                            <InputNumber class="bg-dark text-light form-control " id="qoh" @bind-Value="_product.QuantityOnHand" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <label for="allocated">Allocated:</label>
+                        </div>
+                        <div class="col-8">
+                            <InputNumber class="bg-dark text-light form-control " id="allocated" @bind-Value="_product.QuantityAllocated" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-3">
+                            <label for="imageCount">Image Count:</label>
+                        </div>
+                        <div class="col-8">
+                            <InputNumber class="bg-dark text-light form-control" id="imageCount" @bind-Value="@_imageCount" />
+                        </div>
+                    </div>
+
+
+
                 </div>
-                <div class="col-8">
-                    <InputNumber class="bg-dark text-light form-control " id="price" @bind-Value="@_product.Price" />
-                </div>
-            </div>
-            <div class="form-group row">
-                <div class="col-3">
-                    <label for="currency">Currency:</label>
-                </div>
-                <div class="col-8">
-                    <InputText class="bg-dark text-light form-control " id="currency" @bind-Value="@_product.Currency" />
-                </div>
-            </div>
-            
-            <div class="form-group row">
-                <div class="col-3">
-                    <label for="status">Status:</label>
-                </div>
-                <div class="col-8">
-                    <InputText class="bg-dark text-light form-control" id="status" @bind-Value="@_product.Status" />
-                </div>
-            </div>
-            
-            <div class="form-group row">
-                <div class="col-3">
-                    <label for="imageCount">Image Count:</label>
-                </div>
-                <div class="col-8">
-                    <InputNumber class="bg-dark text-light form-control" id="imageCount" @bind-Value="@_imageCount" />
-                </div>
-            </div>
-            <div class="form-group row">
-                <div class="col-3">
-                    <label for="docCount">Document Count:</label>
-                </div>
-                <div class="col-8">
-                    <InputNumber class="bg-dark text-light form-control" id="docCount" @bind-Value="@_documentCount" />
-                </div>
-            </div>
-            <div class="form-group row">
-                <div class="col-3">
-                    <label for="version">Version:</label>
-                </div>
-                <div class="col-8">
-                    <InputNumber class="bg-dark text-light form-control" id="version" @bind-Value="@_product.Version" />
+                <div class="col-6">
+                    <div class="form-group row">
+                        <div class="col-3">
+                            <label for="currency">Currency:</label>
+                        </div>
+                        <div class="col-8">
+                            <InputText class="bg-dark text-light form-control " id="currency" @bind-Value="@_product.Currency" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-3">
+                            <label for="version">Version:</label>
+                        </div>
+                        <div class="col-8">
+                            <InputNumber class="bg-dark text-light form-control" id="version" @bind-Value="@_product.Version" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <label for="uom">UOM:</label>
+                        </div>
+                        <div class="col-8">
+                            <InputText class="bg-dark text-light form-control " id="uom" @bind-Value="_product.UOM" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <label for="lowstock">Low Stock Amount:</label>
+                        </div>
+                        <div class="col-8">
+                            <InputNumber class="bg-dark text-light form-control " id="lowstock" @bind-Value="_product.LowStockThreshold" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-3">
+                            <label for="docCount">Document Count:</label>
+                        </div>
+                        <div class="col-8">
+                            <InputNumber class="bg-dark text-light form-control" id="docCount" @bind-Value="@_documentCount" />
+                        </div>
+                    </div>
+
+
+
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-3">
-                    <label for="qoh">Quantity On Hand:</label>
-                </div>
-                <div class="col-8">
-                    <InputNumber class="bg-dark text-light form-control " id="qoh" @bind-Value="_product.QuantityOnHand" />
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-3">
-                    <label for="qavail">Quantity Available:</label>
-                </div>
-                <div class="col-8">
-                    <InputNumber class="bg-dark text-light form-control " id="qavail" @bind-Value="_product.QuantityAllocated" />
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-3">
-                    <label for="uom">UOM:</label>
-                </div>
-                <div class="col-8">
-                    <InputText class="bg-dark text-light form-control " id="uom" @bind-Value="_product.UOM" />
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-3">
-                    <label for="lowstock">Low Stock Amount:</label>
-                </div>
-                <div class="col-8">
-                    <InputNumber class="bg-dark text-light form-control " id="lowstock" @bind-Value="_product.LowStockThreshold" />
-                </div>
-            </div>
             <br />
             <!-- COLUMN 1 END -->
             
@@ -270,7 +282,7 @@
                             </div>
                         }
                     </div>
-                    <hr/>
+                   @*  <hr/>
                     <div class="row">
                             <div class="row">
                             @foreach (var thumb in _product.Images)
@@ -281,7 +293,7 @@
                                 </div>
                             }
                             </div>
-                    </div>
+                    </div> *@
                 }
                 else
                 {

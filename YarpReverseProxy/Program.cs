@@ -154,12 +154,13 @@ static RouteConfig[] GetRoutes()
 static ClusterConfig[] GetClusters(
     string productsReadServiceUrl, string productsWriteServiceUrl, string accountsServiceUrl, string cartsServiceUrl, string ordersServiceUrl)
 {
-    // Note: Active HealthChecks are currently disabled avoid Azure charges for a continuously running database
+    // Note: Active HealthChecks are currently disabled avoid Azure charges for a continuously running SQL Server database
     return new[]
     {
         new ClusterConfig
         {
             ClusterId = "products",
+            //// HealthChecks disabled to minimize SQL Server costs
             //HealthCheck = new HealthCheckConfig
             //{
             //    Active = new ActiveHealthCheckConfig
@@ -186,6 +187,7 @@ static ClusterConfig[] GetClusters(
         new ClusterConfig
         {
             ClusterId = "productsManagement",
+            //// HealthChecks disabled to minimize SQL Server costs
             //HealthCheck = new HealthCheckConfig
             //{
             //    Active = new ActiveHealthCheckConfig
@@ -283,7 +285,7 @@ app.UseAuthorization();
 
 // app.MapControllers();
 
-app.MapGet("/", () => "YARP Reverse Proxy is up and running! Last Build: 18 Jul 2026 @ 18:20 CST");
+app.MapGet("/", () => "YARP Reverse Proxy is up and running! Last Build: 21 Jul 2026 @ 1600 CST");
 
 app.MapReverseProxy();  // .RequireAuthorization(); would require authentication for all proxied requests
 
