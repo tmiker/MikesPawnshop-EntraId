@@ -159,12 +159,12 @@ app.MapReverseProxy();  // .RequireAuthorization();  // this would require authe
 
 app.Run();
 
-
-
-
-
-
-
+YARP Auth settings:
+Using "AuthorizationPolicy": "anonymous" for Yarp endpoint config
+--- will cause to always omit token.
+--- causes downstream api to fail as the token is omitted but is required.
+IDownstreamApi:
+Can't use anonymous endpoints with DownstreamApi - Products.Read API and any other anonymous endpoints need standard HttpClient not DownstreamApi.
 
 OLD YARP NOTES:
     TO DO

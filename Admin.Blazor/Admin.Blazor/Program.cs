@@ -78,11 +78,11 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
         msIdentityOptions.AccessDeniedPath = new PathString("/AccessDenied");
     })
     .EnableTokenAcquisitionToCallDownstreamApi()
-    .AddDownstreamApi(StaticData.AccountsApiService_ServiceName, configOptions =>              // api name
+    .AddDownstreamApi(StaticData.AccountsApiService_ServiceName, configOptions =>                   // api name
     {
         configOptions.BaseUrl = yarpProxyBaseUrl;
-        // configOptions.BaseUrl = StaticData.AccountsApiService_LocalBaseURL;                    // api base url
-        configOptions.Scopes = [builder.Configuration["ACCOUNTS_API_SCOPE"]!];                 // Note: scope shows in api access token, not client identity token
+        // configOptions.BaseUrl = StaticData.AccountsApiService_LocalBaseURL;                      // api base url
+        configOptions.Scopes = [builder.Configuration["ACCOUNTS_API_SCOPE"]!];                      // Note: scope shows in api access token, not client identity token
     })
     .AddDownstreamApi(StaticData.CartsApiService_ServiceName, configOptions =>
     {
@@ -205,7 +205,7 @@ app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(Admin.Blazor.Client._Imports).Assembly);
 
-app.MapGet("/ping", () => "Blazor Admin Client is up and running!  Last Build: 20 Jul 2026 @ 17:50 CST").AllowAnonymous();
+app.MapGet("/ping", () => "Blazor Admin Client is up and running!  Last Build: 21 Jul 2026 @ 1500 CST").AllowAnonymous();
 
 app.MapGet("/login", (string? returnUrl, HttpContext httpContext) =>
 {
