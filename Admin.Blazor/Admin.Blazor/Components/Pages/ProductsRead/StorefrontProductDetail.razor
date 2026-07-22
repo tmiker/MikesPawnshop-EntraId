@@ -1,6 +1,6 @@
 ﻿@page "/store/storefrontProductDetail"
 @rendermode InteractiveServer
-@inject IProductsReadHttpService _readSideHttpClient
+@inject IPublicProductsReadHttpService _readSideHttpClient
 @attribute [Authorize(Policy = "IsAdminOrManager")]
 
 @if (_product is not null)

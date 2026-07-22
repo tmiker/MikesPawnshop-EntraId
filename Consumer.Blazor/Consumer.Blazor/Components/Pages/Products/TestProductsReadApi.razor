@@ -59,7 +59,8 @@
 <div class="row mt-2">
     <div class="col-12">
         <p class="text-info-alt">
-            The Products Read Side API uses a global ExceptionHandler to handle returning ProblemDetails for all exception types.
+            The Products Read Side API uses a global ExceptionHandler to handle returning ProblemDetails for all exception types. (Note: The deserialization of the Problem Details response is
+            different between Read and Write Side APIs.)
         </p>
     </div>
 </div>
@@ -70,7 +71,7 @@
         // "ProductEventStoreException",
         "ValidationException",
         "NotFoundException",
-        "RequestFailedException",
+        // "RequestFailedException",            // Read Side API won't get this Azure Blob Storage exception
         "ArgumentException",
         // "UnauthorizedAccessException",       // not configured to throw an exception - handled by .net core middleware
         // "ForbiddenException",                // not configured to throw an exception - handled by .net core middleware

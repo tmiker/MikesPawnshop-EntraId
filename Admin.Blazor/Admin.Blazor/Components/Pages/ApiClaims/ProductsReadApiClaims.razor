@@ -1,9 +1,7 @@
 ﻿@page "/claims/productsReadApiClaims"
 @using Admin.Blazor.Client.DTOs.Claims
 @rendermode InteractiveServer
-@* @inject IClaimsHttpService _claimsService *@
-@inject IProductsReadHttpService _productsReadHttpService
-@* @inject IPublicProductsReadHttpService _productsReadHttpService *@
+@inject IClaimsHttpService _claimsService
 @attribute [Authorize]
 
 <PageTitle>Products Read API Claims</PageTitle>
@@ -192,8 +190,7 @@ else
     {
         if (firstRender)
         {
-            // var result = await _claimsService.GetProductsReadApiUserInfoAsync();
-            var result = await _productsReadHttpService.GetProductsReadApiUserInfoAsync();
+            var result = await _claimsService.GetProductsReadApiUserInfoAsync();
             if (result.IsSuccess)
             {
                 _apiUserInfoDTO = result.ApiUserInfo;

@@ -6,6 +6,7 @@ using Admin.Blazor.Client.DTOs.Products.Test;
 using Admin.Blazor.Client.ErrorHandling;
 using Admin.Blazor.Client.Paging;
 using Admin.Blazor.Client.Utility;
+using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using System.Text.Json;
 
@@ -257,30 +258,6 @@ namespace Admin.Blazor.HttpServices
             }
         }
 
-        private async Task<string> GetErrorMessageAsync(HttpResponseMessage response)
-        {
-            if (response.Content.Headers.ContentType?.MediaType == "application/problem+json")
-            {
-                CustomProblemDetails? problemDetails = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
-                string? traceId = problemDetails?.Extensions?["traceId"]?.ToString();
-                string? correlationId = problemDetails?.Extensions?["correlationId"]?.ToString();
-                string? title = problemDetails?.Title;
-                string? detail = problemDetails?.Detail;
-
-                return problemDetails?.ToString()!;
-            }
-            else
-            {
-                string errorMessage = string.Empty;
-                if (!string.IsNullOrEmpty(response.StatusCode.ToString())) errorMessage += $"Status Code: {response.StatusCode.ToString()}; ";
-                if (!string.IsNullOrEmpty(response.ReasonPhrase)) errorMessage += $"Reason Phrase: {response.ReasonPhrase}; ";
-                string responseContent = await response.Content.ReadAsStringAsync();
-                if (!string.IsNullOrEmpty(responseContent)) errorMessage += $"\nResponse Content: {responseContent}; ";
-
-                return errorMessage;
-            }
-        }
-
         //// FOR DEVELOPMENT AND DEMONSTRATION PURPOSES ONLY
         public async Task<(bool IsSuccess, string? ErrorMessage)> ThrowExceptionForTestingAsync(ThrowExceptionDTO throwExceptionDTO, CancellationToken cancellationToken)
         {
@@ -356,5 +333,32 @@ namespace Admin.Blazor.HttpServices
         //        return (false, new ApiUserInfoDTO() { ErrorMessage = errorMessage }, errorMessage);
         //    }
         //}
+
+        private async Task<string> GetErrorMessageAsync(HttpResponseMessage response)
+        {
+            if (response.Content.Headers.ContentType?.MediaType == "application/problem+json")
+            {
+                try
+                {
+                    ProductsReadProblemDetails? problemDetails = await response.Content.ReadFromJsonAsync<ProductsReadProblemDetails>();
+                    return problemDetails?.ToString()!;
+                }
+                catch (Exception ex)
+                {
+                    var result = await response.Content.ReadAsStringAsync();
+                    return result;
+                }
+            }
+            else
+            {
+                string errorMessage = string.Empty;
+                if (!string.IsNullOrEmpty(response.StatusCode.ToString())) errorMessage += $"Status Code: {response.StatusCode.ToString()}; ";
+                if (!string.IsNullOrEmpty(response.ReasonPhrase)) errorMessage += $"Reason Phrase: {response.ReasonPhrase}; ";
+                string responseContent = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(responseContent)) errorMessage += $"\nResponse Content: {responseContent}; ";
+
+                return errorMessage;
+            }
+        }
     }
 }
