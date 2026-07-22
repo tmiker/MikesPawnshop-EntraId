@@ -282,33 +282,33 @@ namespace Admin.Blazor.HttpServices
         }
 
         //// FOR DEVELOPMENT AND DEMONSTRATION PURPOSES ONLY
-        //public async Task<(bool IsSuccess, string? ErrorMessage)> ThrowExceptionForTestingAsync(ThrowExceptionDTO throwExceptionDTO, CancellationToken cancellationToken)
-        //{
-        //    string uri = $"{StaticData.ProductsReadHttpClient_ProductsPath}/throwExceptionForTesting";
-        //    var client = _httpClientFactory.CreateClient(StaticData.ProductsReadHttpClient_ClientName);
+        public async Task<(bool IsSuccess, string? ErrorMessage)> ThrowExceptionForTestingAsync(ThrowExceptionDTO throwExceptionDTO, CancellationToken cancellationToken)
+        {
+            string uri = $"{StaticData.ProductsReadHttpClient_ProductsPath}/throwExceptionForTesting";
+            var client = _httpClientFactory.CreateClient(StaticData.ProductsReadHttpClient_ClientName);
 
-        //    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, uri);
-        //    request.Content = new StringContent(JsonSerializer.Serialize(throwExceptionDTO), Encoding.UTF8, "application/json");
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
+            request.Content = new StringContent(JsonSerializer.Serialize(throwExceptionDTO), Encoding.UTF8, "application/json");
 
-        //    // Generate a new Correlation ID and add to headers
-        //    string correlationId = Guid.NewGuid().ToString();
-        //    request.Headers.Add("X-Correlation-ID", correlationId);
+            // Generate a new Correlation ID and add to headers
+            string correlationId = Guid.NewGuid().ToString();
+            request.Headers.Add("X-Correlation-ID", correlationId);
 
-        //    using (HttpResponseMessage response = await client.SendAsync(request))
-        //    {
-        //        if (response.IsSuccessStatusCode)
-        //        {
-        //            _logger.LogInformation("The action ThrowExceptionForTestingAsync(ThrowExceptionDTO throwExceptionDTO) returned " +
-        //                "HttptatusCode success. It should return Problem Details.");
-        //            return (true, null);
-        //        }
-        //        else
-        //        {
-        //            string errorMessage = await GetErrorMessageAsync(response);
-        //            return (false, errorMessage);
-        //        }
-        //    }
-        //}
+            using (HttpResponseMessage response = await client.SendAsync(request))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    _logger.LogInformation("The action ThrowExceptionForTestingAsync(ThrowExceptionDTO throwExceptionDTO) returned " +
+                        "HttptatusCode success. It should return Problem Details.");
+                    return (true, null);
+                }
+                else
+                {
+                    string errorMessage = await GetErrorMessageAsync(response);
+                    return (false, errorMessage);
+                }
+            }
+        }
 
         //public async Task<(bool IsSuccess, string? Value, string? ErrorMessage)> GetCloudAmqpSettingsTestingDummyValueAsync(CancellationToken cancellationToken)
         //{
