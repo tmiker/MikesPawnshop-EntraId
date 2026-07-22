@@ -236,30 +236,30 @@ namespace Consumer.Blazor.HttpServices
             }
         }
 
-        //// Dev Tests - moved to Downstream API service
-        //public async Task<(bool IsSuccess, string? ErrorMessage)> ThrowExceptionForTestingAsync(ThrowExceptionDTO throwExceptionDTO, CancellationToken cancellationToken)
-        //{
-        //    string uri = $"{StaticData.ProductsReadHttpClient_ProductsPath}/throwExceptionForTesting";
-        //    var client = _httpClientFactory.CreateClient(StaticData.ProductsReadHttpClient_ClientName);
+        // Dev Tests
+        public async Task<(bool IsSuccess, string? ErrorMessage)> ThrowExceptionForTestingAsync(ThrowExceptionDTO throwExceptionDTO, CancellationToken cancellationToken)
+        {
+            string uri = $"{StaticData.ProductsReadHttpClient_ProductsPath}/throwExceptionForTesting";
+            var client = _httpClientFactory.CreateClient(StaticData.ProductsReadHttpClient_ClientName);
 
-        //    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, uri);
-        //    request.Content = new StringContent(JsonSerializer.Serialize(throwExceptionDTO), Encoding.UTF8, "application/json");
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
+            request.Content = new StringContent(JsonSerializer.Serialize(throwExceptionDTO), Encoding.UTF8, "application/json");
 
-        //    string correlationId = Guid.NewGuid().ToString();
-        //    request.Headers.Add("X-Correlation-ID", correlationId);
+            string correlationId = Guid.NewGuid().ToString();
+            request.Headers.Add("X-Correlation-ID", correlationId);
 
-        //    HttpResponseMessage response = await client.SendAsync(request);
-        //    if (response.IsSuccessStatusCode)
-        //    {
-        //        _logger.LogInformation("The action ThrowExceptionForTestingAsync(ThrowExceptionDTO throwExceptionDTO) returned " +
-        //            "HttptatusCode success. It should return Problem Details.");
-        //        return (true, null);
-        //    }
-        //    else
-        //    {
-        //        string error = await GetErrorMessageAsync(response);
-        //        return (false, error);
-        //    }
-        //}
+            HttpResponseMessage response = await client.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                _logger.LogInformation("The action ThrowExceptionForTestingAsync(ThrowExceptionDTO throwExceptionDTO) returned " +
+                    "HttptatusCode success. It should return Problem Details.");
+                return (true, null);
+            }
+            else
+            {
+                string error = await GetErrorMessageAsync(response);
+                return (false, error);
+            }
+        }
     }
 }

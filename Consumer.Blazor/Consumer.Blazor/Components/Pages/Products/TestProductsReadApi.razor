@@ -1,7 +1,8 @@
 ﻿@page "/dev/testProductsReadApi"
 @using Consumer.Blazor.Client.DTOs.Products.Test
 @rendermode InteractiveServer
-@inject IProductsReadHttpService _readSideHttpClient
+@* @inject IProductsReadHttpService _readSideHttpClient *@
+@inject IPublicProductsReadHttpService _readSideHttpClient
 @attribute [Authorize]
 @* @attribute [Authorize(Policy = "IsAdminOrManager")] *@
 

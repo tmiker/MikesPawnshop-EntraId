@@ -239,7 +239,6 @@ namespace Consumer.Blazor.DownstreamApiServices
         }
 
         // Dev Tests
-
         public async Task<(bool IsSuccess, string? ErrorMessage)> ThrowExceptionForTestingAsync(ThrowExceptionDTO throwExceptionDTO, CancellationToken cancellationToken)
         {
             string uri = $"{StaticData.ProductsReadApiService_DevTestsPath}/throwExceptionForTesting";
