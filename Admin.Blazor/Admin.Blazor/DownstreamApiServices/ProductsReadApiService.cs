@@ -355,6 +355,36 @@ namespace Admin.Blazor.DownstreamApiServices
             }
         }
 
+        // DEV
+
+        public async Task<(bool IsSuccess, ApiUserInfoDTO? ApiUserInfo, string? ErrorMessage)> GetProductsReadApiUserInfoAsync()
+        {
+            string uri = $"{StaticData.ProductsReadApiService_DevTestsPath}{StaticData.ProductsReadApiService_GetApiUserInfoSubpath}";
+
+            var response = await _downstreamApi.CallApiForUserAsync(
+                serviceName: StaticData.ProductsReadApiService_ServiceName,
+                downstreamApiOptionsOverride: options =>
+                {
+                    options.HttpMethod = "GET";
+                    options.ExtraHeaderParameters = new Dictionary<string, string>
+                    {
+                        { "X-Correlation-ID", Guid.NewGuid().ToString() }
+                    };
+                    options.RelativePath = uri;
+                });
+
+            if (response.IsSuccessStatusCode)
+            {
+                ApiUserInfoDTO? apiUserInfoDTO = await response.Content.ReadFromJsonAsync<ApiUserInfoDTO>();
+                return (true, apiUserInfoDTO, null);
+            }
+            else
+            {
+                string errorMessage = await GetErrorMessageAsync(response);
+                return (false, new ApiUserInfoDTO() { ErrorMessage = errorMessage }, errorMessage);
+            }
+        }
+
         public async Task<(bool IsSuccess, string? Value, string? ErrorMessage)> GetCloudAmqpSettingsTestingDummyValueAsync(CancellationToken cancellationToken)
         {
             string uri = $"{StaticData.ProductsReadApiService_DevTestsPath}/getCloudAmqpSettingsTestingDummyValue";
