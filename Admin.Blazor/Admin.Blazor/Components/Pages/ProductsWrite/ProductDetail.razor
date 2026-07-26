@@ -2,6 +2,7 @@
 @rendermode InteractiveServer
 @inject IProductsWriteHttpService _writeSideHttpClient
 @inject IToastrService Toastr
+@implements IDisposable
 @attribute [Authorize(Policy = "IsAdminOrManager")]
 
 <PageTitle>Manage Products</PageTitle>
@@ -380,7 +381,8 @@
 
     //// ****************** ADD AND REMOVE IMAGES AND DOCUMENTS START *******************
 
-    private CancellationTokenSource? _cancellationTokenSource;
+    private CancellationTokenSource? _cancellationTokenSource = new CancellationTokenSource();
+    private async Task CancelOperationAsync() => await _cancellationTokenSource!.CancelAsync();
 
     private AddImageDTO? _addImageDTO;
     private void AddImage() => _addImageDTO = new AddImageDTO() { ProductId = _product!.Id.ToString() };
@@ -388,8 +390,7 @@
     private async Task SubmitAddImage()
     {
         if (_addImageDTO is null) return;
-        _cancellationTokenSource = new CancellationTokenSource();
-        var addImageResult = await _writeSideHttpClient.AddProductImageAsync(_addImageDTO, _cancellationTokenSource.Token);
+        var addImageResult = await _writeSideHttpClient.AddProductImageAsync(_addImageDTO, _cancellationTokenSource!.Token);
         if (addImageResult.IsSuccess)
         {
             _imageCount++;
@@ -397,7 +398,6 @@
         }
         else _errorMessage = addImageResult.ErrorMessage;
         _addImageDTO = null;
-        _cancellationTokenSource = null;
         await ReloadAsync();  
     }
 
@@ -406,8 +406,7 @@
     private void CancelAddDocument() => _addDocumentDTO = null;
     private async Task SubmitAddDocument()
     {
-        _cancellationTokenSource = new CancellationTokenSource();
-        var addDocumentResult = await _writeSideHttpClient.AddProductDocumentAsync(_addDocumentDTO!, _cancellationTokenSource.Token);
+        var addDocumentResult = await _writeSideHttpClient.AddProductDocumentAsync(_addDocumentDTO!, _cancellationTokenSource!.Token);
         if (addDocumentResult.IsSuccess)
         {
             _documentCount++;
@@ -415,7 +414,6 @@
         }
         else _errorMessage = addDocumentResult.ErrorMessage;
         _addDocumentDTO = null;
-        _cancellationTokenSource = null;
         await ReloadAsync(); 
     }
 
@@ -537,6 +535,13 @@
             else _errorMessage = result.ErrorMessage;
             this.StateHasChanged();
         }
+    }
+
+    public void Dispose()
+    {
+        _cancellationTokenSource?.Cancel();
+        _cancellationTokenSource?.Dispose();
+        _cancellationTokenSource = null;
     }
 }
 

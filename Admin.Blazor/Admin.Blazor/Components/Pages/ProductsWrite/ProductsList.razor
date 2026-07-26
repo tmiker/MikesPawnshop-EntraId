@@ -1,8 +1,9 @@
 ﻿@page "/products/productsList"
 @rendermode InteractiveServer
 @inject IProductsWriteHttpService _writeSideHttpClient
-@* @inject IProductsReadHttpService _readSideHttpClient *@
 @inject NavigationManager Nav
+@implements IDisposable
+
 @attribute [Authorize(Policy = "IsAdminOrManager")]
 
 <PageTitle>Manage Products</PageTitle>
@@ -275,7 +276,8 @@
 
     //// ****************** ADD AND REMOVE IMAGES AND DOCUMENTS START *******************
 
-    private CancellationTokenSource? _cancellationTokenSource;
+    private CancellationTokenSource? _cancellationTokenSource = new CancellationTokenSource();
+    private async Task CancelOperationAsync() => await _cancellationTokenSource!.CancelAsync();
 
 
     //// ****************** ADD PRODUCT *****************
@@ -284,11 +286,9 @@
     private void CancelAddProduct() => _addProductDTO = null;
     private async Task SubmitAddProduct()
     {
-        _cancellationTokenSource = new CancellationTokenSource();
         if (_addProductDTO is null) return;
-        var result = await _writeSideHttpClient.AddProductAsync(_addProductDTO!, _cancellationTokenSource.Token);
+        var result = await _writeSideHttpClient.AddProductAsync(_addProductDTO!, _cancellationTokenSource!.Token);
         if (!result.IsSuccess) _errorMessage = result.ErrorMessage;
-        _cancellationTokenSource = new CancellationTokenSource();
         _addProductDTO = null;
         await RefreshData();
     }
@@ -299,12 +299,10 @@
     private void CancelPurgeData() => _purgeDataDTO = null;
     private async Task SubmitPurgeData()
     {
-        _cancellationTokenSource = new CancellationTokenSource();
         if (_purgeDataDTO is null) return;
-        var result = await _writeSideHttpClient.PurgeDataAsync(_purgeDataDTO, _cancellationTokenSource.Token);
+        var result = await _writeSideHttpClient.PurgeDataAsync(_purgeDataDTO, _cancellationTokenSource!.Token);
         if (result.IsSuccess) _successMessage = "Successfully purged data.";
         else _errorMessage = result.ErrorMessage;
-        _cancellationTokenSource = new CancellationTokenSource();
         _purgeDataDTO = null;
         await RefreshData();
     }
@@ -328,12 +326,10 @@
     // }
     // private async Task SubmitDeleteProduct()
     // {
-    //     _cancellationTokenSource = new CancellationTokenSource();
     //     if (_productToDeleteAggregateId is null) { _errorMessage = $"The Aggregate Id of the product was null."; return; }
-    //     var result = await _writeSideHttpClient.DeleteProductByIdAsync(_productToDeleteAggregateId.Value, _cancellationTokenSource.Token);
+    //     var result = await _writeSideHttpClient.DeleteProductByIdAsync(_productToDeleteAggregateId.Value, _cancellationTokenSource!.Token);
     //     if (result.IsSuccess) _successMessage = "Product successfully deleted.";
     //     else _errorMessage = result.ErrorMessage;
-    //     _cancellationTokenSource = new CancellationTokenSource();
     //     _deleteProductDTO = null;
     //     _productToDeleteAggregateId = null;
     //     await RefreshData();
@@ -412,4 +408,12 @@
             this.StateHasChanged();
         }
     }
+
+    public void Dispose()
+    {
+        _cancellationTokenSource?.Cancel();
+        _cancellationTokenSource?.Dispose();
+        _cancellationTokenSource = null;
+    }
+
 }

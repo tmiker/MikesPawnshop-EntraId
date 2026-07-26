@@ -1,6 +1,7 @@
 ﻿@page "/products/productSnapshotsWrite"
 @rendermode InteractiveServer
 @inject IProductsWriteHttpService _writeSideHttpClient
+@implements IDisposable
 @attribute [Authorize(Policy = "IsAdminOrManager")]
 
 <PageTitle>Write Side Products</PageTitle>
@@ -257,11 +258,13 @@
     private string? _errorMessage;
     private void ClearErrorMessage() => _errorMessage = null;
 
+    private CancellationTokenSource? _cancellationTokenSource = new CancellationTokenSource();
+    private async Task CancelOperationAsync() => await _cancellationTokenSource!.CancelAsync();
+
     //// ****************** ADD AND REMOVE IMAGES AND DOCUMENTS START *******************
 
     private AddImageDTO? _addImageDTO;
     private AddDocumentDTO? _addDocumentDTO;
-    private CancellationTokenSource? _cancellationTokenSource;
     private string? _addResultString;
     private void ClearAddResultString() => _addResultString = null;
 
@@ -269,11 +272,9 @@
     private void CancelAddImage() => _addImageDTO = null;
     private async Task SubmitAddImage()
     {
-        _cancellationTokenSource = new CancellationTokenSource();
-        var addImageResult = await _writeSideHttpClient.AddProductImageAsync(_addImageDTO!, _cancellationTokenSource.Token);
+        var addImageResult = await _writeSideHttpClient.AddProductImageAsync(_addImageDTO!, _cancellationTokenSource!.Token);
         _addResultString = addImageResult.IsSuccess ? "Success" : addImageResult.ErrorMessage;
         _addImageDTO = null;
-        _cancellationTokenSource = null;
     }
     private string[] _allowedImageFileTypes = new string[] { "image/jpeg", "image/bmp", "image/png", "image/gif" };
     private async Task OnImageInputFileChange(InputFileChangeEventArgs e)
@@ -287,10 +288,9 @@
     private void CancelAddDocument() => _addDocumentDTO = null;
     private async Task SubmitAddDocument()
     {
-        _cancellationTokenSource = new CancellationTokenSource();
         if (_addDocumentDTO!.DocumentBlob is not null) Console.WriteLine($"The RAZOR PAGE SUBMIT Document Blob IS NOT null.");
         else Console.WriteLine($"The RAZOR PAGE SUBMIT Document Blob IS null.");
-        var addDocumentResult = await _writeSideHttpClient.AddProductDocumentAsync(_addDocumentDTO!, _cancellationTokenSource.Token);
+        var addDocumentResult = await _writeSideHttpClient.AddProductDocumentAsync(_addDocumentDTO!, _cancellationTokenSource!.Token);
         _addResultString = addDocumentResult.IsSuccess ? "Success" : addDocumentResult.ErrorMessage;
         _addDocumentDTO = null;
     }
@@ -298,12 +298,10 @@
     private DeleteImageDTO? _deleteImageDTO;
     private async Task DeleteImage(string productId)
     {
-        _cancellationTokenSource = new CancellationTokenSource();
         _deleteImageDTO = new DeleteImageDTO(productId, "The first image will be deleted if any", null);
         var result = await _writeSideHttpClient.DeleteProductImageAsync(_deleteImageDTO);
         _addResultString = result.IsSuccess ? "Success" : result.ErrorMessage;
         _deleteImageDTO = null;
-        _cancellationTokenSource = null;
     }
     private void CancelDeleteImage() => _deleteImageDTO = null;
     private async Task SubmitDeleteImage()
@@ -311,18 +309,15 @@
         var result = await _writeSideHttpClient.DeleteProductImageAsync(_deleteImageDTO!);
         _addResultString = result.IsSuccess ? "Success" : result.ErrorMessage;
         _deleteImageDTO = null;
-        _cancellationTokenSource = null;
     }
 
     private DeleteDocumentDTO? _deleteDocumentDTO;
     private async Task DeleteDocument(string productId)
     {
-        _cancellationTokenSource = new CancellationTokenSource();
         _deleteDocumentDTO = new DeleteDocumentDTO(productId, "The first document will be deleted if any", null);
         var result = await _writeSideHttpClient.DeleteProductDocumentAsync(_deleteDocumentDTO);
         _addResultString = result.IsSuccess ? "Success" : result.ErrorMessage;
         _deleteDocumentDTO = null;
-        _cancellationTokenSource = null;
     }
     private void CancelDeleteDocument() => _deleteDocumentDTO = null;
     private async Task SubmitDeleteDocument()
@@ -330,7 +325,6 @@
         var result = await _writeSideHttpClient.DeleteProductDocumentAsync(_deleteDocumentDTO!);
         _addResultString = result.IsSuccess ? "Success" : result.ErrorMessage;
         _deleteDocumentDTO = null;
-        _cancellationTokenSource = null;
     }
 
     //// ****************** ADD AND REMOVE IMAGES AND DOCUMENTS END *******************
@@ -399,4 +393,12 @@
             this.StateHasChanged();
         }
     }
+
+    public void Dispose()
+    {
+        _cancellationTokenSource?.Cancel();
+        _cancellationTokenSource?.Dispose();
+        _cancellationTokenSource = null;
+    }
+
 }

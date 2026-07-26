@@ -2,6 +2,7 @@
 @rendermode InteractiveServer
 @inject IProductsWriteHttpService _writeSideHttpClient
 @inject IConfiguration _configuration
+@implements IDisposable
 @attribute [Authorize(Policy = "IsAdminOrManager")]
 
 <PageTitle>Dev Testing</PageTitle>
@@ -110,9 +111,11 @@
     };
     private string? _exceptionType;
     private ThrowExceptionDTO? _throwExceptionDTO;
-    private CancellationTokenSource? _cts;
     private string? _cloudAMQPTestValue;
     private void ClearCloudAMQPTestValue() => _cloudAMQPTestValue = null;
+
+    private CancellationTokenSource? _cancellationTokenSource = new CancellationTokenSource();
+    private async Task CancelOperationAsync() => await _cancellationTokenSource!.CancelAsync();
 
     private string? _errorMessage;
     private void ClearErrorMessage() => _errorMessage = string.Empty;
@@ -126,8 +129,7 @@
         }
 
         _throwExceptionDTO = new ThrowExceptionDTO(_exceptionType);
-        _cts = new CancellationTokenSource();
-        var result = await _writeSideHttpClient.ThrowExceptionForTestingAsync(_throwExceptionDTO, _cts.Token);
+        var result = await _writeSideHttpClient.ThrowExceptionForTestingAsync(_throwExceptionDTO, _cancellationTokenSource!.Token);
         if (!result.IsSuccess)
         {
             _errorMessage = result.ErrorMessage;
@@ -136,14 +138,15 @@
 
     private async Task GetCloudAMQPTestingDummyValue()
     {
-        _cts = new CancellationTokenSource();
-        var writeApiResult = await _writeSideHttpClient.GetCloudAmqpSettingsTestingDummyValueAsync(_cts.Token);
+        var writeApiResult = await _writeSideHttpClient.GetCloudAmqpSettingsTestingDummyValueAsync(_cancellationTokenSource!.Token);
         if (writeApiResult.IsSuccess) _cloudAMQPTestValue = writeApiResult.Value;
-        else _cloudAMQPTestValue = $"Error: {writeApiResult.ErrorMessage}";
-        
-        // string? value = _configuration.GetSection("CloudAMQPSettings:TestingDummyValue").Value;
-        // if (!string.IsNullOrWhiteSpace(value)) _cloudAMQPTestValue = value;
-        // else _cloudAMQPTestValue = "No value found in configuration.";
-        
+        else _cloudAMQPTestValue = $"Error: {writeApiResult.ErrorMessage}";        
+    }
+
+    public void Dispose()
+    {
+        _cancellationTokenSource?.Cancel();
+        _cancellationTokenSource?.Dispose();
+        _cancellationTokenSource = null;
     }
 }
