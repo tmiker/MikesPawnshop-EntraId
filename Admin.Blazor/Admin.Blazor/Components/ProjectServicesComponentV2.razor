@@ -33,7 +33,7 @@
     <div class="col-2 offset-2">
         @if (_accountsThinking || _cartsThinking || _ordersThinking || _productsReadThinking || _productsWriteThinking || _yarpThinking)
         {
-            <a class="btn button-custom-danger-med form-control mb-4" @onclick="PingAllPawnshopEndpoints">Cancel</a>
+            <a class="btn button-custom-danger-med form-control mb-4" @onclick="CancelOperationAsync">Cancel</a>
         }
         else
         {
