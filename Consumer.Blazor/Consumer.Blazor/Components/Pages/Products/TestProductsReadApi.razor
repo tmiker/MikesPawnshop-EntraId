@@ -1,10 +1,9 @@
 ﻿@page "/dev/testProductsReadApi"
 @using Consumer.Blazor.Client.DTOs.Products.Test
 @rendermode InteractiveServer
-@* @inject IProductsReadHttpService _readSideHttpClient *@
 @inject IPublicProductsReadHttpService _readSideHttpClient
+@implements IDisposable
 @attribute [Authorize]
-@* @attribute [Authorize(Policy = "IsAdminOrManager")] *@
 
 <PageTitle>Dev Testing</PageTitle>
 
@@ -82,7 +81,9 @@
     };
     private string? _exceptionType;
     private ThrowExceptionDTO? _throwExceptionDTO;
-    private CancellationTokenSource? _cts;
+    
+    private CancellationTokenSource? _cancellationTokenSource = new CancellationTokenSource();
+    private async Task CancelOperationAsync() => await _cancellationTokenSource!.CancelAsync();
 
     private string? _errorMessage;
     private void ClearErrorMessage() => _errorMessage = string.Empty;
@@ -96,12 +97,18 @@
         }
 
         _throwExceptionDTO = new ThrowExceptionDTO(_exceptionType.ToLower());
-        _cts = new CancellationTokenSource();
-        var result = await _readSideHttpClient.ThrowExceptionForTestingAsync(_throwExceptionDTO, _cts.Token);
+        var result = await _readSideHttpClient.ThrowExceptionForTestingAsync(_throwExceptionDTO, _cancellationTokenSource!.Token);
         if (!result.IsSuccess)
         {
             _errorMessage = result.ErrorMessage;
         }
-        // _cts.Dispose();
     }
+
+    public void Dispose()
+    {
+        _cancellationTokenSource?.Cancel();
+        _cancellationTokenSource?.Dispose();
+        _cancellationTokenSource = null;
+    }
+
 }
