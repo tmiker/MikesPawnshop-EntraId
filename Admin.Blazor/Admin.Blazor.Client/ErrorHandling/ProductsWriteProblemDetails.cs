@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Admin.Blazor.Client.ErrorHandling
 {
-    public class CustomProblemDetails
+    public class ProductsWriteProblemDetails
     {
         public string? Type { get; set; }
         public string? Title { get; set; }
