@@ -111,7 +111,23 @@
         }
         else
         {
+            if (_thinking)
+            {
+                <div class="mx-auto text-center mb-3 mt-3">
+                    <div class="spinner-border text-success-alt role-status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
 
+            }
+            else
+            {
+                <div class="row mt-3">
+                    <div class="col-12 text-center">
+                        <h5><b><i>No products were found.</i></b></h5>
+                    </div>
+                </div>
+            }
         }
     </div>
 </div>
@@ -168,26 +184,6 @@
     }
 </div>
 
-@* @if (_apiHealthCheckResult is null)
-{
-    <br />
-    <div class="row mt-2">
-        <div class="col-3">
-            <a class="btn btn-primary form-control" @onclick="ApiHealthCheck">Check API Health</a>
-        </div>
-    </div>
-}
-else
-{
-    <br />
-    <div class="row mt-2">
-        <div class="col-3">
-            <a class="btn btn-primary form-control" @onclick="ClearHealthCheckResult">Clear Health Result</a>
-        </div>
-    </div>
-    <HealthCheckResult ApiHealthCheckResult="@_apiHealthCheckResult" />
-} *@
-
 @code {
 
     private List<ProductSummaryDTO>? _productSummaries;
@@ -198,8 +194,8 @@ else
     private int _pageNumber = 1;
     private int _pageSize = 10;
     private PaginationMetadata? _pagingData;
-
     private int _productSummaryCount;
+    private bool _thinking;
 
     private string? _errorMessage;
     private void ClearErrorMessage() => _errorMessage = null;
@@ -251,6 +247,7 @@ else
 
     private async Task RefreshData()
     {
+        _thinking = true;
         var pagedProductSummariesResult = await _readProductsClient.GetPagedAndFilteredProductSummariesAsync(_nameFilter, _categoryFilter, _sortColumn, _pageNumber, _pageSize);
         if (pagedProductSummariesResult.IsSuccess)
         {
@@ -261,7 +258,8 @@ else
                 _productSummaryCount = _productSummaries.Count;
             }
         }
-        else Console.WriteLine(pagedProductSummariesResult.ErrorMessage);
+        else _errorMessage = pagedProductSummariesResult.ErrorMessage;
+        _thinking = false;
     }
 
 
@@ -269,19 +267,13 @@ else
     {
         if (isFirstRender)
         {
-            Console.WriteLine($"@@@@@@@@@@ **************** ProductsRead.razor OnAfterRender was called. *************** @@@@@@@@@");
-            var pagedProductSummariesResult = await _readProductsClient.GetPagedAndFilteredProductSummariesAsync(_nameFilter, _categoryFilter, _sortColumn, _pageNumber, _pageSize);
-            if (pagedProductSummariesResult.IsSuccess)
-            {
-                if (pagedProductSummariesResult.Products is not null && pagedProductSummariesResult.Products.Any())
-                {
-                    _productSummaries = pagedProductSummariesResult.Products.ToList();
-                    _pagingData = pagedProductSummariesResult.PagingData;
-                    _productSummaryCount = _productSummaries.Count;
-                }
-            }
-            else _errorMessage = pagedProductSummariesResult.ErrorMessage;
+            await RefreshData();
             this.StateHasChanged();
         }
+    }
+
+    protected override void OnInitialized()
+    {
+        _thinking = true;
     }
 }

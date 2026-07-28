@@ -206,11 +206,4 @@ else
     {
         if (AddToCartCallback.HasDelegate) await AddToCartCallback.InvokeAsync(productId);
     }
-
-    // private async Task DeleteReadSideProduct(Guid productId)
-    // {
-    //     var result = await _readProductsClient.DeleteReadSideProductByAggregateIdAsync(productId);
-    //     if (result.IsSuccess) await ShowSuccessMessage($"Product successfully deleted from Read Side. Reload data and await cache refresh to see changes.");
-    //     else await ShowErrorMessage($"Error deleting product from Read Side.  {result.ErrorMessage}");
-    // }
 }
