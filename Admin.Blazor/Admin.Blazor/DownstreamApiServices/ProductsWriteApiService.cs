@@ -731,13 +731,22 @@ namespace Admin.Blazor.DownstreamApiServices
         {
             if (response.Content.Headers.ContentType?.MediaType == "application/problem+json")
             {
-                ProductsWriteProblemDetails? problemDetails = await response.Content.ReadFromJsonAsync<ProductsWriteProblemDetails>();
-                string? traceId = problemDetails?.Extensions?["traceId"]?.ToString();
-                string? correlationId = problemDetails?.Extensions?["correlationId"]?.ToString();
-                string? title = problemDetails?.Title;
-                string? detail = problemDetails?.Detail;
+                try
+                {
+                    ProductsWriteProblemDetails? problemDetails = await response.Content.ReadFromJsonAsync<ProductsWriteProblemDetails>();
+                    string? traceId = problemDetails?.Extensions?["traceId"]?.ToString();
+                    string? correlationId = problemDetails?.Extensions?["correlationId"]?.ToString();
+                    string? title = problemDetails?.Title;
+                    string? detail = problemDetails?.Detail;
 
-                return problemDetails?.ToString()!;
+                    return problemDetails?.ToString()!;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message);
+                    var result = await response.Content.ReadAsStringAsync();
+                    return result;
+                }
             }
             else
             {

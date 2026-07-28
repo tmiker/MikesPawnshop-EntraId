@@ -452,6 +452,7 @@ namespace Admin.Blazor.DownstreamApiServices
                 }
                 catch (Exception ex)
                 {
+                    _logger.LogError(ex.Message);
                     var result = await response.Content.ReadAsStringAsync();
                     return result;
                 }

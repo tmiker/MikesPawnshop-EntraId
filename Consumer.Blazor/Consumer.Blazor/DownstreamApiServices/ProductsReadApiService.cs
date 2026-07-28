@@ -272,9 +272,17 @@ namespace Consumer.Blazor.DownstreamApiServices
         {
             if (response.Content.Headers.ContentType?.MediaType == "application/problem+json")
             {
-                CustomProblemDetails? problemDetails = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
-
-                return problemDetails?.ToString()!;
+                try
+                {
+                    CustomProblemDetails? problemDetails = await response.Content.ReadFromJsonAsync<CustomProblemDetails>();
+                    return problemDetails?.ToString()!;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message);
+                    var result = await response.Content.ReadAsStringAsync();
+                    return result;
+                }
             }
             else
             {

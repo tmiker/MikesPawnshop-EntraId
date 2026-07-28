@@ -124,7 +124,7 @@ namespace Admin.Blazor.HttpServices
             var client = _httpClientFactory.CreateClient(StaticData.ProductsWriteHttpClient_ClientName);
 
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, uri);
-            
+
             request.Content = new StringContent(JsonSerializer.Serialize(addProductDTO), Encoding.UTF8, "application/json");
 
             // Generate a new Correlation ID and add to headers
@@ -150,7 +150,7 @@ namespace Admin.Blazor.HttpServices
             var client = _httpClientFactory.CreateClient(StaticData.ProductsWriteHttpClient_ClientName);
 
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, uri);
-            
+
             request.Content = new StringContent(JsonSerializer.Serialize(updateStatusDTO), Encoding.UTF8, "application/json");
 
             // Generate a new Correlation ID and add to headers
@@ -172,7 +172,7 @@ namespace Admin.Blazor.HttpServices
             var client = _httpClientFactory.CreateClient(StaticData.ProductsWriteHttpClient_ClientName);
 
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, uri);
-            
+
             request.Content = new StringContent(JsonSerializer.Serialize(addImageDTO), Encoding.UTF8, "application/json");
 
             // Generate a new Correlation ID and add to headers
@@ -484,7 +484,7 @@ namespace Admin.Blazor.HttpServices
             request.Headers.Add("X-Correlation-ID", correlationId);
 
             HttpResponseMessage response = await client.SendAsync(request);
-            
+
             if (response.IsSuccessStatusCode)
             {
                 PagedOutboxRecordResult? result = await response.Content.ReadFromJsonAsync<PagedOutboxRecordResult>();
@@ -619,13 +619,22 @@ namespace Admin.Blazor.HttpServices
         {
             if (response.Content.Headers.ContentType?.MediaType == "application/problem+json")
             {
-                ProductsWriteProblemDetails? problemDetails = await response.Content.ReadFromJsonAsync<ProductsWriteProblemDetails>();
-                string? traceId = problemDetails?.Extensions?["traceId"]?.ToString();
-                string? correlationId = problemDetails?.Extensions?["correlationId"]?.ToString();
-                string? title = problemDetails?.Title;
-                string? detail = problemDetails?.Detail;
+                try
+                {
+                    ProductsWriteProblemDetails? problemDetails = await response.Content.ReadFromJsonAsync<ProductsWriteProblemDetails>();
+                    string? traceId = problemDetails?.Extensions?["traceId"]?.ToString();
+                    string? correlationId = problemDetails?.Extensions?["correlationId"]?.ToString();
+                    string? title = problemDetails?.Title;
+                    string? detail = problemDetails?.Detail;
 
-                return problemDetails?.ToString()!;
+                    return problemDetails?.ToString()!;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message);
+                    var result = await response.Content.ReadAsStringAsync();
+                    return result;
+                }
             }
             else
             {

@@ -345,6 +345,7 @@ namespace Admin.Blazor.HttpServices
                 }
                 catch (Exception ex)
                 {
+                    _logger.LogError(ex.Message);
                     var result = await response.Content.ReadAsStringAsync();
                     return result;
                 }
