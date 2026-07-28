@@ -12,21 +12,15 @@
     <div class="col-4">
         <h4><b>STORE FRONT</b></h4>
     </div>
-    @* <div class="col-3">
-        @if (MyCartData is not null)
+    <div class="col-4 text-center">
+        @if (_thinking)
         {
-            <h6 class="text-secondary"><i>MyCartData.ShowCart: @MyCartData.ShowCart</i></h6>
+            <span class="loader-vertical-bars"></span>
         }
     </div>
-    <div class="col-3">
-        @if (MyCartData is not null)
-        {
-            <input class="bg-dark text-light" type="checkbox" checked="@MyCartData.ShowCart" @bind-value="MyCartData.ShowCart" />
-        }
-    </div> *@
     <AuthorizeView>
         <Authorized>
-            <div class="col-2 offset-6">
+            <div class="col-2 offset-2">
                 <a class="btn button-custom-warning-med form-control" @onclick="ToggleShowCart">@_cartButtonText</a>
             </div>
         </Authorized>
@@ -140,6 +134,7 @@
     public DateTime? PageRenderTime { get; set; }
     public ShoppingCartDTO? ShoppingCart { get; set; }
     private bool _showCart = false;
+    private bool _thinking;
 
     private async Task CartItemCountChanged(int count)
     {
@@ -307,6 +302,7 @@
 
     private async Task GetCart()
     {
+        _thinking = true;
         var result = await _cartsHttpClient.GetShoppingCartAsync();
         if (result.IsSuccess)
         {
@@ -314,10 +310,12 @@
             if (ShoppingCart is not null) await CartItemCountChanged(ShoppingCart.Items.Count);
         }
         else _errorMessage = result.ErrorMessage;
+        _thinking = false;
     }
 
     private async Task GetProducts()
     {
+        _thinking = true;
         var result = await _productReadSideHttpClient.GetPagedAndFilteredProductSummariesAsync(_nameFilter, _categoryFilter, _sortColumn, _pageNumber, _pageSize);
         if (result.IsSuccess)
         {
@@ -330,6 +328,8 @@
         {
             _errorMessage = result.ErrorMessage;
         }
+
+        _thinking = false;
         this.StateHasChanged();
     }
 
@@ -353,5 +353,10 @@
             await GetProducts();
             StateHasChanged();
         }
+    }
+
+    protected override void OnInitialized()
+    {
+        _thinking = true;
     }
 }

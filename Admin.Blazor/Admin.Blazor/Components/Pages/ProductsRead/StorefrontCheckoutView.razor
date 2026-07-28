@@ -6,116 +6,140 @@
 @inject IOrderMapper _orderMapper
 @attribute [Authorize(Policy = "IsAdminOrManager")]
 
-    <div class="row mt-2">
-        <div class="col-7">
-            @* LEFT COLUMN DATA *@
-            <h4><b>Order Items</b></h4>
-            <div class="row">
-                <div class="col-12">
-                    @if (AddOrderDTO != null)
+<div class="row mt-2">
+    <div class="col-7">
+        @* LEFT COLUMN DATA *@
+        <h4><b>Order Items</b></h4>
+        <div class="row">
+            <div class="col-12">
+                @if (AddOrderDTO != null)
+                {
+                    @if (AddOrderDTO.Items != null && AddOrderDTO.Items.Any())
                     {
-                        @if (AddOrderDTO.Items != null && AddOrderDTO.Items.Any())
+                        @foreach (var item in AddOrderDTO.Items!)
                         {
-                            @foreach (var item in AddOrderDTO.Items!)
-                            {
-                                <div class="row mt-4">
-                                    <div class="col-3 offset-1">
-                                        <h5><b>Item: @item.Name</b></h5>
-                                    </div>
-                                    <div class="col-2">
-                                        <h5><b>Qty: @item.Quantity</b></h5>
-                                    </div>
-                                    <div class="col-3">
-                                        <h5><b>Price Each: $ @item.Price</b></h5>
-                                    </div>
-                                    <div class="col-3">
-                                        <h5><b>Line Total: $ @item.LineTotalPrice</b></h5>
-                                    </div>
-                                </div>
-                            }
                             <div class="row mt-4">
-                                <div class="col-12 text-primary">
-                                    <h4><b><i>ORDER TOTAL: @AddOrderDTO.OrderTotalPrice</i></b></h4>
+                                <div class="col-3 offset-1">
+                                    <h5><b>Item: @item.Name</b></h5>
+                                </div>
+                                <div class="col-2">
+                                    <h5><b>Qty: @item.Quantity</b></h5>
+                                </div>
+                                <div class="col-3">
+                                    <h5><b>Price Each: $ @item.Price</b></h5>
+                                </div>
+                                <div class="col-3">
+                                    <h5><b>Line Total: $ @item.LineTotalPrice</b></h5>
                                 </div>
                             </div>
                         }
-                        else
-                        {
-                            <div class="row">
-                                <div class="col-12 text-center text-info">
-                                    <h5>There are no items in your cart!</h5>
-                                </div>
+                        <div class="row mt-4">
+                            <div class="col-12 text-primary">
+                                <h4><b><i>ORDER TOTAL: @AddOrderDTO.OrderTotalPrice</i></b></h4>
                             </div>
-                        }
-
-                        <hr />
-
-                        <h5>Shipping Address: @AddOrderDTO.ShippingAddress?.ToString()</h5>
-
-                        <h5>Billing Address: @AddOrderDTO.BillingAddress?.ToString()</h5>
+                        </div>
                     }
                     else
                     {
-                        <h4 class="text-danger">An order object with items was found.</h4>
+                        <div class="row">
+                            <div class="col-12 text-center text-info">
+                                <h5>There are no items in your cart!</h5>
+                            </div>
+                        </div>
                     }
-                </div>
-            </div>
-        </div>
-        <div class="col-4 offset-1">
-            @* RIGHT COLUMN DATA *@
-            <h4><b>Account Data</b></h4>
-            <div class="row">
-                <div class="col-12">
-                    @if (_accountInfo != null)
-                    {
-                        foreach (var address in _accountInfo.Addresses)
-                        {
-                            if (address.IsPrimaryShipping)
-                            {
-                                <h5>Shipping Address: @address.ToString()</h5>
-                            }
-                            if (address.IsPrimaryBilling)
-                            {
-                                <h5>Billing Address: @address.ToString()</h5>
-                            }
-                        }
-                    }
-                    else
-                    {
-                        <h4 class="text-danger">Please complete your account setup if you wish to place an order.</h4>
-                    }
-                </div>
-            </div>
 
-            <hr />
-            <h5>Payment Details</h5>
-            <div class="row">
-                <div class="col-12">
-                    <label>Payment Method:</label>
-                    <select class="bg-dark text-light form-select" >
-                        <option selected>VISA ...1234</option>
-                        <option>MasterCard ...5678</option>
-                        <option>AMEX ...9012</option>
-                    </select>
-                </div>
+                    <hr />
+
+                    <h5>Shipping Address: @AddOrderDTO.ShippingAddress?.ToString()</h5>
+
+                    <h5>Billing Address: @AddOrderDTO.BillingAddress?.ToString()</h5>
+                }
+                else
+                {
+                    <h4 class="text-danger">An order object with items was found.</h4>
+                }
             </div>
         </div>
     </div>
-
-    <hr />
-    @if (AddOrderDTO != null && _accountInfo != null)
-    {
+    <div class="col-4 offset-1">
+        @* RIGHT COLUMN DATA *@
+        <h4><b>Account Data</b></h4>
         <div class="row">
-            <div class="col-4 offset-4">
-                <a class="btn button-custom-success form-control" @onclick="SubmitOrder">Submit Order</a>
+            <div class="col-12">
+                @if (_accountInfo != null)
+                {
+                    foreach (var address in _accountInfo.Addresses)
+                    {
+                        if (address.IsPrimaryShipping)
+                        {
+                            <h5>Shipping Address: @address.ToString()</h5>
+                        }
+                        if (address.IsPrimaryBilling)
+                        {
+                            <h5>Billing Address: @address.ToString()</h5>
+                        }
+                    }
+                }
+                else
+                {
+                    if (_thinking)
+                    {
+                        <div class="mx-auto text-center mb-3 mt-3">
+                            <div class="spinner-border text-success-alt role-status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row mt-3">
+                            <div class="col-12 text-center">
+                                <h4><b><i>Please complete your account setup if you wish to place an order.</i></b></h4>
+                            </div>
+                        </div>
+                    }
+                }
             </div>
         </div>
-        <div class="row mt-2">
-            <div class="col-12 text-center">
-                <h6 class="text-info-alt"><i>Note the Orders API will validate account status allows placing orders and get the billing and shipping address from the Accounts API via API to API encrypted comm with ApiKey Auth</i></h6>
+
+        <hr />
+        <h5>Payment Details</h5>
+        <div class="row">
+            <div class="col-12">
+                <label>Payment Method:</label>
+                <select class="bg-dark text-light form-select">
+                    <option selected>VISA ...1234</option>
+                    <option>MasterCard ...5678</option>
+                    <option>AMEX ...9012</option>
+                </select>
             </div>
         </div>
-    }
+    </div>
+</div>
+
+<hr />
+@if (AddOrderDTO != null && _accountInfo != null)
+{
+    <div class="row">
+        <div class="col-4 offset-4">
+            <a class="btn button-custom-success form-control" @onclick="SubmitOrder">Submit Order</a>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col-12 text-center">
+            <h6 class="text-info-alt"><i>Note the Orders API will validate account status allows placing orders and get the billing and shipping address from the Accounts API via API to API encrypted comm with ApiKey Auth</i></h6>
+        </div>
+    </div>
+}
+
+@if (_processingOrder)
+{
+    <div class="mx-auto text-center mb-3 mt-3">
+        <div class="spinner-border text-yellow-alt role-status">
+            <span class="text-yellow-alt mt-3">... processing order ...</span>
+        </div>
+    </div>
+}
 
 @code {
 
@@ -144,20 +168,25 @@
     }
 
     private AccountDTO? _accountInfo { get; set; }
+    private bool _thinking;
+    private bool _processingOrder = false;
 
     private SubmitOrderResultDTO? _submitOrderResult { get; set; }
 
     private async Task SubmitOrder()
     {
+        _processingOrder = true;
         var submitOrderResult = await _ordersService.SubmitOrderAsync(AddOrderDTO!);
 
         if (submitOrderResult.IsSuccess)
         {
             var deleteCartResult = await _cartService.RemoveShoppingCartAsync();
             await OrderSubmitted();
+            _processingOrder = false;
             _nav.NavigateTo("/store/myOrders");
         }
-        else await ShowErrorMessage(submitOrderResult.ErrorMessage ?? $"An Error Occurred placing your order."); 
+        else await ShowErrorMessage(submitOrderResult.ErrorMessage ?? $"An Error Occurred placing your order.");
+        _processingOrder = false;
     }
 
     protected override async Task OnAfterRenderAsync(bool isFirstRender)
@@ -176,7 +205,14 @@
                 }
             }
 
+            _thinking = false;
             this.StateHasChanged();
         }
     }
+
+    protected override void OnInitialized()
+    {
+        _thinking = true;
+    }
+
 }

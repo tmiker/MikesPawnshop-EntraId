@@ -13,11 +13,11 @@
     <div class="col-4">
         <h4><b>STORE FRONT</b></h4>
     </div>
-    <div class="col-4">
-        @* @if (MyCartData is not null)
+    <div class="col-4 text-center">
+        @if (_thinking)
         {
-            <h6 class="text-secondary"><i>MyCartData.ShowCart: @MyCartData.ShowCart</i></h6>
-        } *@
+            <span class="loader-vertical-bars"></span>
+        }
     </div>
     <div class="col-2">
         @if (_apiHealthCheckResult is null)
@@ -149,6 +149,7 @@
     public int SelectedProductId { get; set; } = 0;
     public ShoppingCartDTO? ShoppingCart { get; set; }
     private bool _showCart = false;
+    private bool _thinking;
 
     public bool TableView = false;
     private string _tableViewButtonText => TableView ? "Card View" : "Table View";
@@ -164,6 +165,7 @@
     private void ClearHealthCheckResult() => _apiHealthCheckResult = null;
     private async Task CartsApiHealthCheck()
     {
+        _thinking = true;
         var result = await _cartsHttpClient.CheckHealthAsync();
         if (result.IsSuccess)
         {
@@ -173,6 +175,7 @@
         {
             _errorMessage = $"{result.ErrorMessage}";
         }
+        _thinking = false;
     }
 
     private async Task CartItemCountChanged(int count)
@@ -344,6 +347,7 @@
 
     private async Task GetCart()
     {
+        _thinking = true;
         var result = await _cartsHttpClient.GetShoppingCartAsync();
         if (result.IsSuccess)
         {
@@ -351,10 +355,12 @@
             if (ShoppingCart is not null) await CartItemCountChanged(ShoppingCart.Items.Count);
         }
         else _errorMessage = result.ErrorMessage;
+        _thinking = false;
     }
 
     private async Task GetProducts()
     {
+        _thinking = true;
         var result = await _productReadSideHttpClient.GetPagedAndFilteredProductSummariesAsync(_nameFilter, _categoryFilter, _sortColumn, _pageNumber, _pageSize);
         if (result.IsSuccess)
         {
@@ -367,6 +373,8 @@
         {
             _errorMessage = result.ErrorMessage;
         }
+
+        _thinking = false;
         this.StateHasChanged();
     }
 
@@ -390,5 +398,10 @@
             await GetProducts();
             StateHasChanged();
         }
+    }
+
+    protected override void OnInitialized()
+    {
+        _thinking = true;
     }
 }
