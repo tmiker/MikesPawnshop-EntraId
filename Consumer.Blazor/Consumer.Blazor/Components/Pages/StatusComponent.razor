@@ -1,0 +1,20 @@
+﻿
+<div class="row px-3">
+    <div class="col-12">
+        <textarea rows="1" class="bg-dark text-secondary form-control form-control-sm text-center" id="status"
+                  readonly
+                  @bind="StatusMessage" />
+    </div>
+</div>
+
+
+@code {
+
+    [Parameter]
+    public string? StatusMessage { get; set; }
+
+    // THIS IS ONLY NEEDED IF ADD A BUTTON TO CHANGE STATUS
+    [Parameter]
+    public EventCallback ClearStatusCallback { get; set; }
+    private async Task ClearStatusMessage() => await ClearStatusCallback.InvokeAsync();
+}

@@ -1,4 +1,4 @@
-﻿@page "/claims/accountsApiClaims"
+﻿@page "/claims/apiResourceClaims"
 @rendermode InteractiveServer
 @inject IClaimsHttpService _claimsService
 @inject IToastrService Toastr
@@ -11,7 +11,7 @@
     <ErrorComponent SuccessMessage="@_successMessage" ErrorMessage="@_errorMessage" ClearSuccessCallback="ClearSuccessMessage" ClearErrorCallback="ClearErrorMessage" />
 </div>
 
-<h4>@_title</h4>
+<h4 class="mt-4">@_title</h4>
 
 <div class="mr-toolbar-bottom">
 
@@ -21,6 +21,7 @@
             <option value="accounts">Accounts API</option>
             <option value="carts">Carts API</option>
             <option value="orders">Orders API</option>
+            <option value="products_read">Products Read API</option>
             <option value="products_write">Products Write API</option>
         </select>
     </div>
@@ -268,6 +269,12 @@
             case "orders":
                 _title = "Orders API Claims";
                 apiResult = await _claimsService.GetOrdersApiUserInfoAsync();
+                if (apiResult.IsSuccess) _apiUserInfoDTO = apiResult.ApiUserInfo;
+                else _errorMessage = apiResult.ErrorMessage;
+                break;
+            case "products_read":
+                _title = "Products Read Side API Claims";
+                apiResult = await _claimsService.GetProductsReadApiUserInfoAsync();
                 if (apiResult.IsSuccess) _apiUserInfoDTO = apiResult.ApiUserInfo;
                 else _errorMessage = apiResult.ErrorMessage;
                 break;

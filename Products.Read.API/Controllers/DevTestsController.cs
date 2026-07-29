@@ -37,78 +37,35 @@ namespace Products.Read.API.Controllers
         [Authorize]
         public async Task<ActionResult<ApiUserInfoDTO>> GetApiUserInfo()
         {
-            var contextClaims = HttpContext.User.Claims;
-            _logger.LogInformation("Products Read API method GetApiUserInfo HTTPCONTEXT CLAIMS COUNT: {count}", contextClaims.Count());    // 20
-            var actionClaims = User.Claims;
-            _logger.LogInformation("Products Read API method GetApiUserInfo ACTION CLAIMS COUNT: {count}", actionClaims.Count());          // 20
-            var username = User.Identity?.Name; // Works if "sub" or "name" claim is mapped
-            _logger.LogInformation("Products Read API method GetApiUserInfo was called. USERNAME: {username}", username);                  // null
-            string? ownerId = User.Claims.FirstOrDefault(c => c.Type == "oid")?.Value;
-            _logger.LogInformation("Products Read API method GetApiUserInfo Owner Id: {id}.", ownerId);                                    
-
-            string authHeaderPrefix = "Bearer ";
-            string authorizationHeaderValue = Request.Headers.Authorization.ToString();
-            string accessTokenFromHeader = authorizationHeaderValue.Substring(authHeaderPrefix.Length);
-
-            string? identityToken = await HttpContext.GetTokenAsync(OpenIdConnectParameterNames.IdToken);
-            // string jsonIdentityToken = JsonSerializer.Serialize(identityToken, _jsonOptions);
-            _logger.LogInformation("Products Read API method GetApiUserInfo IDENTITY TOKEN from HttpContext: {idtoken}", identityToken);
-            string? accessToken = await HttpContext.GetTokenAsync(OpenIdConnectParameterNames.AccessToken);
-            // string jsonAccessToken = JsonSerializer.Serialize(accessToken, _jsonOptions);
-            _logger.LogInformation("Products Read API method GetApiUserInfo ACCESS TOKEN from HttpContext: {accesstoken}", accessToken);
-
-            ApiUserInfoDTO apiUserInfoDTO = _tokenDecoder.GetTokenData(accessTokenFromHeader);
-
-            List<Claim> userClaims = HttpContext.User.Claims.ToList();
-            if (userClaims.Any())
+            try
             {
-                foreach (var claim in userClaims)
+                // Get the access token from the Authorization header to parse it's claims
+                string authHeaderPrefix = "Bearer ";
+                string authorizationHeaderValue = Request.Headers.Authorization.ToString();
+                string accessTokenFromHeader = string.Empty;
+                if (!string.IsNullOrEmpty(authorizationHeaderValue)) accessTokenFromHeader = authorizationHeaderValue.Substring(authHeaderPrefix.Length);
+
+                // Create ApiUserInfoDTO with AccessTokenClaims property populated by ITokenDecoder.GetTokenData(token) method 
+                ApiUserInfoDTO apiUserInfoDTO = _tokenDecoder.GetTokenData(accessTokenFromHeader);
+
+                // Add HttpContext.User.Claims to ApiUserInfoDTO and Log HttpContext.User.Claims
+                List<Claim>? userClaims = HttpContext.User?.Claims.ToList();
+                if (userClaims is not null && userClaims.Any())
                 {
-                    if (claim.Type == "roles") apiUserInfoDTO.ApiUserClaimsRolesList.Add(claim.Value);
-                    apiUserInfoDTO.ApiUserClaimsClaimsList.Add($"{claim.Type} : {claim.Value}");
+                    foreach (var claim in userClaims)
+                    {
+                        apiUserInfoDTO.ClaimsPrincipalClaims.Add(new ClaimDTO(claim));
+                    }
                 }
+
+                return Ok(apiUserInfoDTO);
             }
-            else
+            catch (Exception ex)
             {
-                apiUserInfoDTO.ApiUserClaimsClaimsList.Add("User.Claims did not contain any claims.");
+                _logger.LogError(ex, "An error occurred in GetApiUserInfo.");
+                return new ApiUserInfoDTO() { ErrorMessage = $"Exception getting API Claims: {ex.Message}." };
             }
-            return Ok(apiUserInfoDTO);
         }
-
-        //[HttpPost("throwExceptionForTesting")]
-        //[Authorize]
-        //public IActionResult ThrowExceptionForTesting([FromBody] ThrowExceptionDTO throwExceptionDTO, CancellationToken cancellationToken)
-        //{
-        //    // Note passing Correlation ID from the request headers to the command as Microsoft recommends
-        //    // caution using IHttpContextAccessor to get http context if want to pull header in handlers
-        //    // (https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.ihttpcontextaccessor?view=aspnetcore-9.0).
-
-        //    var validator = new ThrowExceptionDtoValidator();
-        //    validator.ValidateAndThrow(throwExceptionDTO);
-
-        //    Exception ex = throwExceptionDTO.ExceptionType.ToLower() switch
-        //    {
-        //        "validationexception" => throw new ValidationException(        //"This is a test FluentValidation.ValidationException thrown from ThrowExceptionHandler"),
-        //                "This is a test FluentValidation.ValidationException thrown from ThrowExceptionHandler and should enumerate two validation errors.",
-        //                new List<ValidationFailure>()
-        //                {
-        //                    new ValidationFailure("Property 1", "This is a Property 1 error"),
-        //                    new ValidationFailure("Property 2", "This is Property 2's first error"),
-        //                    new ValidationFailure("Property 2", "This is Property 2's second error")
-        //                }),
-        //        "unauthorizedaccessexception" => throw new UnauthorizedAccessException("This is a test UnauthorizedAccessException thrown from ThrowExceptionHandler."),
-        //        "forbiddenexception" => throw new ForbiddenException("This is a test ForbiddenException thrown from ThrowExceptionHandler."),
-        //        "notfoundexception" => throw new NotFoundException("This is a test NotFoundException thrown from ThrowExceptionHandler."),
-        //        "conflictexception" => throw new ConflictException("This is a test ConflictException thrown from ThrowExceptionHandler."),
-        //        "argumentexception" => throw new ArgumentException("This is a test ArgumentException thrown from ThrowExceptionHandler."),
-        //        "argumentnullexception" => throw new ArgumentNullException("This is a test ArgumentNullException thrown from ThrowExceptionHandler."),
-        //        "invalidoperationexception" => throw new InvalidOperationException("This is a test InvalidOperationException thrown from ThrowExceptionHandler."),
-        //        "taskcanceledexception" => throw new TaskCanceledException("This is a test TaskCanceledException thrown from ThrowExceptionHandler."),
-        //        _ => throw new Exception("This is a test general Exception thrown from ThrowExceptionHandler.")
-        //    };
-
-        //    return Ok();
-        //}
 
         [HttpGet("getCloudAmqpSettingsTestingDummyValue")]
         [Authorize]
