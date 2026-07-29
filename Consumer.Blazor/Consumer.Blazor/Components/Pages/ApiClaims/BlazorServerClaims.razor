@@ -1,79 +1,164 @@
 ﻿@page "/claims/blazorServerClaims"
-@using System.Text
+@rendermode InteractiveServer
 @using Microsoft.AspNetCore.Components.Authorization
 @using System.Security.Claims
-@rendermode InteractiveServer
+@using Consumer.Blazor.Client.Pages
+@inject IToastrService Toastr
 
-<h4 class="mt-4">This Blazor App Authentication State Task Data</h4>
+<PageTitle>Admin Client User Claims</PageTitle>
 
-@* <div class="row mt-2">
-    <div class="col-4">
-        <a class="btn btn-primary form-control" @onclick="LoadAuthenticationStateAsync">Load Authentication State</a>
+<div class="mt-1">
+    <ErrorComponent SuccessMessage="@_successMessage" ErrorMessage="@_errorMessage" ClearSuccessCallback="ClearSuccessMessage" ClearErrorCallback="ClearErrorMessage" />
+</div>
+
+@* PRODUCTS TABLE TOOLBAR 1 *@
+<div class="mr-toolbar-bottom">
+    <div class="mr-toolbar-group">
+        <label class="mr-toolbar-label">Filter: </label>
+        <input class="mr-toolbar-input-medium" @bind="@_filter" @bind:after="(() => FilterSortAndPageData(true))" />
+        @if (string.IsNullOrWhiteSpace(_filter))
+        {
+            <a class="btn mr-toolbar-btn-icon"> </a>
+        }
+        else
+        {
+            <a class="btn mr-toolbar-btn-icon" @onclick="ClearFilter"> <i class="bi-fire text-warning-alt"></i> </a>
+        }
     </div>
-    <div class="col-4">
-        <a class="btn btn-warning form-control" @onclick="ToggleShowBlazorAuthData">Toggle Show Blazor Auth Data</a>
+    <div class="mr-toolbar-group">
+        <label class="mr-toolbar-label">Sort:</label>
+        <select class="form-select mr-toolbar-select-medium" id="sortColumn" @bind="_sortColumn" @bind:after="(() => FilterSortAndPageData(true))">
+            <option value="type">Type</option>
+            <option value="value">Value</option>
+        </select>
     </div>
-</div> *@
+    <div class="mr-toolbar-group">
+        <label class="mr-toolbar-label">Page Size: </label>
+        <input type="number" min="1" class="mr-toolbar-input-very-small" @bind-value="@_pageSize" @bind-value:after="(() => FilterSortAndPageData(true))" />
+    </div>
+</div>
 
-@if (_showBlazorAuthData)
+@if (_displayedClaims is not null && _displayedClaims.Any())
 {
-    <div class="row mt-2">
+    <div class="mt-2">
         <div class="col-12">
-            <h5> Loaded OnAfterRender</h5>
-            @if (_claims is not null && _claims.Any())
-            {
-                <label>Claims List</label>
-                @foreach (var claim in _claims)
-                {
-                    <div class="row mt-2">
-                        <div class="col-3">
-                            <h6>Type: @claim.Type</h6>
-                        </div>
-                        <div class="col-8 offset-1">
-                            <h6>Value: @claim.Value</h6>
-                        </div>
-                    </div>
-                }
-            }
+            <h4>Admin Blazor Server Claims</h4>
+            <table class="table table-sm table-dark table-bordered">
+                <thead>
+                    <tr>
+                        <th>Claim Type</th>
+                        <th>Claim Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var claim in _displayedClaims)
+                    {
+                        <tr>
+                            <td>@claim.Type</td>
+                            <td>@claim.Value</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
-        @* <div class="col-5">
-            <h5>Button Driven Data</h5>
-            <div class="row mt-2">
-                <div class="col-12">
-                    <label>Auth Message</label>
-                    <textarea rows="16" type="text" class="bg-dark text-light form-control" @bind="_authMessage" />
-                </div>
-            </div>
-        </div> *@
     </div>
+    @if (_pagingData is not null)
+    {
+        <PagingComponent PagingData="@_pagingData" PageBackwardCallback="PageBackward" PageForwardCallback="PageForward" GoToPageCallback="PageTo" />
+    }
 }
-
-@if (!string.IsNullOrWhiteSpace(_errorMessage))
-{
-    <div class="row mt-2">
-        <div class="col-12 text-danger">
-            <p><b><i>@_errorMessage</i></b></p>
-        </div>
-    </div>
-    <div class="row mt-2">
-        <div class="col-12 text-center">
-            <a class="btn btn-success form-control" @onclick="ClearError">Clear</a>
-        </div>
-    </div>
-}
-
 
 @code {
-
-    // GET BLAZOR APP AUTH DATA
-
-    // [Inject]
-    // private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
 
     [CascadingParameter]
     Task<AuthenticationState> authenticationStateTask { get; set; } = default!;
 
-    private IEnumerable<Claim> _claims = Enumerable.Empty<Claim>();
+    private IEnumerable<Claim>? _claims;
+    private List<Claim>? _displayedClaims;
+
+    // ERROR COMPONENT MESSAGING
+    #region Error Handling
+    private string? _errorMessage;
+    private string? _successMessage;
+    private void ClearErrorMessage() => _errorMessage = null;
+    private void ClearSuccessMessage() => _successMessage = null;
+    private void ClearMessages()
+    {
+        _errorMessage = null;
+        _successMessage = null;
+    }
+    #endregion Error Handling
+
+    // QUERY SEARCH, FILTER, SORT
+    #region Filter Sort Page
+    private int _pageNumber = 1;
+    private int _pageSize = 10;
+    private string? _filter;
+    private string? _sortColumn;
+    private void ClearFilter() { _filter = null; FilterSortAndPageData(true); }
+    private void ResetFilters()
+    {
+        _filter = null;
+        _sortColumn = "type";
+        FilterSortAndPageData(true);    // if pageNumber is not reset, need logic to ensure within page count
+    }
+    #endregion Filter Sort Page
+
+    // PAGING
+    #region Paging
+    private PaginationMetadata? _pagingData;
+    private void PageForward()
+    {
+        if (_pageNumber >= _pagingData?.TotalPageCount) return;
+        _pageNumber++;
+        FilterSortAndPageData(false);
+    }
+    private void PageBackward()
+    {
+        if (_pageNumber <= 1) return;
+        _pageNumber--;
+        FilterSortAndPageData(false);
+    }
+    private void PageTo(int page)
+    {
+        if (page == _pageNumber) return;
+        if (_pageNumber > _pagingData?.TotalPageCount || _pageNumber < 1) return;
+        _pageNumber = page;
+        FilterSortAndPageData(false);
+    }
+    #endregion Paging
+
+    private void FilterSortAndPageData(bool resetPageNumber)
+    {
+        if (_claims is not null && _claims.Any())
+        {
+            if (resetPageNumber) _pageNumber = 1;
+
+            IQueryable<Claim> query = _claims.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(_filter))
+            {
+                query = query.Where(c => c.Type != null && c.Type.ToLower().Contains(_filter.ToLower()) ||
+                c.Value != null && c.Value.ToLower().Contains(_filter.ToLower()));
+            }
+            switch (_sortColumn)
+            {
+                case "type":
+                    query = query.OrderBy(c => c.Type);
+                    break;
+                case "value":
+                    query = query.OrderBy(c => c.Value);
+                    break;
+                default:
+                    query = query.OrderBy(c => c.Type);
+                    break;
+            }
+
+            List<Claim> claimsToDisplay = query.ToList();
+            int count = claimsToDisplay.Count;
+            _pagingData = new PaginationMetadata(count, _pageSize, _pageNumber);
+            _displayedClaims = claimsToDisplay.Skip(_pageSize * (_pageNumber - 1)).Take(_pageSize).ToList();
+        }
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -82,41 +167,9 @@
             if (authenticationStateTask == null) return;
             var authState = await authenticationStateTask;
             _claims = authState.User.Claims;
+            
+            FilterSortAndPageData(true);
             this.StateHasChanged();
         }
     }
-
-    private string? _authMessage;
-
-    private async Task LoadAuthenticationStateAsync()
-    {
-
-        // var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        // var user = authState.User;
-
-        var user = (await authenticationStateTask).User;
-
-        if (user.Identity is not null && user.Identity.IsAuthenticated)
-        {
-            var userClaimsStringBuilder = new StringBuilder();
-            foreach (var claim in user.Claims)
-            {
-                userClaimsStringBuilder.AppendLine($"Type: {claim.Type} = Value: {claim.Value}  ");
-            }
-            _authMessage = userClaimsStringBuilder.ToString();
-            Console.WriteLine($"User claims: \n{userClaimsStringBuilder}");
-        }
-        else
-        {
-            _authMessage = "The user is not authenticated.";
-        }
-    }
-
-    private bool _showBlazorAuthData = true;
-    private void ToggleShowBlazorAuthData() => _showBlazorAuthData = !_showBlazorAuthData;
-
-    private string? _errorMessage;
-    private void ClearError() => _errorMessage = null;
-
-
 }

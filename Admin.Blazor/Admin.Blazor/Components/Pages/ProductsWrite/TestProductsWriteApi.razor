@@ -34,65 +34,6 @@
     </div>
 </div>
 
-<div class="row mt-4">
-    <div class="col-12">
-        <h5 class="text-info-alt">
-            Notes:
-        </h5>
-    </div>
-</div>
-<div class="row mt-2">
-    <div class="col-12">
-        <p class="text-info-alt">
-            Ensure API uses IProblemDetailsService to write the response so that response has content type of `application/problem+json`.
-        </p>
-    </div>
-</div>
-<div class="row mt-2">
-    <div class="col-12">
-        <p class="text-info-alt">
-            Client HTTP Service checks for content type of `application/problem+json` and if present can parse or deserialize the response accordingly.
-        </p>
-    </div>
-</div>
-<div class="row mt-2">
-    <div class="col-12">
-        <p class="text-info-alt">
-            The Products Write Side API has exception type specific ExceptionHandler for NotFoundException, ValidationException, and ProductEventStoreException, 
-            while other exceptions are handled by a global ExceptionHandler.
-        </p>
-    </div>
-</div>
-
-<hr />
-<div class="row mt-2">
-    <div class="col-4">
-        <a class="btn button-custom-primary" @onclick="GetCloudAMQPTestingDummyValue">Get Cloud AMQP Test Value</a>
-    </div>
-    <div class="col-8">
-        <p class="text-info-alt mt-2">Gets Value from API which uses Options pattern for CloudAMQPSettings (_cloudAmqpSettings.Value.TestingDummyValue)</p>
-    </div>
-</div>
-<div class="row mt-1">
-    <div class="col-8">
-        <p class="text-info-alt">Locally, the API configuration uses a nested entry (colon), while in Azure the configuraton uses a double underscore.</p>
-    </div>
-</div>
-@if (!string.IsNullOrWhiteSpace(_cloudAMQPTestValue))
-{
-    <div class="row mt-2">
-        <div class="col-12">
-            <input type="text" class="bg-dark text-light form-control" @bind-value="@_cloudAMQPTestValue" />
-        </div>
-    </div>
-    <div class="row mt-2">
-        <div class="col offset-5">
-            <a class="btn button-custom-warning" @onclick="ClearCloudAMQPTestValue">Clear</a>
-        </div>
-    </div>
-}
-
-
 @code {
 
     private List<string> _exceptionTypeList { get; } = new()

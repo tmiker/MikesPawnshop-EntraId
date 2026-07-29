@@ -1,0 +1,195 @@
+﻿<div class="mr-toolbar-paging">
+
+    @if (PagingData is not null)
+    {
+        <div class="mr-toolbar-paging-buttons">
+
+            <ul class="pagination">
+                <li class="page-item">
+                    <a class="btn button-custom-paging-arrow" title="Page backward" role="button" @onclick="TryPageBackwardAsync">
+                        <i class="bi-chevron-double-left text-primary-alt"></i>
+                    </a>
+                </li>
+
+                @if (PagingData.CurrentPage <= _pivot)
+                {
+                    for (int i = 1; i <= _pivot * 2 - 1; i++)
+                    {
+                        if (i > PagingData.TotalPageCount) break;
+
+                        int page = i;
+                        if (page == PagingData.CurrentPage)
+                        {
+                            <li class="page-item active">
+                                <a class="btn button-custom-paging-current" title="Current page" role="button" @onclick="(() => TryPageToAsync(page))">
+                                    <span class="text-info-alt">@i</span>
+                                </a>
+                            </li>
+                        }
+                        else if (i == _pivot * 2 - 1)
+                        {
+                            <li class="page-item">
+                                <a class="btn button-custom-paging-page" title="Earlier pages" role="button" @onclick="(() => TryPageToAsync(page))">
+                                    <span class="text-primary-alt">...</span>
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="page-item">
+                                <a class="btn button-custom-paging-page" title="Go to this page" role="button" @onclick="(() => TryPageToAsync(page))">
+                                    <span class="text-primary-alt">@i</span>
+                                </a>
+                            </li>
+                        }
+                    }
+                }
+                else if (PagingData.CurrentPage > PagingData.TotalPageCount - _pivot)
+                {
+
+                    for (int i = PagingData.TotalPageCount - 2 * (_pivot - 1); i <= PagingData.TotalPageCount; i++)
+                    {
+                        int page = i;
+
+                        if (i < 1) continue;    // added in v6
+
+                        if (page == PagingData.CurrentPage)
+                        {
+                            <li class="page-item active">
+                                <a class="btn button-custom-paging-current" title="Current page" role="button" @onclick="(() => TryPageToAsync(page))">
+                                    <span class="text-info-alt">@i</span>
+                                </a>
+                            </li>
+                        }
+                        else if (i == PagingData.TotalPageCount - _pivot)
+                        {
+                            <li class="page-item">
+                                <a class="btn button-custom-paging-page" title="Earlier pages" role="button" @onclick="(() => TryPageToAsync(page))">
+                                    <span class="text-primary-alt">...</span>
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="page-item">
+                                <a class="btn button-custom-paging-page" title="Go to this page" role="button" @onclick="(() => TryPageToAsync(page))">
+                                    <span class="text-primary-alt">@i</span>
+                                </a>
+                            </li>
+                        }
+                    }
+                }
+                else
+                {
+                    for (int i = PagingData.CurrentPage - _pivot + 1; i < PagingData.CurrentPage + _pivot; i++)
+                    {
+                        if (i > PagingData.TotalPageCount) break;
+
+                        int page = i;
+                        if (page == PagingData.CurrentPage)
+                        {
+                            <li class="page-item active">
+                                <a class="btn button-custom-paging-current" title="Current page" role="button" @onclick="(() => TryPageToAsync(page))">
+                                    <span class="text-info-alt">@i</span>
+                                </a>
+                            </li>
+                        }
+                        else if (i == PagingData.CurrentPage - _pivot + 1)
+                        {
+                            <li class="page-item">
+                                <a class="btn button-custom-paging-page" title="Earlier pages" role="button" @onclick="(() => TryPageToAsync(page))">
+                                    <span class="text-primary-alt">...</span>
+                                </a>
+                            </li>
+                        }
+                        else if (i == PagingData.CurrentPage + _pivot - 1)
+                        {
+                            <li class="page-item">
+                                <a class="btn button-custom-paging-page" title="Earlier pages" role="button" @onclick="(() => TryPageToAsync(page))">
+                                    <span class="text-primary-alt">...</span>
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="page-item">
+                                <a class="btn button-custom-paging-page" title="Go to this page" role="button" @onclick="(() => TryPageToAsync(page))">
+                                    <span class="text-primary-alt">@i</span>
+                                </a>
+                            </li>
+                        }
+                    }
+                }
+
+                <li class="page-item">
+                    <a class="btn button-custom-paging-arrow" title="Page forward" role="button" @onclick="TryPageForwardAsync">
+                        <i class="bi-chevron-double-right text-primary-alt"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="mr-toolbar-paging-data">
+
+            <div class="mr-toolbar-paging-group">
+                <label class="mr-toolbar-paging-label text-secondary-alt">Items:</label>
+                <input inert class="form-control mr-toolbar-paging-input" title="Total number of items for all pages" @bind="PagingData.TotalItemCount" />
+            </div>
+
+            <div class="mr-toolbar-paging-group">
+                <label class="mr-toolbar-paging-label text-secondary-alt">Pages:</label>
+                <input inert class="form-control mr-toolbar-paging-input" title="Total number of pages" @bind="PagingData.TotalPageCount" />
+            </div>
+
+            <div class="mr-toolbar-paging-group">
+                <label class="mr-toolbar-paging-label text-secondary-alt">Go to:</label>
+                <input type="number" class="form-control mr-toolbar-paging-input" min="1" title="Go to page number" @bind="_goToPageNumber" @bind:after="(() => TryPageToAsync(_goToPageNumber))" />
+            </div>
+
+        </div>
+
+    }
+</div>
+
+@code {
+
+    [Parameter]
+    public PaginationMetadata PagingData { get; set; } = default!;
+    [Parameter]
+    public EventCallback PageForwardCallback { get; set; }
+    [Parameter]
+    public EventCallback PageBackwardCallback { get; set; }
+    [Parameter]
+    public EventCallback<int> GoToPageCallback { get; set; }
+
+    private int _pivot = 6;
+    private int _goToPageNumber;
+
+    private async Task TryPageForwardAsync()
+    {
+        if (PagingData is null || PagingData.CurrentPage >= PagingData.TotalPageCount) return;
+        _goToPageNumber++;
+        await PageForwardCallback.InvokeAsync();
+    }
+
+    private async Task TryPageBackwardAsync()
+    {
+        if (PagingData.CurrentPage <= 1) return;
+        _goToPageNumber--;
+        await PageBackwardCallback.InvokeAsync();
+    }
+
+    private async Task TryPageToAsync(int page)
+    {
+        if (page < 1) page = 1;
+        else if (page > PagingData.TotalPageCount) page = PagingData.TotalPageCount;
+
+        _goToPageNumber = page;
+        await GoToPageCallback.InvokeAsync(page);
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (PagingData is not null) _goToPageNumber = PagingData.CurrentPage;
+    }
+}
