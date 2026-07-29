@@ -3,17 +3,19 @@
 @inject IClaimsHttpService _claimsService
 @inject IToastrService Toastr
 
-<PageTitle>Accounts API Claims</PageTitle>
+<PageTitle>API Claims</PageTitle>
 
 <div class="mt-1">
     <ErrorComponent SuccessMessage="@_successMessage" ErrorMessage="@_errorMessage" ClearSuccessCallback="ClearSuccessMessage" ClearErrorCallback="ClearErrorMessage" />
 </div>
 
+<h4>@_title</h4>
+
 <div class="mr-toolbar-bottom">
 
     <div class="mr-toolbar-group">
         <label class="mr-toolbar-label">API:</label>
-        <select class="form-select mr-toolbar-select-medium" id="api" @bind="_api" @bind:after="(() => FilterSortAndPageData(true))">
+        <select class="form-select mr-toolbar-select-medium" id="api" @bind="_selectedApiResource" @bind:after="(() => SetApiResource())">
             <option value="accounts">Accounts API</option>
             <option value="carts">Carts API</option>
             <option value="orders">Orders API</option>
@@ -58,7 +60,7 @@
 {
     <div class="mt-2">
         <div class="col-12">
-            <h4>Accounts API Claims</h4>
+            
             <table class="table table-sm table-dark table-bordered">
                 <thead>
                     <tr>
@@ -101,10 +103,11 @@
     private List<ClaimDTO>? _displayedClaims;
     private List<ClaimDTO>? _exceptClaims;
     private bool _thinking;
+    private string? _title;
 
-    private string _api = "accounts";
+    private string? _selectedApiResource;
     private List<string> _claimSourceList = new List<string> { "access_token", "claims_principal", "difference" };
-    private string _claimSource = "access_token";
+    private string? _claimSource;
 
     // ERROR COMPONENT MESSAGING
     #region Error Handling
@@ -205,22 +208,81 @@
     {
         if (firstRender)
         {
-            var result = await _claimsService.GetAccountsApiUserInfoAsync();
-            if (result.IsSuccess)
-            {
-                _apiUserInfoDTO = result.ApiUserInfo;
-                ProcessApiInfo();
-                FilterSortAndPageData(true);
-            }
-            else 
-            {
-                _apiUserInfoDTO = new ApiUserInfoDTO() { ErrorMessage = result.ErrorMessage };
-                _errorMessage = result.ErrorMessage;
-            }
+            // var result = await _claimsService.GetAccountsApiUserInfoAsync();
+            // if (result.IsSuccess)
+            // {
+            //     _apiUserInfoDTO = result.ApiUserInfo;
+            //     ProcessApiInfo();
+            //     FilterSortAndPageData(true);
+            // }
+            // else 
+            // {
+            //     _apiUserInfoDTO = new ApiUserInfoDTO() { ErrorMessage = result.ErrorMessage };
+            //     _errorMessage = result.ErrorMessage;
+            // }
+
+            await SetApiResource();
 
             _thinking = false;
+
             this.StateHasChanged();
         }
+    }
+
+    //
+    private async Task SetApiResource()
+    {
+        _thinking = true;
+
+        (bool IsSuccess, ApiUserInfoDTO? ApiUserInfo, string? ErrorMessage) apiResult = (false, null, null);
+
+        switch (_selectedApiResource)
+        {
+            case "accounts":
+                _title = "Accounts API Claims";
+                apiResult = await _claimsService.GetAccountsApiUserInfoAsync();
+                if (apiResult.IsSuccess) _apiUserInfoDTO = apiResult.ApiUserInfo;
+                else _errorMessage = apiResult.ErrorMessage;
+                break;
+            case "carts":
+                _title = "Carts API Claims";
+                apiResult = await _claimsService.GetCartsApiUserInfoAsync();
+                if (apiResult.IsSuccess) _apiUserInfoDTO = apiResult.ApiUserInfo;
+                else _errorMessage = apiResult.ErrorMessage;
+                break;
+            case "orders":
+                _title = "Orders API Claims";
+                apiResult = await _claimsService.GetOrdersApiUserInfoAsync();
+                if (apiResult.IsSuccess) _apiUserInfoDTO = apiResult.ApiUserInfo;
+                else _errorMessage = apiResult.ErrorMessage;
+                break;
+            case "products_write":
+                _title = "Products Write Side API Claims";
+                apiResult = await _claimsService.GetProductsWriteApiUserInfoAsync();
+                if (apiResult.IsSuccess) _apiUserInfoDTO = apiResult.ApiUserInfo;
+                else _errorMessage = apiResult.ErrorMessage;
+                break;
+            default:
+                _title = "Accounts API Claims";
+                apiResult = await _claimsService.GetAccountsApiUserInfoAsync();
+                if (apiResult.IsSuccess) _apiUserInfoDTO = apiResult.ApiUserInfo;
+                else _errorMessage = apiResult.ErrorMessage;
+                break;
+        }
+
+        if (apiResult.IsSuccess)
+        {
+            _apiUserInfoDTO = apiResult.ApiUserInfo;
+            ProcessApiInfo();
+            FilterSortAndPageData(true);
+        }
+        else
+        {
+            _apiUserInfoDTO = new ApiUserInfoDTO() { ErrorMessage = apiResult.ErrorMessage };
+            _errorMessage = apiResult.ErrorMessage;
+        }
+
+        _thinking = false;
     }
 
     private void ProcessApiInfo()
@@ -268,6 +330,9 @@
 
     protected override void OnInitialized()
     {
+        _title = "Accounts API Claims";
+        _selectedApiResource = "accounts";
+        _claimSource = "access_token";
         _thinking = true;
     }
 }
