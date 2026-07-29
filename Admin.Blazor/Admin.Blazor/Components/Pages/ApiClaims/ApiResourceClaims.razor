@@ -21,7 +21,6 @@
             <option value="accounts">Accounts API</option>
             <option value="carts">Carts API</option>
             <option value="orders">Orders API</option>
-            <option value="products_read">Products Read API</option>
             <option value="products_write">Products Write API</option>
         </select>
     </div>
@@ -30,7 +29,6 @@
         <select class="form-select mr-toolbar-select-medium" id="source" @bind="_claimSource" @bind:after="(() => FilterSortAndPageData(true))">
             <option value="access_token">Access Token</option>
             <option value="claims_principal">Claims Principal</option>
-            <option value="difference">Difference</option>
         </select>
     </div>
 
@@ -101,21 +99,18 @@
 @code {
 
     private ApiUserInfoDTO? _apiUserInfoDTO { get; set; }
-    // private List<ClaimDTO>? _accessTokenClaims;           // = new Dictionary<string, string>();
-    // private List<ClaimDTO>? _httpContextUserClaims;       // = new Dictionary<string, string>();
     private List<ClaimDTO>? _displayedClaims;
-    private List<ClaimDTO>? _exceptClaims;
     private bool _thinking;
     private string? _title;
 
     private string? _selectedApiResource;
-    private List<string> _claimSourceList = new List<string> { "access_token", "claims_principal", "difference" };
+    private List<string> _claimSourceList = new List<string> { "access_token", "claims_principal" };
     private string? _claimSource;
 
     private string? _status = "ready";
     private void SetStatus(string message) => _status = message;
     private void AppendStatus(string append) => _status += $", {append}";
-    private void ClearStatus() => _status = "ready";    // NOT CURRENTLY USED, STATUS COMPONENT HAS PARAMETER FOR THIS IN CASE WANT TO ADD A BUTTON TO IT
+    private void ClearStatus() => _status = "ready";    
     private string? _previousStatus;
 
     // ERROR COMPONENT MESSAGING
@@ -175,14 +170,8 @@
         _thinking = true;
         IEnumerable<ClaimDTO>? claims = _claimSource switch
         {
-            // "access_token" => _accessTokenClaims,
-            // "claims_principal" => _httpContextUserClaims,
-            // "difference" => _exceptClaims,
-            // _ => _accessTokenClaims
-
             "access_token" => _apiUserInfoDTO?.AccessTokenClaims,
             "claims_principal" => _apiUserInfoDTO?.ClaimsPrincipalClaims,
-            "difference" => _exceptClaims,
             _ => _apiUserInfoDTO?.AccessTokenClaims
         };
 
@@ -213,7 +202,6 @@
             int count = claimsToDisplay.Count;
             _pagingData = new PaginationMetadata(count, _pageSize, _pageNumber);
             _displayedClaims = claimsToDisplay.Skip(_pageSize * (_pageNumber - 1)).Take(_pageSize).ToList();
-            // AppendStatus($"source {_claimSource}");
             SetStatus($"api resource {_selectedApiResource}, claims source {_claimSource}");
         }
 
@@ -224,19 +212,6 @@
     {
         if (firstRender)
         {
-            // var result = await _claimsService.GetAccountsApiUserInfoAsync();
-            // if (result.IsSuccess)
-            // {
-            //     _apiUserInfoDTO = result.ApiUserInfo;
-            //     ProcessApiInfo();
-            //     FilterSortAndPageData(true);
-            // }
-            // else 
-            // {
-            //     _apiUserInfoDTO = new ApiUserInfoDTO() { ErrorMessage = result.ErrorMessage };
-            //     _errorMessage = result.ErrorMessage;
-            // }
-
             await SetApiResource();
 
             _thinking = false;
@@ -245,7 +220,6 @@
         }
     }
 
-    //
     private async Task SetApiResource()
     {
         _thinking = true;
@@ -272,12 +246,6 @@
                 if (apiResult.IsSuccess) _apiUserInfoDTO = apiResult.ApiUserInfo;
                 else _errorMessage = apiResult.ErrorMessage;
                 break;
-            case "products_read":
-                _title = "Products Read Side API Claims";
-                apiResult = await _claimsService.GetProductsReadApiUserInfoAsync();
-                if (apiResult.IsSuccess) _apiUserInfoDTO = apiResult.ApiUserInfo;
-                else _errorMessage = apiResult.ErrorMessage;
-                break;
             case "products_write":
                 _title = "Products Write Side API Claims";
                 apiResult = await _claimsService.GetProductsWriteApiUserInfoAsync();
@@ -295,8 +263,6 @@
         if (apiResult.IsSuccess)
         {
             _apiUserInfoDTO = apiResult.ApiUserInfo;
-            // SetStatus($"{_selectedApiResource} api resource");
-            ProcessApiInfo();
             FilterSortAndPageData(true);
         }
         else
@@ -307,52 +273,6 @@
 
         _thinking = false;
     }
-
-    private void ProcessApiInfo()
-    {
-        // claims principal has 24 claims, access token has 20 claims
-        if (_apiUserInfoDTO is not null)
-        {
-            // if (_apiUserInfoDTO.ApiAuthorizationHeaderClaimsList is not null && _apiUserInfoDTO.ApiAuthorizationHeaderClaimsList.Any()) 
-            //     _accessTokenClaims = ParseListAsDictionaryOfTypeAndValue(_apiUserInfoDTO.ApiAuthorizationHeaderClaimsList).ToList();
-            // if (_apiUserInfoDTO.ApiUserClaimsClaimsList is not null && _apiUserInfoDTO.ApiUserClaimsClaimsList.Any()) 
-            //     _httpContextUserClaims = ParseListAsDictionaryOfTypeAndValue(_apiUserInfoDTO.ApiUserClaimsClaimsList).ToList();
-            if (_apiUserInfoDTO.ClaimsPrincipalClaims is not null && _apiUserInfoDTO.AccessTokenClaims is not null)
-            {
-                _exceptClaims = (_apiUserInfoDTO.ClaimsPrincipalClaims.Except(_apiUserInfoDTO.AccessTokenClaims)).ToList();
-                Console.WriteLine($"EXCEPT CLAIMS COUNT: {_exceptClaims.Count}");
-                Console.WriteLine($"ACCESS TOKEN CLAIMS COUNT: {_apiUserInfoDTO.AccessTokenClaims.Count}");
-                Console.WriteLine($"CLAIMS PRINCIPAL CLAIMS COUNT: {_apiUserInfoDTO.ClaimsPrincipalClaims.Count}");
-            }
-        }
-    }
-
-    // private IEnumerable<ClaimDTO> ParseListAsDictionaryOfTypeAndValue(IEnumerable<string> list)
-    // {
-    //     List<ClaimDTO> claims = new List<ClaimDTO>();
-
-    //     if (list is not null && list.Any())
-    //     {
-    //         foreach (var entry in list)
-    //         {
-    //             int index = entry.IndexOf(':');
-    //             if (index > 0)
-    //             {
-    //                 string key = entry[..index];
-    //                 string value = entry[(index + 1)..];
-
-    //                 if (!string.IsNullOrWhiteSpace(key) && !string.IsNullOrWhiteSpace(value))
-    //                 {
-    //                     key = key.Trim();
-    //                     value = value.Trim();
-    //                     @if (value.Length > 100) value = $"{value.Substring(0, 100)} ...";
-    //                     claims.Add(new ClaimDTO(key, value));
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     return claims;
-    // }
 
     protected override void OnInitialized()
     {
