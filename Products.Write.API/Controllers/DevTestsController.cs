@@ -13,7 +13,6 @@ using Products.Write.Application.CQRS.DevTests;
 using Products.Write.Application.CQRS.QueryResults;
 using Products.Write.Application.DTOs;
 using Products.Write.Application.Validators;
-using Products.Write.Auth;
 using Products.Write.Domain.Snapshots;
 using System.Security.Claims;
 

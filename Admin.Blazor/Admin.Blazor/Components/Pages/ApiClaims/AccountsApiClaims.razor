@@ -1,176 +1,94 @@
-﻿@page "/claims/accountsApiClaims_OLD"
+﻿@page "/claims/accountsApiClaims"
 @rendermode InteractiveServer
 @inject IClaimsHttpService _claimsService
+@inject IToastrService Toastr
 
-<PageTitle>Accounts API Claims</PageTitle>
+<PageTitle>API Claims</PageTitle>
 
-@if (!string.IsNullOrWhiteSpace(_retrieveError))
+<StatusComponent StatusMessage="@_status" ClearStatusCallback="ClearStatus" />
+
+<div class="mt-1">
+    <ErrorComponent SuccessMessage="@_successMessage" ErrorMessage="@_errorMessage" ClearSuccessCallback="ClearSuccessMessage" ClearErrorCallback="ClearErrorMessage" />
+</div>
+
+<h4>@_title</h4>
+
+<div class="mr-toolbar-bottom">
+
+    <div class="mr-toolbar-group">
+        <label class="mr-toolbar-label">API:</label>
+        <select class="form-select mr-toolbar-select-medium" id="api" @bind="_selectedApiResource" @bind:after="(() => SetApiResource())">
+            <option value="accounts">Accounts API</option>
+            <option value="carts">Carts API</option>
+            <option value="orders">Orders API</option>
+            <option value="products_write">Products Write API</option>
+        </select>
+    </div>
+    <div class="mr-toolbar-group">
+        <label class="mr-toolbar-label">Source:</label>
+        <select class="form-select mr-toolbar-select-medium" id="source" @bind="_claimSource" @bind:after="(() => FilterSortAndPageData(true))">
+            <option value="access_token">Access Token</option>
+            <option value="claims_principal">Claims Principal</option>
+            <option value="difference">Difference</option>
+        </select>
+    </div>
+
+    <div class="mr-toolbar-group">
+        <label class="mr-toolbar-label">Filter: </label>
+        <input class="mr-toolbar-input-medium" @bind="@_filter" @bind:after="(() => FilterSortAndPageData(true))" />
+        @if (string.IsNullOrWhiteSpace(_filter))
+        {
+            <a class="btn mr-toolbar-btn-icon"> </a>
+        }
+        else
+        {
+            <a class="btn mr-toolbar-btn-icon" @onclick="ClearFilter"> <i class="bi-fire text-warning-alt"></i> </a>
+        }
+    </div>
+    <div class="mr-toolbar-group">
+        <label class="mr-toolbar-label">Sort:</label>
+        <select class="form-select mr-toolbar-select-short" id="sortColumn" @bind="_sortColumn" @bind:after="(() => FilterSortAndPageData(true))">
+            <option value="type">Type</option>
+            <option value="value">Value</option>
+        </select>
+    </div>
+    <div class="mr-toolbar-group">
+        <label class="mr-toolbar-label">Page Size: </label>
+        <input type="number" min="1" class="mr-toolbar-input-very-small" @bind-value="@_pageSize" @bind-value:after="(() => FilterSortAndPageData(true))" />
+    </div>
+</div>
+
+@if (_displayedClaims is not null && _displayedClaims.Any())
 {
-    <div class="row mt-2">
+    <div class="mt-2">
         <div class="col-12">
-            <h6 class="text-danger"><b>Retrieve Error:  @_retrieveError</b></h6>
-        </div>
-    </div>
-}
-
-@if (_apiUserInfoDTO != null)
-{
-    @if (_apiUserInfoDTO.ErrorMessage != null)
-    {
-        <div class="row mt-2">
-            <div class="col-12">
-                <h6 class="text-danger"><b>Error:  @_apiUserInfoDTO.ErrorMessage</b></h6>
-            </div>
-        </div>
-    }
-
-    <div class="row mt-2">
-        @* LEFT COLUMN *@
-        <div class="col-6">
-            <div class="row">
-                <div class="col-12">
-                    <h5><b>Accounts API User Claims from User.Claims</b></h5>
-                </div>
-            </div>
-            <div class="row mt-2">
-                <div class="col-12">
-                    <h6><b>Derived from query of User.Claims in API Controller</b></h6>
-                </div>
-            </div>
-
-            <div class="row mt-4">
-                <div class="col-9">
-                    <div class="row">
-                        <div class="col-12">
-                            <h6>CLAIMS</h6>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12">
-                            @* LIST CLAIMS TYPE AND VALUE HERE *@
-                            @foreach (var item in _apiUserInfoDTO.ApiUserClaimsClaimsList)
-                            {
-                                <div class="row">
-                                    <div class="col-12">
-                                        @if (item.Length > 50)
-                                        {
-                                            <p>Value: @item.Substring(0, 50)...</p>
-                                        }
-                                        else
-                                        {
-                                            <p>Value: @item</p>
-                                        }
-                                        @* <p>@item</p> *@
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </div>
-                <div class="col-3">
-                    <div class="row">
-                        <div class="col-12">
-                            <h6>ROLES</h6>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12">
-                            @* LIST ROLES HERE *@
-                            @foreach (var item in _apiUserInfoDTO.ApiUserClaimsRolesList)
-                            {
-                                <div class="row">
-                                    <div class="col-12">
-                                        <p>@item</p>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-            <div class="row mt-2">
-                <div class="col-12">
-                    <p class="text-light"><b>Remarks: </b></p>
-                    @* LIST REMARKS HERE *@
-                    @foreach (var remark in _apiUserInfoDTO.Remarks)
+            
+            <table class="table table-sm table-dark table-bordered">
+                <thead>
+                    <tr>
+                        <th>Claim Type</th>
+                        <th>Claim Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var claim in _displayedClaims)
                     {
-                        <div class="row">
-                            <div class="col-12">
-                                <p>@remark</p>
-                            </div>
-                        </div>
+                        <tr>
+                            <td>@claim.Type</td>
+                            <td>@claim.Value</td>
+                        </tr>
                     }
-                </div>
-            </div>
-        </div>
-        @* RIGHT COLUMN *@
-        <div class="col-6">
-            <div class="row">
-                <div class="col-12">
-                    <h5><b>Accounts API Access Token</b></h5>
-                </div>
-                <div class="row mt-2">
-                    <div class="col-12">
-                        <h6><b>Parsed from Request Authorization Header Value</b></h6>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row mt-4">
-                <div class="col-9">
-                    <div class="row">
-                        <div class="col-12">
-                            <h6>CLAIMS</h6>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12">
-                            @* LIST CLAIMS TYPE AND VALUE HERE *@
-                            @foreach (var item in _apiUserInfoDTO.ApiAuthorizationHeaderClaimsList)
-                            {
-                                <div class="row">
-                                    <div class="col-12">
-                                        @if (item.Length > 50)
-                                        {
-                                            <p>Value: @item.Substring(0, 50)...</p>
-                                        }
-                                        else
-                                        {
-                                            <p>Value: @item</p>
-                                        }
-                                        @* <p>@item</p> *@
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </div>
-                <div class="col-3">
-                    <div class="row">
-                        <div class="col-12">
-                            <h6>ROLES</h6>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12">
-                            @* LIST ROLES HERE *@
-                            @foreach (var item in _apiUserInfoDTO.ApiAuthorizationHeaderRolesList)
-                            {
-                                <div class="row">
-                                    <div class="col-12">
-                                        <p>@item</p>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
+                </tbody>
+            </table>
         </div>
     </div>
+    @if (_pagingData is not null)
+    {
+        <PagingComponent PagingData="@_pagingData" PageBackwardCallback="PageBackward" PageForwardCallback="PageForward" GoToPageCallback="PageTo" />
+    }
 }
-else
+
+@if (_thinking)
 {
     <div class="mx-auto text-center mb-3 mt-3">
         <div class="spinner-border text-yellow-alt role-status">
@@ -182,19 +100,258 @@ else
 @code {
 
     private ApiUserInfoDTO? _apiUserInfoDTO { get; set; }
-    private string? _retrieveError { get; set; }
+    // private List<ClaimDTO>? _accessTokenClaims;           // = new Dictionary<string, string>();
+    // private List<ClaimDTO>? _httpContextUserClaims;       // = new Dictionary<string, string>();
+    private List<ClaimDTO>? _displayedClaims;
+    private List<ClaimDTO>? _exceptClaims;
+    private bool _thinking;
+    private string? _title;
+
+    private string? _selectedApiResource;
+    private List<string> _claimSourceList = new List<string> { "access_token", "claims_principal", "difference" };
+    private string? _claimSource;
+
+    private string? _status = "ready";
+    private void SetStatus(string message) => _status = message;
+    private void AppendStatus(string append) => _status += $", {append}";
+    private void ClearStatus() => _status = "ready";    // NOT CURRENTLY USED, STATUS COMPONENT HAS PARAMETER FOR THIS IN CASE WANT TO ADD A BUTTON TO IT
+    private string? _previousStatus;
+
+    // ERROR COMPONENT MESSAGING
+    #region Error Handling
+    private string? _errorMessage;
+    private string? _successMessage;
+    private void ClearErrorMessage() => _errorMessage = null;
+    private void ClearSuccessMessage() => _successMessage = null;
+    private void ClearMessages()
+    {
+        _errorMessage = null;
+        _successMessage = null;
+    }
+    #endregion Error Handling
+
+    // QUERY SEARCH, FILTER, SORT
+    #region Filter Sort Page
+    private int _pageNumber = 1;
+    private int _pageSize = 10;
+    private string? _filter;
+    private string? _sortColumn;
+    private void ClearFilter() { _filter = null; FilterSortAndPageData(true); }
+    private void ResetFilters()
+    {
+        _filter = null;
+        _sortColumn = "type";
+        FilterSortAndPageData(true);    // if pageNumber is not reset, need logic to ensure within page count
+    }
+    #endregion Filter Sort Page
+
+    // PAGING
+    #region Paging
+    private PaginationMetadata? _pagingData;
+    private void PageForward()
+    {
+        if (_pageNumber >= _pagingData?.TotalPageCount) return;
+        _pageNumber++;
+        FilterSortAndPageData(false);
+    }
+    private void PageBackward()
+    {
+        if (_pageNumber <= 1) return;
+        _pageNumber--;
+        FilterSortAndPageData(false);
+    }
+    private void PageTo(int page)
+    {
+        if (page == _pageNumber) return;
+        if (_pageNumber > _pagingData?.TotalPageCount || _pageNumber < 1) return;
+        _pageNumber = page;
+        FilterSortAndPageData(false);
+    }
+    #endregion Paging
+
+    private void FilterSortAndPageData(bool resetPageNumber)
+    {
+        _thinking = true;
+        IEnumerable<ClaimDTO>? claims = _claimSource switch
+        {
+            // "access_token" => _accessTokenClaims,
+            // "claims_principal" => _httpContextUserClaims,
+            // "difference" => _exceptClaims,
+            // _ => _accessTokenClaims
+
+            "access_token" => _apiUserInfoDTO?.AccessTokenClaims,
+            "claims_principal" => _apiUserInfoDTO?.ClaimsPrincipalClaims,
+            "difference" => _exceptClaims,
+            _ => _apiUserInfoDTO?.AccessTokenClaims
+        };
+
+        if (claims is not null && claims.Any())
+        {
+            if (resetPageNumber) _pageNumber = 1;
+
+            IQueryable<ClaimDTO> query = claims.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(_filter))
+            {
+                query = query.Where(c => c.Type != null && c.Type.ToLower().Contains(_filter.ToLower()) ||
+                c.Value != null && c.Value.ToLower().Contains(_filter.ToLower()));
+            }
+            switch (_sortColumn)
+            {
+                case "type":
+                    query = query.OrderBy(c => c.Type);
+                    break;
+                case "value":
+                    query = query.OrderBy(c => c.Value);
+                    break;
+                default:
+                    query = query.OrderBy(c => c.Type);
+                    break;
+            }
+
+            List<ClaimDTO> claimsToDisplay = query.ToList();
+            int count = claimsToDisplay.Count;
+            _pagingData = new PaginationMetadata(count, _pageSize, _pageNumber);
+            _displayedClaims = claimsToDisplay.Skip(_pageSize * (_pageNumber - 1)).Take(_pageSize).ToList();
+            // AppendStatus($"source {_claimSource}");
+            SetStatus($"api resource {_selectedApiResource}, claims source {_claimSource}");
+        }
+
+        _thinking = false;
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            var result = await _claimsService.GetAccountsApiUserInfoAsync();
-            if (result.IsSuccess)
-            {
-                _apiUserInfoDTO = result.ApiUserInfo;
-            }
-            else _apiUserInfoDTO = new ApiUserInfoDTO() { ErrorMessage = result.ErrorMessage };
+            // var result = await _claimsService.GetAccountsApiUserInfoAsync();
+            // if (result.IsSuccess)
+            // {
+            //     _apiUserInfoDTO = result.ApiUserInfo;
+            //     ProcessApiInfo();
+            //     FilterSortAndPageData(true);
+            // }
+            // else 
+            // {
+            //     _apiUserInfoDTO = new ApiUserInfoDTO() { ErrorMessage = result.ErrorMessage };
+            //     _errorMessage = result.ErrorMessage;
+            // }
+
+            await SetApiResource();
+
+            _thinking = false;
+
             this.StateHasChanged();
         }
+    }
+
+    //
+    private async Task SetApiResource()
+    {
+        _thinking = true;
+
+        (bool IsSuccess, ApiUserInfoDTO? ApiUserInfo, string? ErrorMessage) apiResult = (false, null, null);
+
+        switch (_selectedApiResource)
+        {
+            case "accounts":
+                _title = "Accounts API Claims";
+                apiResult = await _claimsService.GetAccountsApiUserInfoAsync();
+                if (apiResult.IsSuccess) _apiUserInfoDTO = apiResult.ApiUserInfo;
+                else _errorMessage = apiResult.ErrorMessage;
+                break;
+            case "carts":
+                _title = "Carts API Claims";
+                apiResult = await _claimsService.GetCartsApiUserInfoAsync();
+                if (apiResult.IsSuccess) _apiUserInfoDTO = apiResult.ApiUserInfo;
+                else _errorMessage = apiResult.ErrorMessage;
+                break;
+            case "orders":
+                _title = "Orders API Claims";
+                apiResult = await _claimsService.GetOrdersApiUserInfoAsync();
+                if (apiResult.IsSuccess) _apiUserInfoDTO = apiResult.ApiUserInfo;
+                else _errorMessage = apiResult.ErrorMessage;
+                break;
+            case "products_write":
+                _title = "Products Write Side API Claims";
+                apiResult = await _claimsService.GetProductsWriteApiUserInfoAsync();
+                if (apiResult.IsSuccess) _apiUserInfoDTO = apiResult.ApiUserInfo;
+                else _errorMessage = apiResult.ErrorMessage;
+                break;
+            default:
+                _title = "Accounts API Claims";
+                apiResult = await _claimsService.GetAccountsApiUserInfoAsync();
+                if (apiResult.IsSuccess) _apiUserInfoDTO = apiResult.ApiUserInfo;
+                else _errorMessage = apiResult.ErrorMessage;
+                break;
+        }
+
+        if (apiResult.IsSuccess)
+        {
+            _apiUserInfoDTO = apiResult.ApiUserInfo;
+            // SetStatus($"{_selectedApiResource} api resource");
+            ProcessApiInfo();
+            FilterSortAndPageData(true);
+        }
+        else
+        {
+            _apiUserInfoDTO = new ApiUserInfoDTO() { ErrorMessage = apiResult.ErrorMessage };
+            _errorMessage = apiResult.ErrorMessage;
+        }
+
+        _thinking = false;
+    }
+
+    private void ProcessApiInfo()
+    {
+        // claims principal has 24 claims, access token has 20 claims
+        if (_apiUserInfoDTO is not null)
+        {
+            // if (_apiUserInfoDTO.ApiAuthorizationHeaderClaimsList is not null && _apiUserInfoDTO.ApiAuthorizationHeaderClaimsList.Any()) 
+            //     _accessTokenClaims = ParseListAsDictionaryOfTypeAndValue(_apiUserInfoDTO.ApiAuthorizationHeaderClaimsList).ToList();
+            // if (_apiUserInfoDTO.ApiUserClaimsClaimsList is not null && _apiUserInfoDTO.ApiUserClaimsClaimsList.Any()) 
+            //     _httpContextUserClaims = ParseListAsDictionaryOfTypeAndValue(_apiUserInfoDTO.ApiUserClaimsClaimsList).ToList();
+            if (_apiUserInfoDTO.ClaimsPrincipalClaims is not null && _apiUserInfoDTO.AccessTokenClaims is not null)
+            {
+                _exceptClaims = (_apiUserInfoDTO.ClaimsPrincipalClaims.Except(_apiUserInfoDTO.AccessTokenClaims)).ToList();
+                Console.WriteLine($"EXCEPT CLAIMS COUNT: {_exceptClaims.Count}");
+                Console.WriteLine($"ACCESS TOKEN CLAIMS COUNT: {_apiUserInfoDTO.AccessTokenClaims.Count}");
+                Console.WriteLine($"CLAIMS PRINCIPAL CLAIMS COUNT: {_apiUserInfoDTO.ClaimsPrincipalClaims.Count}");
+            }
+        }
+    }
+
+    // private IEnumerable<ClaimDTO> ParseListAsDictionaryOfTypeAndValue(IEnumerable<string> list)
+    // {
+    //     List<ClaimDTO> claims = new List<ClaimDTO>();
+
+    //     if (list is not null && list.Any())
+    //     {
+    //         foreach (var entry in list)
+    //         {
+    //             int index = entry.IndexOf(':');
+    //             if (index > 0)
+    //             {
+    //                 string key = entry[..index];
+    //                 string value = entry[(index + 1)..];
+
+    //                 if (!string.IsNullOrWhiteSpace(key) && !string.IsNullOrWhiteSpace(value))
+    //                 {
+    //                     key = key.Trim();
+    //                     value = value.Trim();
+    //                     @if (value.Length > 100) value = $"{value.Substring(0, 100)} ...";
+    //                     claims.Add(new ClaimDTO(key, value));
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     return claims;
+    // }
+
+    protected override void OnInitialized()
+    {
+        _title = "Accounts API Claims";
+        _selectedApiResource = "accounts";
+        _claimSource = "access_token";
+        _thinking = true;
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Admin.Blazor.Client.DTOs.Claims
+﻿using System.Security.Claims;
+
+namespace Products.Read.API.Auth
 {
     public class ClaimDTO
     {
@@ -9,7 +11,12 @@
         {
             Type = type;
             Value = value;
-            if (Value is not null && Value.Length > 100) { Value = $"{Value.Substring(0, 100)} ..."; }
+        }
+
+        public ClaimDTO(Claim claim)
+        {
+            Type = claim.Type;
+            Value = claim.Value;
         }
     }
 }

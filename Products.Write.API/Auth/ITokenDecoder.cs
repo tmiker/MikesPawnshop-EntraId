@@ -1,5 +1,4 @@
-﻿using Products.Write.Auth;
-
+﻿
 namespace Products.Write.API.Auth
 {
     public interface ITokenDecoder

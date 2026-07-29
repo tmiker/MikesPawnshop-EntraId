@@ -1,5 +1,4 @@
 ﻿using Microsoft.IdentityModel.JsonWebTokens;
-using Products.Write.Auth;
 using System.Security.Claims;
 
 namespace Products.Write.API.Auth

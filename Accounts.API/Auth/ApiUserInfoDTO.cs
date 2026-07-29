@@ -1,4 +1,6 @@
-﻿namespace Accounts.API.Auth
+﻿using Microsoft.AspNetCore.Components.Authorization;
+
+namespace Accounts.API.Auth
 {
     public class ApiUserInfoDTO
     {
@@ -12,6 +14,9 @@
         // public IDictionary<string, string> ApiUserClaimsDictionary { get; set; } = new Dictionary<string, string>();                 // from User.Claims
         public IList<string> ApiUserClaimsClaimsList { get; set; } = new List<string>();                                                      // from User.Claims
         public IList<string> ApiUserClaimsRolesList { get; set; } = new List<string>();                                                 // from User.Claims
+
+        public List<ClaimDTO> AccessTokenClaims { get; set; } = new List<ClaimDTO>();
+        public List<ClaimDTO> ClaimsPrincipalClaims { get; set; } = new List<ClaimDTO>();
 
         // station keeping
         public string? ErrorMessage { get; set; }

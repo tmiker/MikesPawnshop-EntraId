@@ -1,4 +1,4 @@
-﻿namespace Admin.Blazor.Client.DTOs.Claims
+﻿namespace Consumer.Blazor.Client.DTOs.Claims
 {
     public class ClaimDTO
     {
