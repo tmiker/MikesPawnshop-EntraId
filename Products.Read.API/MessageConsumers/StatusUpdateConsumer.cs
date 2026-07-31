@@ -23,11 +23,8 @@ namespace Products.Read.API.MessageConsumers
             _logger.LogInformation("Status Updated Message Received: VERSION = {version}, AggregateId = {message.AggregateId}, " +
                 "Status = {message.Status}", message.AggregateVersion, message.AggregateId, message.Status);
 
-            // await _productRepository.UpdateProductStatusAsync(message);
-
             bool messagesInMessageRecordQueue = await _messageProcessor.ProcessProductMessageAsync(message);
 
-            // really want to batch process messages and call the below after processing a batch, or something equivalent
             if (messagesInMessageRecordQueue) await _messageProcessor.ProcessMessageRecordsFromQueue();
         }
     }

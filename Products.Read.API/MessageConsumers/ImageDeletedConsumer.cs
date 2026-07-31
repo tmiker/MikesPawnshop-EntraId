@@ -25,7 +25,6 @@ namespace Products.Read.API.MessageConsumers
 
             bool messagesInMessageRecordQueue = await _messageProcessor.ProcessProductMessageAsync(message);
 
-            // really want to batch process messages and call the below after processing a batch, or something equivalent
             if (messagesInMessageRecordQueue) await _messageProcessor.ProcessMessageRecordsFromQueue();
         }
     }

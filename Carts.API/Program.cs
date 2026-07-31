@@ -30,7 +30,7 @@ try
 
     var builder = WebApplication.CreateBuilder(args);
 
-    // Example: Log startup details
+    // Log startup details
     Log.Information("Environment: {Environment}", builder.Environment.EnvironmentName);
     Log.Information("Content Root: {ContentRoot}", builder.Environment.ContentRootPath);
 
@@ -53,14 +53,6 @@ try
         });
     });
 
-    //// Replaced with direct retrieval from configuration
-    //builder.Services.Configure<MongoSettings>(builder.Configuration.GetRequiredSection(nameof(MongoSettings)));
-    //builder.Services.AddSingleton<IMongoSettings>(sp => sp.GetRequiredService<IOptions<MongoSettings>>().Value);
-
-    // Best Practice:
-    // Always explicitly set NameClaimType and RoleClaimType in TokenValidationParameters so your code is not dependent on defaults that may change.
-
-    // Configure Auth
     // MS ENTRA ID AUTH CONFIG
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -72,7 +64,7 @@ try
         options.MapInboundClaims = false;
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            // make sure claims are mapped consistently
+            // make sure claims are mapped consistently - always explicitly set NameClaimType and RoleClaimType in TokenValidationParameters so your code is not dependent on defaults that may change.
             NameClaimType = JwtRegisteredClaimNames.Name,
             RoleClaimType = "roles",                                                // roles plural to match Entra Id implementation of roles
             ValidIssuer = builder.Configuration["AZURE_CREDENTIALS_VALID_ISSUER"]       
@@ -82,9 +74,9 @@ try
 
     builder.Services.AddAuthorization(options =>
     {
-        options.AddPolicy("IsAdmin", policy => policy.RequireClaim("roles", "Admin"));                          // (ClaimTypes.Role, "Admin")); does not work
-        options.AddPolicy("IsManager", policy => policy.RequireClaim("roles", "Manager"));                      // (ClaimTypes.Role, "Manager")); does not work
-        options.AddPolicy("IsAdminOrManager", policy => policy.RequireClaim("roles", "Admin", "Manager"));      // (ClaimTypes.Role, "Admin", "Manager"));does not work
+        options.AddPolicy("IsAdmin", policy => policy.RequireClaim("roles", "Admin"));                          
+        options.AddPolicy("IsManager", policy => policy.RequireClaim("roles", "Manager"));                      
+        options.AddPolicy("IsAdminOrManager", policy => policy.RequireClaim("roles", "Admin", "Manager"));      
         options.AddPolicy("MarlowAndWendy", policy => policy.RequireClaim(ClaimTypes.Name, "Wendy Davenport", "Marlow Bean"));
         options.AddPolicy("DomesticDogs", policy => policy.RequireClaim("Genus", "Canis").RequireClaim("Species", "Familiaris"));
     });

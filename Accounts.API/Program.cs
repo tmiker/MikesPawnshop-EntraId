@@ -33,19 +33,17 @@ try
 
     var builder = WebApplication.CreateBuilder(args);
 
-    //// Example: Log startup details
-    //Log.Information("Environment: {Environment}", builder.Environment.EnvironmentName);
-    //Log.Information("Content Root: {ContentRoot}", builder.Environment.ContentRootPath);
-
-    // Add services to the container.
+    //// Log startup details
+    Log.Information("Environment: {Environment}", builder.Environment.EnvironmentName);
+    Log.Information("Content Root: {ContentRoot}", builder.Environment.ContentRootPath);
 
     // Configure Serilog
     builder.Logging.ClearProviders();
     builder.Host.UseSerilog((ctx, lc) => lc
            .ReadFrom.Configuration(ctx.Configuration));
            // .Enrich.FromLogContext());
-           // .ReadFrom.Services()    // DI-based enrichers
-           // .WriteTo.Console());  // causes double logging if also configured in appsettings with args
+           // .ReadFrom.Services()          // DI-based enrichers
+           // .WriteTo.Console());          // causes double logging if also configured in appsettings with args
 
     builder.Services.AddHealthChecks()
     .AddCheck<MongoDbHealthCheck>(name: "MongoHealthCheck"); // was MongoLocalConnectionHealthCheck
@@ -62,35 +60,11 @@ try
     });
 
     // Configure Auth 
-    //// DUENDE AUTH CONFIG
-    //JsonWebTokenHandler.DefaultInboundClaimTypeMap.Clear(); // Note: As configured, Roles are not populated by HttpContext.User.Claims without this
-    //builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    //    .AddJwtBearer(options =>
-    //    {
-    //        options.Authority = "https://localhost:5001";   // IDP
-    //        options.Audience = "accountsapi";            // this api, middleware checks value is in token  
-    //        options.TokenValidationParameters = new TokenValidationParameters()
-    //        {
-    //            NameClaimType = "given_name",       // should have the same mapping as in client app
-    //            RoleClaimType = "role",             // should have the same mapping as in our client mvc app
-    //            ValidTypes = new[] { "at+jwt" }     // says the only valid token type is 'at + jwt'
-    //        };
-
-    //        //// Optional: Keep claim names as in token
-    //        //options.MapInboundClaims = false;
-    //    });
-    // MS ENTRA ID AUTH CONFIG
-
-    // JsonWebTokenHandler.DefaultInboundClaimTypeMap.Clear();
-    // JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); 
-
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         // Authority should match the issurer (`iss`) of the JWT returned by the identity provider.
         options.Authority = builder.Configuration["AZURE_CREDENTIALS_AUTHORITY"];
-        // Received Token: "aud": "0a5c9d6e-24c4-4fec-a018-e6f682d31921", "iss": "https://login.microsoftonline.com/2fd80906-88f0-4874-8d94-1d87e82053f7/v2.0",
-        // NOTE this 'idp' = live.com and BLAZOR CONSUMER 'idp' = https://sts.windows.net/9188040d-6c67-4c5b-b112-36a304b66dad/     
         // Audience is this API's Application ID URI
         options.Audience = builder.Configuration["AZURE_CREDENTIALS_AUDIENCE"];         
         options.MapInboundClaims = false;
@@ -98,7 +72,7 @@ try
         {
             // make sure claims are mapped consistently
             NameClaimType = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames.Name,
-            RoleClaimType = "roles",                                                // roles plural to match Entra Id implementation of roles
+            RoleClaimType = "roles",                                                                // roles plural to match Entra Id implementation of roles
             ValidIssuer = builder.Configuration["AZURE_CREDENTIALS_VALID_ISSUER"]      
             // Validate ...
         };
@@ -106,15 +80,12 @@ try
 
     builder.Services.AddAuthorization(options =>
     {
-        options.AddPolicy("IsAdmin", policy => policy.RequireClaim("roles", "Admin"));                          // (ClaimTypes.Role, "Admin")); does not work
-        options.AddPolicy("IsManager", policy => policy.RequireClaim("roles", "Manager"));                      // (ClaimTypes.Role, "Manager")); does not work
-        options.AddPolicy("IsAdminOrManager", policy => policy.RequireClaim("roles", "Admin", "Manager"));      // (ClaimTypes.Role, "Admin", "Manager"));does not work
+        options.AddPolicy("IsAdmin", policy => policy.RequireClaim("roles", "Admin"));                          
+        options.AddPolicy("IsManager", policy => policy.RequireClaim("roles", "Manager"));                      
+        options.AddPolicy("IsAdminOrManager", policy => policy.RequireClaim("roles", "Admin", "Manager"));      
         options.AddPolicy("MarlowAndWendy", policy => policy.RequireClaim(ClaimTypes.Name, "Wendy Davenport", "Marlow Bean"));
         options.AddPolicy("DomesticDogs", policy => policy.RequireClaim("Genus", "Canis").RequireClaim("Species", "Familiaris"));
     });
-
-    //builder.Services.Configure<MongoSettings>(builder.Configuration.GetRequiredSection(nameof(MongoSettings)));
-    //builder.Services.AddSingleton<IMongoSettings>(sp => sp.GetRequiredService<IOptions<MongoSettings>>().Value);
 
     builder.Services.AddScoped<ITokenDecoder, TokenDecoder>();
     builder.Services.AddScoped<IAccountService, AccountService>();
@@ -137,13 +108,12 @@ try
     // *** Crypto Services *** //
 
     builder.Services.AddControllers();
-    // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
     builder.Services.AddOpenApi();
 
     var app = builder.Build();
 
     // Configure the HTTP request pipeline.
-    app.UseMiddleware<DevelopmentOnlyMiddleware>();
+    // app.UseMiddleware<DevelopmentOnlyMiddleware>();
     app.UseMiddleware<CorrelationIdMiddleware>();
     app.UseMiddleware<SerilogMiddleware>();
 

@@ -1,14 +1,12 @@
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Orders.API.Abstractions;
 using Orders.API.Auth;
 using Orders.API.Crypto;
 using Orders.API.Health;
-using Orders.API.Infrastructure.Mongo;
 using Orders.API.Middleware;
 using Orders.API.Services;
 using Orders.API.Utility;
@@ -33,7 +31,7 @@ try
 
     var builder = WebApplication.CreateBuilder(args);
 
-    // Example: Log startup details
+    // Log startup details
     Log.Information("Environment: {Environment}", builder.Environment.EnvironmentName);
     Log.Information("Content Root: {ContentRoot}", builder.Environment.ContentRootPath);
 
@@ -57,24 +55,6 @@ try
         });
     });
 
-    // Configure Auth
-    //// DUENDE AUTH CONFIG
-    //JsonWebTokenHandler.DefaultInboundClaimTypeMap.Clear(); // Note: As configured, Roles are not populated by HttpContext.User.Claims without this
-    //builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    //    .AddJwtBearer(options =>
-    //    {
-    //        options.Authority = "https://localhost:5001";   // IDP
-    //        options.Audience = "ordersapi";            // this api, middleware checks value is in token  
-    //        options.TokenValidationParameters = new TokenValidationParameters()
-    //        {
-    //            NameClaimType = "given_name",       // should have the same mapping as in client app
-    //            RoleClaimType = "role",             // should have the same mapping as in our client mvc app
-    //            ValidTypes = new[] { "at+jwt" }     // says the only valid token type is 'at + jwt'
-    //        };
-
-    //        //// Optional: Keep claim names as in token
-    //        //options.MapInboundClaims = false;
-    //    });
     // MS ENTRA ID AUTH CONFIG
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -96,18 +76,14 @@ try
 
     builder.Services.AddAuthorization(options =>
     {
-        options.AddPolicy("IsAdmin", policy => policy.RequireClaim("roles", "Admin"));                          // (ClaimTypes.Role, "Admin")); does not work
-        options.AddPolicy("IsManager", policy => policy.RequireClaim("roles", "Manager"));                      // (ClaimTypes.Role, "Manager")); does not work
-        options.AddPolicy("IsAdminOrManager", policy => policy.RequireClaim("roles", "Admin", "Manager"));      // (ClaimTypes.Role, "Admin", "Manager"));does not work
+        options.AddPolicy("IsAdmin", policy => policy.RequireClaim("roles", "Admin"));                        
+        options.AddPolicy("IsManager", policy => policy.RequireClaim("roles", "Manager"));                    
+        options.AddPolicy("IsAdminOrManager", policy => policy.RequireClaim("roles", "Admin", "Manager"));    
         options.AddPolicy("MarlowAndWendy", policy => policy.RequireClaim(ClaimTypes.Name, "Wendy Davenport", "Marlow Bean"));
         options.AddPolicy("DomesticDogs", policy => policy.RequireClaim("Genus", "Canis").RequireClaim("Species", "Familiaris"));
     });
 
     builder.Services.AddScoped<ITokenDecoder, TokenDecoder>();
-
-    //// Moved Mongo configuration to direct access thru IConfiguration in using services
-    //builder.Services.Configure<MongoSettings>(builder.Configuration.GetRequiredSection(nameof(MongoSettings)));
-    //builder.Services.AddSingleton<IMongoSettings>(sp => sp.GetRequiredService<IOptions<MongoSettings>>().Value);
 
     builder.Services.AddScoped<IOrderService, OrderService>();
 

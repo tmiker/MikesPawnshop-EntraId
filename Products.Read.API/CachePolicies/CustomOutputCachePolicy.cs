@@ -40,6 +40,7 @@ namespace Products.Read.API.CachePolicies
             //{
             //    return false;
             //}
+
             return true;
         }
 

@@ -2,7 +2,6 @@ using HealthChecks.UI.Client;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
@@ -10,8 +9,6 @@ using Products.Read.API;
 using Products.Read.API.CachePolicies;
 using Products.Read.API.DTOs;
 using Products.Read.API.Extensions;
-using Products.Read.API.Health;
-using Products.Read.API.Infrastructure.Data;
 using Products.Read.API.MessageConsumers;
 using Products.Read.API.Middleware;
 using Scalar.AspNetCore;
@@ -19,7 +16,6 @@ using Serilog;
 using Serilog.Events;
 using System.Security.Authentication;
 using System.Security.Claims;
-using System.Text;
 using System.Text.Json;
 
 // Configure static logger early for capturing startup issues
@@ -37,17 +33,14 @@ try
 
     var builder = WebApplication.CreateBuilder(args);
 
-    //// Example: Log startup details
-    //Log.Information("Environment: {Environment}", builder.Environment.EnvironmentName);
-    //Log.Information("Content Root: {ContentRoot}", builder.Environment.ContentRootPath);
+    //// Log startup details
+    Log.Information("Environment: {Environment}", builder.Environment.EnvironmentName);
+    Log.Information("Content Root: {ContentRoot}", builder.Environment.ContentRootPath);
 
     // Configure Serilog
     builder.Logging.ClearProviders();
     builder.Host.UseSerilog((ctx, lc) => lc
            .ReadFrom.Configuration(ctx.Configuration));
-
-    //builder.Services.AddHealthChecks()
-    //    .AddSqlServer(builder.Configuration.GetConnectionString("LocalDevelopmentConnectionString")!);
 
     // Add HealthChecks with SQL Server check
     builder.Services.AddHealthChecks()
@@ -58,14 +51,6 @@ try
         timeout: TimeSpan.FromSeconds(5),
         tags: new[] { "db", "sql", "sqlserver" }
     );
-
-    //builder.Services.AddHealthChecks()
-    //    // Add a health check for a SQL Server database
-    //    .AddCheck(
-    //        name: "SqlServer",
-    //        instance: new SqlServerHealthCheck(builder.Configuration.GetConnectionString("LocalDevelopmentConnectionString")!),
-    //        failureStatus: HealthStatus.Unhealthy,
-    //        tags: new string[] { "sql", "sqlserver" });
 
     builder.Services.AddCors(setup =>
     {
@@ -80,25 +65,6 @@ try
 
     builder.Services.AddProblemDetails();
 
-    // Configure Auth
-    //// DUENDE AUTH CONFIG
-    //JsonWebTokenHandler.DefaultInboundClaimTypeMap.Clear(); // Note: As configured, Roles are not populated by HttpContext.User.Claims without this
-    //builder.Services.AddAuthentication(defaultScheme: JwtBearerDefaults.AuthenticationScheme)
-    //    .AddJwtBearer(options =>
-    //    {
-    //        options.Authority = "https://localhost:5001";
-    //        options.Audience = "productsreadapi";
-    //        options.TokenValidationParameters = new TokenValidationParameters()
-    //        {
-    //            NameClaimType = "given_name",       // should have the same mapping as in client app
-    //            RoleClaimType = "role",             // should have the same mapping as in our client mvc app
-    //            ValidTypes = new[] { "at+jwt" }     // says the only valid token type is 'at + jwt' 
-    //                                                //ValidateIssuer = true,
-    //                                                //ValidateAudience = true,
-    //                                                //ValidateLifetime = true
-    //        };
-
-    //    });
     // MS ENTRA ID AUTH CONFIG
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -120,9 +86,9 @@ try
 
     builder.Services.AddAuthorization(options =>
     {
-        options.AddPolicy("IsAdmin", policy => policy.RequireClaim("roles", "Admin"));                          // (ClaimTypes.Role, "Admin")); does not work
-        options.AddPolicy("IsManager", policy => policy.RequireClaim("roles", "Manager"));                      // (ClaimTypes.Role, "Manager")); does not work
-        options.AddPolicy("IsAdminOrManager", policy => policy.RequireClaim("roles", "Admin", "Manager"));      // (ClaimTypes.Role, "Admin", "Manager"));does not work
+        options.AddPolicy("IsAdmin", policy => policy.RequireClaim("roles", "Admin"));                          
+        options.AddPolicy("IsManager", policy => policy.RequireClaim("roles", "Manager"));                      
+        options.AddPolicy("IsAdminOrManager", policy => policy.RequireClaim("roles", "Admin", "Manager"));      
         options.AddPolicy("MarlowAndWendy", policy => policy.RequireClaim(ClaimTypes.Name, "Wendy Davenport", "Marlow Bean"));
         options.AddPolicy("DomesticDogs", policy => policy.RequireClaim("Genus", "Canis").RequireClaim("Species", "Familiaris"));
     });
@@ -222,8 +188,8 @@ try
 
     app.UseCors("AllowGetPolicy");
 
-    // app.UseResponseCaching();
-    app.UseOutputCache();   // must be called after UseCors and after UseRouting if called
+    // app.UseResponseCaching();    // uncomment if add response caching above
+    app.UseOutputCache();           // must be called after UseCors and after UseRouting if called
 
     app.UseAuthentication();
     app.UseAuthorization();
@@ -236,7 +202,7 @@ try
     app.MapHealthChecks("/api/products/healthYarp", new HealthCheckOptions
     {
         ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-    }).AllowAnonymous();    //.RequireAuthorization("IsAdminOrManager");
+    }).AllowAnonymous();    
 
     // Client healthcheck endpoint
     app.MapHealthChecks("/api/products/healthClient", new HealthCheckOptions

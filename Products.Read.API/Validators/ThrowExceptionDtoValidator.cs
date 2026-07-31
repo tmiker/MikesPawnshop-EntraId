@@ -12,5 +12,3 @@ namespace Products.Read.Validators
         }
     }
 }
-
-// public string ExceptionType { get; init; } = default!;

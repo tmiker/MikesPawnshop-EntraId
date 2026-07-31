@@ -105,9 +105,6 @@ namespace Products.Read.API.Middleware
         {
             return exception switch
             {
-                //MissingProductVersionException => (StatusCodes.Status422UnprocessableEntity,
-                //    "Missing Product Message", "Previous message version not found. Unable to process succeeding message.  Please Contact Support Immediately."),
-
                 DataConsistencyException => (StatusCodes.Status422UnprocessableEntity,
                     "Data Synchronization Error", "Write Side Data Conflict.  Please Contact Support Immediately with CorrelationId."),
 

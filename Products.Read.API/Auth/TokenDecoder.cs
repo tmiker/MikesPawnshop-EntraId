@@ -30,8 +30,6 @@ namespace Products.Read.API.Auth
             {
                 foreach (var claim in jsonWebToken.Claims)
                 {
-                    //if (claim.Type == "roles") apiUserInfoDTO.ApiAuthorizationHeaderRolesList.Add(claim.Value);
-                    //else apiUserInfoDTO.ApiAuthorizationHeaderClaimsList.Add($"{claim.Type} : {claim.Value}");
                     apiUserInfoDTO.AccessTokenClaims.Add(new ClaimDTO(claim));
                 }
             }

@@ -7,7 +7,7 @@ namespace Products.Read.API.Paging
     public class ApiResult<T>
     {
         /// <summary>
-        /// Private constructor called by CreateAsync method.
+        /// Generic API response with reflection for properties
         /// </summary>
         /// 
         public List<T>? Data { get; set; }
@@ -22,7 +22,6 @@ namespace Products.Read.API.Paging
 
         private ApiResult() { }
 
-        // made constructor public vs private so can use to convert to dtos
         public ApiResult(List<T> data, int count, int pageIndex, int pageSize, string? sortColumn, string? sortOrder, string? filterColumn, string? filterQuery)
         {
             Data = data;

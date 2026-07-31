@@ -24,10 +24,8 @@ namespace Products.Read.API.MessageConsumers
                 "Caption = {message.Caption}", message.AggregateVersion, message.AggregateId, message.Caption);
 
             bool messagesInMessageRecordQueue = await _messageProcessor.ProcessProductMessageAsync(message);
-            // really want to batch process messages and call the below after processing a batch, or something equivalent
-            if (messagesInMessageRecordQueue) await _messageProcessor.ProcessMessageRecordsFromQueue();
 
-            // await _productRepository.AddProductImageAsync(message);
+            if (messagesInMessageRecordQueue) await _messageProcessor.ProcessMessageRecordsFromQueue();
         }
     }
 }

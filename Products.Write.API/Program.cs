@@ -67,25 +67,6 @@ try
         });
     });
 
-    // Configure Auth
-    //// DUENDE AUTH CONFIG
-    //JsonWebTokenHandler.DefaultInboundClaimTypeMap.Clear(); // Note: As configured, Roles are not populated by HttpContext.User.Claims without this
-    //builder.Services.AddAuthentication(defaultScheme: JwtBearerDefaults.AuthenticationScheme)
-    //    .AddJwtBearer(options =>
-    //    {
-    //        options.Authority = "https://localhost:5001";
-    //        options.Audience = "productswriteapi";
-    //        options.TokenValidationParameters = new TokenValidationParameters()
-    //        {
-    //            NameClaimType = "given_name",       // should have the same mapping as in client app
-    //            RoleClaimType = "role",             // should have the same mapping as in our client mvc app
-    //            ValidTypes = new[] { "at+jwt" }     // says the only valid token type is 'at + jwt' 
-    //                                                //ValidateIssuer = true,
-    //                                                //ValidateAudience = true,
-    //                                                //ValidateLifetime = true
-    //        };
-
-    //    });
     // MS ENTRA ID AUTH CONFIG
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -107,9 +88,9 @@ try
 
     builder.Services.AddAuthorization(options =>
     {
-        options.AddPolicy("IsAdmin", policy => policy.RequireClaim("roles", "Admin"));                          // (ClaimTypes.Role, "Admin")); does not work
-        options.AddPolicy("IsManager", policy => policy.RequireClaim("roles", "Manager"));                      // (ClaimTypes.Role, "Manager")); does not work
-        options.AddPolicy("IsAdminOrManager", policy => policy.RequireClaim("roles", "Admin", "Manager"));      // (ClaimTypes.Role, "Admin", "Manager"));does not work
+        options.AddPolicy("IsAdmin", policy => policy.RequireClaim("roles", "Admin"));                     
+        options.AddPolicy("IsManager", policy => policy.RequireClaim("roles", "Manager"));                     
+        options.AddPolicy("IsAdminOrManager", policy => policy.RequireClaim("roles", "Admin", "Manager"));     
         options.AddPolicy("MarlowAndWendy", policy => policy.RequireClaim(ClaimTypes.Name, "Wendy Davenport", "Marlow Bean"));
         options.AddPolicy("DomesticDogs", policy => policy.RequireClaim("Genus", "Canis").RequireClaim("Species", "Familiaris"));
     });

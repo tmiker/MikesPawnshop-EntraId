@@ -56,7 +56,6 @@ namespace Products.Write.Application
             services.AddScoped<ProductEventHandlers>();
 
             // Build the service provider and register the event handlers with the event aggregator as IEventAggregator
-            // var serviceProvider = services.BuildServiceProvider();
             services.AddScoped(serviceProvider =>
             {
                 IRegisterableEventHandlers handlers = serviceProvider.GetRequiredService<ProductEventHandlers>();
@@ -69,9 +68,8 @@ namespace Products.Write.Application
             services.AddScoped<IAzureStorageService, AzureStorageService>();
             services.AddScoped<IImageResizeHelper, ImageResizeHelper>();
 
-            // Register Dispatchers
-            services.AddScoped<ICommandDispatcher, CommandDispatcher>();
-
+            // Register Dispatchers - initial dev - refactored to use mediatr
+            // services.AddScoped<ICommandDispatcher, CommandDispatcher>();
             // Register Command Handlers - converted to mediatr request handlers
             // services.AddScoped<ICommandHandler<AddProduct, AddProductResult>, AddProductHandler>();      
             // services.AddScoped<ICommandHandler<UpdateStatus, UpdateStatusResult>, UpdateStatusHandler>();
@@ -79,9 +77,7 @@ namespace Products.Write.Application
             // services.AddScoped<ICommandHandler<AddImage, AddImageResult>, AddImageHandler>();
             // services.AddScoped<ICommandHandler<DeleteImage, DeleteImageResult>, DeleteImageHandler>();
             // services.AddScoped<ICommandHandler<DeleteDocument, DeleteDocumentResult>, DeleteDocumentHandler>();
-
-            // Register Query Handlers
-
+            // Register Query Handlers - converted to mediatr request handlers
             // Register Dev Test Handlers and Services - converted to mediatr request handlers
             // services.AddScoped<ICommandHandler<ThrowException, ThrowExceptionResult>, ThrowExceptionHandler>();
             // services.AddScoped<ICommandHandler<PurgeData, PurgeDataResult>, PurgeDataHandler>();

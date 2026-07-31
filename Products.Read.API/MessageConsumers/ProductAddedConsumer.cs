@@ -23,12 +23,9 @@ namespace Products.Read.API.MessageConsumers
             _logger.LogInformation("Product Added Message Received: VERSION = {version}, AggregateId = {message.AggregateId}," +
                 " Name = {message.Name}", message.AggregateVersion, message.AggregateId, message.Name);
 
-            // await _productRepository.AddProductAsync(message);
-
             // note this will always return false for the Add Product Message
             bool messagesInMessageRecordQueue = await _messageProcessor.ProcessProductMessageAsync(message);
 
-            // really want to batch process messages and call the below after processing a batch, or something equivalent
             if (messagesInMessageRecordQueue) await _messageProcessor.ProcessMessageRecordsFromQueue();
         }
     }

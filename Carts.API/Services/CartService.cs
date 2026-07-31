@@ -38,7 +38,6 @@ namespace Carts.API.Services
             }
         }
 
-
         private async Task<ShoppingCart> EnsureCartExistsAsync(string ownerId)
         {
             ShoppingCart? cart = await _carts.Find(c => c.OwnerId == ownerId).FirstOrDefaultAsync();

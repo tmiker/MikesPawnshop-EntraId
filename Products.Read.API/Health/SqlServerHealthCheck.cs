@@ -4,7 +4,6 @@ using System.Data.Common;
 
 namespace Products.Read.API.Health
 {
-    // Sample SQL Connection Health Check
     public class SqlServerHealthCheck : IHealthCheck
     {
         private const string DefaultTestQuery = "Select 1";

@@ -15,7 +15,6 @@ namespace Products.Read.API.Infrastructure.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // modelBuilder.ApplyConfigurationsFromAssembly(typeof(ProductsReadDbContext).Assembly);
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfiguration(new ImageDataConfiguration());
             modelBuilder.ApplyConfiguration(new DocumentDataConfiguration());

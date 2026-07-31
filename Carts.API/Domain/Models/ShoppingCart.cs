@@ -9,7 +9,7 @@ namespace Carts.API.Domain.Models
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string? Id { get; private set; }
-        public string? ShoppingCartId { get; private set; }     // to add items before cart is persisted ???
+        public string? ShoppingCartId { get; private set; }     
         public string? OwnerId { get; private set; }
         public int CreditLimit { get; private set; }
         public List<ShoppingCartItem> Items { get; private set; } = new List<ShoppingCartItem>();

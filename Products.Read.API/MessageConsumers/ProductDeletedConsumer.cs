@@ -19,8 +19,6 @@ namespace Products.Read.API.MessageConsumers
             var message = context.Message;
             _logger.LogInformation("Product Deleted Message Received");
 
-            // Guid aggregateId = message.AggregateId;
-
             bool success = await _productRepository.DeleteProductByAggregateIdAsync(message.AggregateId);
             _logger.LogInformation("Product successfully deleted from Products Read Side.");
         }
