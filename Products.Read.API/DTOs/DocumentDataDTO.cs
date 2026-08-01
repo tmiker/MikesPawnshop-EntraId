@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace Products.Read.API.DTOs
+﻿namespace Products.Read.API.DTOs
 {
     public class DocumentDataDTO
     {

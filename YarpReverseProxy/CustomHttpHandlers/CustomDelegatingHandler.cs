@@ -15,7 +15,6 @@ namespace YarpReverseProxy.CustomHttpHandlers
 
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            //return _policyWrap.ExecuteAsync(ct => base.SendAsync(request, ct), cancellationToken);
             return _policyWrap.ExecuteAsync(() => base.SendAsync(request, cancellationToken));
         }
     }

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Products.Write.Application.Exceptions;
 
 namespace Products.Write.API.ExceptionHandling.ExceptionHandlers

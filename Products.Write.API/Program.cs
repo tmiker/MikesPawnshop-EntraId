@@ -1,23 +1,18 @@
 ﻿using HealthChecks.UI.Client;
-using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Products.Write.API;
-using Products.Write.API.ExceptionHandling;
 using Products.Write.API.ExceptionHandling.ExceptionHandlers;
 using Products.Write.API.Middleware;
 using Products.Write.Application.DTOs;
 using Products.Write.Application.Extensions;
-using Products.Write.Domain.Enumerations;
 using Scalar.AspNetCore;
 using Serilog;
 using Serilog.Events;
 using System.Security.Claims;
-using System.Text;
 using System.Text.Json;
 
 // Configure static logger early for capturing startup issues

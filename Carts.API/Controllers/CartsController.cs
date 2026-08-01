@@ -1,6 +1,5 @@
 ﻿using Carts.API.Abstractions;
 using Carts.API.DTOs;
-using Carts.API.Exceptions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Products.Read.API.Exceptions;
-using System.Text.Json;
 
 namespace Products.Read.API.Middleware
 {

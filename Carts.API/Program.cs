@@ -1,13 +1,11 @@
 using Carts.API.Abstractions;
 using Carts.API.Auth;
 using Carts.API.Health;
-using Carts.API.Infrastructure.Mongo;
 using Carts.API.Middleware;
 using Carts.API.Services;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;

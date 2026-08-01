@@ -2,10 +2,8 @@
 using Carts.API.Auth;
 using Carts.API.DTOs;
 using Carts.API.Exceptions;
-using Carts.API.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Security.Claims;

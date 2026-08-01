@@ -6,7 +6,6 @@ using Products.Write.Application.CQRS.CommandResults;
 using Products.Write.Application.CQRS.Commands;
 using Products.Write.Domain.Aggregates;
 using Products.Write.Infrastructure.Abstractions;
-using System.Text;
 
 namespace Products.Write.Application.CQRS.CommandHandlers
 {

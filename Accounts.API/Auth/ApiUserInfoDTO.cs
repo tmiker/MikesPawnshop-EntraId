@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
-
+﻿
 namespace Accounts.API.Auth
 {
     public class ApiUserInfoDTO

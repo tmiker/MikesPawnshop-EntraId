@@ -1,5 +1,4 @@
 ﻿using Products.Read.API.DTOs;
-using Products.Read.API.Paging;
 
 namespace Products.Read.API.QueryResponses
 {

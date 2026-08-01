@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using Microsoft.Extensions.Http;
+﻿using Microsoft.Extensions.Http;
 using Polly;
 using Polly.Extensions.Http;
 using System.Net;

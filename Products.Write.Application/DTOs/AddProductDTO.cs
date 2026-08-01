@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Products.Write.Application.DTOs
+﻿namespace Products.Write.Application.DTOs
 {
     public class AddProductDTO
     {

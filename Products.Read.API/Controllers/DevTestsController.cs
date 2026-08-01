@@ -1,16 +1,9 @@
-﻿using FluentValidation;
-using FluentValidation.Results;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Products.Read.API.Abstractions;
 using Products.Read.API.Auth;
 using Products.Read.API.Configuration;
-using Products.Read.API.DTOs.DevTests;
-using Products.Read.API.Exceptions;
-using Products.Read.Validators;
 using System.Security.Claims;
 
 namespace Products.Read.API.Controllers

@@ -5,7 +5,6 @@ using Products.Read.API.DTOs;
 using Products.Read.API.Infrastructure.Data;
 using Products.Read.API.Paging;
 using Products.Read.API.QueryResponses;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Products.Read.API.QueryServices
 {

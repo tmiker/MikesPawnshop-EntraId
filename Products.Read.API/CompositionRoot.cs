@@ -1,16 +1,13 @@
 ﻿using FluentValidation;
-using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Products.Read.API.Abstractions;
 using Products.Read.API.Auth;
 using Products.Read.API.Configuration;
 using Products.Read.API.Infrastructure.Data;
 using Products.Read.API.Infrastructure.Repositories;
-using Products.Read.API.MessageConsumers;
 using Products.Read.API.MessageServices;
 using Products.Read.API.QueryServices;
 using Products.Read.Validators;
-using System.Security.Authentication;
 
 namespace Products.Read.API
 {

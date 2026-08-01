@@ -2,7 +2,6 @@
 using Products.Shared.Messages;
 using Products.Write.Application.Abstractions;
 using Products.Write.Domain.Events;
-using System.Threading.Tasks;
 
 namespace Products.Write.Application.EventManagement
 {
