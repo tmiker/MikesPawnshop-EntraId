@@ -9,14 +9,14 @@ namespace Products.Shared.Messages
         public string AggregateType { get; init; } = default!;
         public int AggregateVersion { get; init; }
         public DateTime OccurredAt { get; init; }
-        public string? CorrelationId { get; init; } // = default!;
+        public string? CorrelationId { get; init; } 
         // command data
-        public string Name { get; init; } // = default!;
-        public string Category { get; init; } // = default!;
-        public string Description { get; init; } // = default!;
+        public string Name { get; init; } 
+        public string Category { get; init; } 
+        public string Description { get; init; } 
         public decimal Price { get; init; }
-        public string Currency { get; init; } // = default!;
-        public string Status { get; init; } // = default!;
+        public string Currency { get; init; } 
+        public string Status { get; init; } 
         public int QuantityOnHand { get; init; }
         public int QuantityAllocated { get; init; }
         public string UOM { get; init; }

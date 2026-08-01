@@ -9,7 +9,7 @@ namespace Products.Shared.Messages
         public string AggregateType { get; init; } = default!;
         public int AggregateVersion { get; init; }
         public DateTime OccurredAt { get; init; }
-        public string? CorrelationId { get; init; } // = default!;
+        public string? CorrelationId { get; init; } 
         // command data
         public string FileName { get; init; } = default!;
 

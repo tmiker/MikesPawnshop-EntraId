@@ -113,8 +113,6 @@ namespace Products.Write.Domain.Aggregates
 
         public void AddImage(string name, string caption, string imageUrl, string thumbnailUrl, string correlationId)
         {
-            // CONSIDER REINDEXING SEQUENCE NUMBERS IN CASE DELETION LEFT GAPS
-
             if (string.IsNullOrWhiteSpace(caption) || string.IsNullOrWhiteSpace(imageUrl) || string.IsNullOrWhiteSpace(thumbnailUrl))
             {
                 throw new ArgumentNullException("Missing Image Metadata; Caption, Image URL, and Thumbnail URL are required.");
@@ -134,8 +132,6 @@ namespace Products.Write.Domain.Aggregates
 
         public void AddDocument(string name, string title, string documentUrl, string correlationId)
         {
-            // CONSIDER REINDEXING SEQUENCE NUMBERS IN CASE DELETION LEFT GAPS
-
             if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(documentUrl))
             {
                 throw new ArgumentNullException("Missing Document Metadata; Title and Document URL are required.");

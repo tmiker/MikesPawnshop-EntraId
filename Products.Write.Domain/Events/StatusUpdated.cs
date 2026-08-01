@@ -1,5 +1,4 @@
 ﻿using Products.Write.Domain.Base;
-using Products.Write.Domain.Enumerations;
 
 namespace Products.Write.Domain.Events
 {
@@ -13,7 +12,7 @@ namespace Products.Write.Domain.Events
         public string Status { get; init; } = default!;
 
         public StatusUpdated(Guid aggregateId, string aggregateType, int aggregateVersion,
-            string? correlationId, string status)   // validate valid status from enumeration
+            string? correlationId, string status)   
         {
             AggregateId = aggregateId;
             AggregateType = aggregateType;

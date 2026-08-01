@@ -18,8 +18,6 @@ namespace Products.Write.Infrastructure.Repositories
             _logger = logger;
         }
 
-        // IDomainEvents are the persistence mechanism for the aggregate, not for inter-service communication
-
         // EVENT RECORDS
         public async Task<bool> SaveAsync(Product product)
         {

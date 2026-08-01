@@ -7,8 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Entities\" />
-    <Folder Include="IRepositories\" />
+    <Compile Remove="Entities\**" />
+    <Compile Remove="IRepositories\**" />
+    <EmbeddedResource Remove="Entities\**" />
+    <EmbeddedResource Remove="IRepositories\**" />
+    <None Remove="Entities\**" />
+    <None Remove="IRepositories\**" />
   </ItemGroup>
 
 </Project>

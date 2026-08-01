@@ -30,8 +30,8 @@ builder.Services.AddCors(options =>
 });
 
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-IdentityModelEventSource.ShowPII = true;  // Enable detailed error messages for token validation issues (useful for debugging, but should be disabled in production)
-JwtSecurityTokenHandler.DefaultMapInboundClaims = false;  // Prevent automatic mapping of standard JWT claims to Microsoft-specific claim types (e.g. "sub" to "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+IdentityModelEventSource.ShowPII = true;                        // Enable detailed error messages for token validation issues (useful for debugging, but should be disabled in production)
+JwtSecurityTokenHandler.DefaultMapInboundClaims = false;        // Prevent automatic mapping of standard JWT claims to Microsoft-specific claim types (e.g. "sub" to "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
 
 /// ADD JWT BEARER AUTHENTICATION WITH MICROSOFT IDENTITY WEB API
 builder.Services.AddMicrosoftIdentityWebApiAuthentication(builder.Configuration, "YarpAzureAd", subscribeToJwtBearerMiddlewareDiagnosticsEvents: true);
@@ -261,8 +261,6 @@ builder.Services.AddRateLimiter(options =>
     });
 });
 
-// builder.Services.AddControllers();
-
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
@@ -278,15 +276,13 @@ app.UseHttpsRedirection();
 
 app.UseRouting();
 
-app.UseCors("PawnshopCorsPolicy");      // After routing, before auth
+app.UseCors("PawnshopCorsPolicy");    
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-// app.MapControllers();
-
 app.MapGet("/", () => "YARP Reverse Proxy is up and running! Last Build: 21 Jul 2026 @ 1600 CST");
 
-app.MapReverseProxy();  // .RequireAuthorization(); would require authentication for all proxied requests
+app.MapReverseProxy();  
 
 app.Run();
