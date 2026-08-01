@@ -57,23 +57,3 @@ namespace Products.Write.Application.CQRS.CommandHandlers
         }
     }
 }
-
-// ENUM.PARSE EXCEPTIONS:
-
-//ArgumentNullException
-//enumType is null.
-
-//ArgumentException
-//enumType is not an Enum.
-
-//ArgumentException
-//value is either an empty string or only contains white space.
-
-//ArgumentException
-//value is a name, but not one of the named constants defined for the enumeration.
-
-//OverflowException
-//value is outside the range of the underlying type of enumType.
-
-//InvalidOperationException
-//.NET 8 and later versions: enumType is a Boolean - backed enumeration type.

@@ -68,20 +68,7 @@ namespace Products.Write.Application
             services.AddScoped<IAzureStorageService, AzureStorageService>();
             services.AddScoped<IImageResizeHelper, ImageResizeHelper>();
 
-            // Register Dispatchers - initial dev - refactored to use mediatr
-            // services.AddScoped<ICommandDispatcher, CommandDispatcher>();
-            // Register Command Handlers - converted to mediatr request handlers
-            // services.AddScoped<ICommandHandler<AddProduct, AddProductResult>, AddProductHandler>();      
-            // services.AddScoped<ICommandHandler<UpdateStatus, UpdateStatusResult>, UpdateStatusHandler>();
-            // services.AddScoped<ICommandHandler<AddDocument, AddDocumentResult>, AddDocumentHandler>();
-            // services.AddScoped<ICommandHandler<AddImage, AddImageResult>, AddImageHandler>();
-            // services.AddScoped<ICommandHandler<DeleteImage, DeleteImageResult>, DeleteImageHandler>();
-            // services.AddScoped<ICommandHandler<DeleteDocument, DeleteDocumentResult>, DeleteDocumentHandler>();
-            // Register Query Handlers - converted to mediatr request handlers
-            // Register Dev Test Handlers and Services - converted to mediatr request handlers
-            // services.AddScoped<ICommandHandler<ThrowException, ThrowExceptionResult>, ThrowExceptionHandler>();
-            // services.AddScoped<ICommandHandler<PurgeData, PurgeDataResult>, PurgeDataHandler>();
-
+            // Register other services
             services.AddScoped<IDevQueryService, DevQueryService>();
 
             return services;

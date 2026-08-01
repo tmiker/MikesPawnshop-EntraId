@@ -14,8 +14,3 @@ namespace Products.Write.Application.Validators
         }
     }
 }
-
-//[Required]
-//public string ProductId { get; init; }
-//[Required]
-//public string FileName { get; init; }

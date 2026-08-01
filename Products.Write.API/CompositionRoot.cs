@@ -29,16 +29,6 @@ namespace Products.Write.API
                 config.GetSection(nameof(CloudAMQPSettings)).Bind(options);
             });
 
-            //services.AddOptions<MediatRSettings>().Configure<IConfiguration>((options, config) =>
-            //{
-            //    config.GetSection(nameof(MediatRSettings)).Bind(options);
-            //});
-
-            //services.AddOptions<AzureSettings>().Configure<IConfiguration>((options, config) =>
-            //{
-            //    config.GetSection(nameof(AzureSettings)).Bind(options);
-            //});
-
             // Register Class Library services
             services.RegisterInfrastructureServices();
             services.RegisterApplicationServices();

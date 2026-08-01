@@ -22,11 +22,11 @@ namespace Products.Write.Application.CQRS.Commands
             int quantityOnHand, string uom, int lowStockThreshold, string? correlationId)
         {
             Name = name;
-            Category = category;    // (CategoryEnum)Enum.Parse(typeof(CategoryEnum), category);
+            Category = category;    
             Description = description;
             Price = price;
             Currency = currency;
-            Status = status;        // Status.FromName(status);
+            Status = status;        
             QuantityOnHand = quantityOnHand;
             UOM = uom;
             LowStockThreshold = lowStockThreshold;

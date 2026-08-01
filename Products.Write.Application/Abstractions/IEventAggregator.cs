@@ -10,6 +10,3 @@ namespace Products.Write.Application.Abstractions
         void Raise(IDomainEvent domainEvent);
     }
 }
-
-
-// eventaggregator.Register(handlers) => handler.RegisterWithEventAggregator(eventAggregator) ===>>> calls eventAggregator.Register<T>(eventHandler) for each handler

@@ -20,19 +20,3 @@ namespace Products.Write.Application.Validators
         }
     }
 }
-
-//public class AddDocumentDTO
-//{
-//    [Required]
-//    public string ProductId { get; init; } = default!;
-//    [Required]
-//    public string Name { get; init; } = default!;
-//    [Required]
-//    public string Title { get; init; } = default!;
-
-//    // Added for blob service
-//    [Required]
-//    public IFormFile? DocumentBlob { get; set; }
-//    [Required]
-//    public string? BlobFileName { get; set; }
-//}

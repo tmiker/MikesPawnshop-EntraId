@@ -35,7 +35,7 @@ namespace Products.Write.API.ExceptionHandling.PendingIncorporation.Handlers
         }
         private ProblemDetails CreateProblemDetails(HttpContext httpContext, Exception exception)
         {
-            // Implementation here...
+            // Implementation ...
             return new ProblemDetails();
         }
     }

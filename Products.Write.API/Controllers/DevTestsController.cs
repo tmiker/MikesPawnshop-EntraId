@@ -82,8 +82,7 @@ namespace Products.Write.API.Controllers
             }
         }
 
-        // Query service propagated endpoints
-
+        // Product Queries
         [HttpGet("pagedAndFilteredProductSnapshots")]
         [Authorize(Policy = "IsAdmin")]
         public async Task<ActionResult<PagedProductSnapshotResult>> GetPagedAndFilteredProductSnapshots(

@@ -10,9 +10,6 @@ namespace Products.Write.Application.Abstractions
         Task<(bool IsSuccess, string? ErrorMessage)> DeleteProductImageFromAzureAsync(string containerName, string fileName, CancellationToken cancellationToken);
         Task<(bool IsSuccess, string? ErrorMessage)> DeleteProductDocumentFromAzureAsync(string containerName, string fileName, CancellationToken cancellationToken);
 
-
-
-
         // BELOW ONLY FOR USE WHEN ADDING A PRODUCT IF DESIRED AS THROWS IF CONTAINER ALREADY EXISTS
         Task<BlobContainerClient?> CreateContainerAsync(string azureConnectionString, string containerName, CancellationToken cancellationToken);
         Task<BlobContainerClient?> CreateContainerWithMetadataAsync(string azureConnectionString, string containerName, CancellationToken cancellationToken);

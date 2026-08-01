@@ -15,7 +15,6 @@ namespace Products.Write.API.Controllers
     public class ProductsManagementController : ControllerBase
     {
         private readonly ISender _sender;
-        // private readonly IOptions<AzureSettings> _azureSettings;
         private readonly ILogger<ProductsManagementController> _logger;
         private readonly IConfiguration _config;
 

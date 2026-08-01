@@ -156,7 +156,7 @@ try
     app.MapHealthChecks("/api/productsManagement/healthYarp", new HealthCheckOptions
     {
         ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-    }).AllowAnonymous();    //.RequireAuthorization("IsAdminOrManager");     
+    }).AllowAnonymous();        
 
     // Client healthcheck endpoint
     app.MapHealthChecks("/api/productsManagement/healthClient", new HealthCheckOptions

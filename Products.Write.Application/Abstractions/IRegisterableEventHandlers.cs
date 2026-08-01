@@ -3,6 +3,5 @@
     public interface IRegisterableEventHandlers
     {
         void RegisterWithEventAggregator(IEventAggregator eventAggregator);
-
     }
 }

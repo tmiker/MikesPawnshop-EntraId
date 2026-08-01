@@ -9,7 +9,7 @@ namespace Products.Write.API.ExceptionHandling.PendingIncorporation.Handlers
     {
         private readonly ILogger<SecurityAwareExceptionHandler> _logger;
         private readonly IWebHostEnvironment _environment;
-        // private readonly SecuritySettings _securitySettings;  // install nuget: DotNetOpenAuth.OAuth.Core or DotNetOpenAuth.OpenId.Core
+        // private readonly SecuritySettings _securitySettings;  // requires nuget: DotNetOpenAuth.OAuth.Core or DotNetOpenAuth.OpenId.Core
 
         public SecurityAwareExceptionHandler(ILogger<SecurityAwareExceptionHandler> logger, IWebHostEnvironment environment)
         {

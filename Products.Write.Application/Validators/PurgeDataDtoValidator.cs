@@ -12,8 +12,3 @@ namespace Products.Write.Application.Validators
         }
     }
 }
-
-
-//[Required]
-//[DisplayName("Pin Number")]
-//public int PinNumber { get; init; }

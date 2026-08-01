@@ -14,8 +14,3 @@ namespace Products.Write.Application.Validators
         }
     }
 }
-
-// All required
-
-//public Guid ProductId { get; set; }
-//public string Status { get; set; } = default!;

@@ -28,7 +28,6 @@ namespace Products.Write.Application.Services
         public async Task<(string? ImageUrl, string? ThumbUrl)> UploadImageToAzureAsync(IFormFile file, string containerName, string desiredFileName, CancellationToken cancellationToken)
         {
             string? azureConnectionString = _configuration["AZURE_BLOB_STORAGE_CONNECTION"] ?? throw new ArgumentNullException("Azure Connection String");
-            // string ? azureConnectionString = _azureSettings.Value.BlobStorageConnectionString ?? throw new ArgumentNullException("Azure Connection String");
 
             // Note: BlobServiceClient.CreateBlobContainerAsync THROWS if the container exists
             // Note: Don't assign reture of BlobContainerInfo result to BlobContainerClient.CreateIfNotExistsAsync as it throws if already exists (returns null)
@@ -79,7 +78,6 @@ namespace Products.Write.Application.Services
         public async Task<string> UploadDocumentToAzureAsync(IFormFile file, string containerName, string desiredFileName, CancellationToken cancellationToken)
         {
             string? azureConnectionString = _configuration["AZURE_BLOB_STORAGE_CONNECTION"] ?? throw new ArgumentNullException("Azure Connection String");
-            // string? azureConnectionString = _azureSettings.Value.BlobStorageConnectionString ?? throw new ArgumentNullException("Azure Connection String");
 
             // Note: BlobServiceClient.CreateBlobContainerAsync THROWS if the container exists
             // Note: Don't assign reture of BlobContainerInfo result to BlobContainerClient.CreateIfNotExistsAsync as it throws if already exists (returns null)
@@ -132,15 +130,10 @@ namespace Products.Write.Application.Services
             string thumbFileName = $"thumbs/{fileName}";
 
             string? azureConnectionString = _configuration["AZURE_BLOB_STORAGE_CONNECTION"] ?? throw new ArgumentNullException("Azure Connection String");
-            // string? azureConnectionString = _azureSettings.Value.BlobStorageConnectionString ?? throw new ArgumentNullException("Azure Connection String");
 
             BlobContainerClient blobContainerClient = new BlobContainerClient(azureConnectionString, containerName);
             bool imgSuccess = await blobContainerClient.DeleteBlobIfExistsAsync(imageFileName, DeleteSnapshotsOption.IncludeSnapshots, null, cancellationToken);
             bool thumbSuccess = await blobContainerClient.DeleteBlobIfExistsAsync(thumbFileName, DeleteSnapshotsOption.IncludeSnapshots, null, cancellationToken);
-
-            //// this is returning false for delete call
-            //BlobClient blobClient = blobContainerClient.GetBlobClient($"{fileName}");
-            //bool success = await blobClient.DeleteIfExistsAsync(DeleteSnapshotsOption.IncludeSnapshots, default, cancellationToken);
 
             if (imgSuccess && thumbSuccess) return (true, null);
             else throw new RequestFailedException($"Unable to remove all images and thumbnails from Azure Storage Container Name: {containerName}, File Name: {fileName}");
@@ -150,15 +143,9 @@ namespace Products.Write.Application.Services
         {
             string docFileName = $"docs/{fileName}";
             string? azureConnectionString = _configuration["AZURE_BLOB_STORAGE_CONNECTION"] ?? throw new ArgumentNullException("Azure Connection String");
-            // string? azureConnectionString = _azureSettings.Value.BlobStorageConnectionString ?? throw new ArgumentNullException("Azure Connection String");
 
             BlobContainerClient blobContainerClient = new BlobContainerClient(azureConnectionString, containerName);
-            // below is throwing
             bool success = await blobContainerClient.DeleteBlobIfExistsAsync(docFileName, DeleteSnapshotsOption.IncludeSnapshots, null, cancellationToken);
-
-            //// below is throwing also
-            //BlobClient blobClient = blobContainerClient.GetBlobClient(docFileName);
-            //bool success = await blobClient.DeleteIfExistsAsync(DeleteSnapshotsOption.IncludeSnapshots, default, cancellationToken);
 
             if (success) return (true, null);
             else throw new RequestFailedException($"Unable to remove documents from Azure Storage Container Name: {containerName}, File Name: {fileName}");
