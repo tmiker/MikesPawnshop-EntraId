@@ -6,7 +6,6 @@ namespace Admin.Blazor.Client.DTOs.Orders
 {
     public class AddOrderDTO
     {
-        // public string? OrderId { get; set; }
         [Required]
         public List<AddOrderItemDTO> Items { get; set; } = new List<AddOrderItemDTO>();
         [Required]

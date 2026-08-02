@@ -9,8 +9,6 @@ namespace Admin.Blazor
     // This is a server-side AuthenticationStateProvider that uses PersistentComponentState to flow the
     // authentication state to the client which is then fixed for the lifetime of the WebAssembly application.
 
-    // Requires adding UserInfo.cs model
-
     internal sealed class PersistingAuthenticationStateProvider : AuthenticationStateProvider, IHostEnvironmentAuthenticationStateProvider, IDisposable
     {
         private readonly PersistentComponentState _persistentComponentState;
@@ -39,11 +37,9 @@ namespace Admin.Blazor
             if (principal.Identity?.IsAuthenticated == true)
             {
                 var userId = GetRequiredClaim(principal, "sub");
-                var name = GetRequiredClaim(principal, "name");                                             // JwtClaimTypes.Name
+                var name = GetRequiredClaim(principal, "name");                                             
                 var email = principal.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
                 if (string.IsNullOrEmpty(email)) email = "No email claim found";
-                // var email = GetRequiredClaim(principal, JwtClaimTypes.Email);   // "email");             // JwtClaimTypes.Email
-                // var country = GetRequiredClaim(principal, "ctry");
 
                 if (userId != null && name != null)
                 {
@@ -52,7 +48,6 @@ namespace Admin.Blazor
                         UserId = userId,
                         Name = name,
                         Email = email
-                        // Country = country
                     });
                 }
             }

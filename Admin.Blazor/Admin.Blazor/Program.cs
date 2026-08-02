@@ -7,7 +7,6 @@ using Admin.Blazor.Client.Utility;
 using Admin.Blazor.Components;
 using Admin.Blazor.DownstreamApiServices;
 using Admin.Blazor.HttpServices;
-using Duende.AccessTokenManagement.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -19,7 +18,6 @@ using Microsoft.Identity.Web.TokenCacheProviders.Distributed;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Polly;
 using Polly.Extensions.Http;
-using Serilog.Sinks.Console.LogThemes;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 
@@ -35,9 +33,6 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingAuthenticationStateProvider>();
 
 /// MS ENTRA ID AUTH CONFIG START
-// Configure authentication to use Microsoft Entra ID
-// JsonWebTokenHandler.DefaultInboundClaimTypeMap.Clear();
-
 string yarpProxyBaseUrl = builder.Environment.IsDevelopment() ? 
     StaticData.ProductsApiServices_LocalYarpProxyBaseURL : 
     builder.Configuration["AZURE_YARP_PROXY_BASE_URL"] ??
@@ -47,27 +42,19 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApp(msIdentityOptions =>
     {
         /// see: http s://learn.microsoft.com/en-us/entra/identity-platform/msal-client-application-configuration#:~:text=The%20authority%20is%20a%20U
-
-        /// NOTE: If configure 'Authority' when using Microsoft.Identity.Web, the 'Instance', 'TenantId', and 'Domain' options are ignored. 
-        /// So, to use those options, do not configure 'Authority' and instead configure 'Instance', 'TenantId', and 'Domain' as shown below.
+        /// NOTE: If configure 'Authority' when using Microsoft.Identity.Web, the 'Instance', 'TenantId', and 'Domain' options are ignored ...
+        /// ... so, to use those options, do not configure 'Authority' and instead configure 'Instance', 'TenantId', and 'Domain' as shown below.
 
         // msIdentityOptions.Authority = "http s://login.microsoftonline.com/2fd80906-88f0-4874-8d94-1d87e82053f7/v2.0";
         msIdentityOptions.Instance = "https://login.microsoftonline.com/";
-        msIdentityOptions.TenantId = builder.Configuration["AZURE_CREDENTIALS_TENANT_ID"];                // for azure deploy
-        msIdentityOptions.Domain = builder.Configuration["AZURE_CREDENTIALS_DOMAIN"];                    // for azure deploy
+        msIdentityOptions.TenantId = builder.Configuration["AZURE_CREDENTIALS_TENANT_ID"];               
+        msIdentityOptions.Domain = builder.Configuration["AZURE_CREDENTIALS_DOMAIN"];                   
 
-        msIdentityOptions.CallbackPath = "/signin-oidc";                        // for local development
-        // msIdentityOptions.CallbackPath = "/.auth/login/aad/callback";        // for azure hosted
+        msIdentityOptions.CallbackPath = "/signin-oidc";                       
+        msIdentityOptions.SignedOutCallbackPath = "/signout-callback-oidc";            
 
-        msIdentityOptions.SignedOutCallbackPath = "/signout-callback-oidc";             // for local development
-        // msIdentityOptions.SignedOutCallbackPath = "/.auth/logout/aad/callback";      // for azure hosted
-
-        msIdentityOptions.ClientId = builder.Configuration["AZURE_CREDENTIALS_CLIENT_ID"];                // for azure deploy
-
-        msIdentityOptions.ClientSecret = builder.Configuration["AZURE_CREDENTIALS_CLIENT_SECRET"];        // for azure deploy      
-
-        /// warn: Microsoft.Identity.Web.MergedOptions[500]
-        /// [MsIdWeb] Authority 'https://login.microsoftonline.com/2fd80906-88f0-4874-8d94-1d87e82053f7/v2.0' is being ignored because Instance 'https://login.microsoftonline.com/' and / or TenantId '2fd80906-88f0-4874-8d94-1d87e82053f7' are already configured.To use Authority, remove Instance and TenantId from the configuration.
+        msIdentityOptions.ClientId = builder.Configuration["AZURE_CREDENTIALS_CLIENT_ID"];                
+        msIdentityOptions.ClientSecret = builder.Configuration["AZURE_CREDENTIALS_CLIENT_SECRET"];            
 
         msIdentityOptions.ResponseType = "code";
         msIdentityOptions.GetClaimsFromUserInfoEndpoint = true;
@@ -81,31 +68,26 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddDownstreamApi(StaticData.AccountsApiService_ServiceName, configOptions =>                   // api name
     {
         configOptions.BaseUrl = yarpProxyBaseUrl;
-        // configOptions.BaseUrl = StaticData.AccountsApiService_LocalBaseURL;                      // api base url
-        configOptions.Scopes = [builder.Configuration["ACCOUNTS_API_SCOPE"]!];                      // Note: scope shows in api access token, not client identity token
+        configOptions.Scopes = [builder.Configuration["ACCOUNTS_API_SCOPE"]!];                      // Note: scope appears in api access token, not client identity token
     })
     .AddDownstreamApi(StaticData.CartsApiService_ServiceName, configOptions =>
     {
         configOptions.BaseUrl = yarpProxyBaseUrl;
-        // configOptions.BaseUrl = StaticData.CartsApiService_LocalBaseURL;
         configOptions.Scopes = [builder.Configuration["CARTS_API_SCOPE"]!];
     })
     .AddDownstreamApi(StaticData.OrdersApiService_ServiceName, configOptions =>
     {
         configOptions.BaseUrl = yarpProxyBaseUrl;
-        // configOptions.BaseUrl = StaticData.OrdersApiService_LocalBaseURL;
         configOptions.Scopes = [builder.Configuration["ORDERS_API_SCOPE"]!];
     })
     .AddDownstreamApi(StaticData.ProductsReadApiService_ServiceName, configOptions =>
     {
         configOptions.BaseUrl = yarpProxyBaseUrl;
-        // configOptions.BaseUrl = StaticData.ProductsReadApiService_LocalBaseURL;
         configOptions.Scopes = [builder.Configuration["PRODUCTS_READ_API_SCOPE"]!];
     })
     .AddDownstreamApi(StaticData.ProductsWriteApiService_ServiceName, configOptions =>
     {
         configOptions.BaseUrl = yarpProxyBaseUrl;
-        // configOptions.BaseUrl = StaticData.ProductsWriteApiService_LocalBaseURL;
         configOptions.Scopes = [builder.Configuration["PRODUCTS_WRITE_API_SCOPE"]!];
     })
     .AddDistributedTokenCaches();
@@ -238,8 +220,6 @@ app.MapPost("/logout", async ([FromForm] string? returnUrl, HttpContext httpCont
         { RedirectUri = returnUrl },
             [CookieAuthenticationDefaults.AuthenticationScheme, OpenIdConnectDefaults.AuthenticationScheme]);
 });
-
-// app.MapControllers();
 
 app.Run();
 

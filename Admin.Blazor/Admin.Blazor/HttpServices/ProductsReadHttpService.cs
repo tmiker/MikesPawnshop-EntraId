@@ -1,12 +1,10 @@
 ﻿using Admin.Blazor.Client.Abstractions;
-using Admin.Blazor.Client.DTOs.Claims;
 using Admin.Blazor.Client.DTOs.Health;
 using Admin.Blazor.Client.DTOs.Products;
 using Admin.Blazor.Client.DTOs.Products.Test;
 using Admin.Blazor.Client.ErrorHandling;
 using Admin.Blazor.Client.Paging;
 using Admin.Blazor.Client.Utility;
-using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using System.Text.Json;
 
@@ -44,7 +42,7 @@ namespace Admin.Blazor.HttpServices
                 var resultDTO = await response.Content.ReadFromJsonAsync<HealthCheckResultDTO>(_jsonSerializerOptions);
                 if (resultDTO is not null)
                 {
-                    _logger.LogInformation($"ProductsReadHttpService CheckHealthAsync() at path '{request.RequestUri}' Result: \n{JsonSerializer.Serialize(resultDTO)}");
+                    // _logger.LogInformation($"ProductsReadHttpService CheckHealthAsync() at path '{request.RequestUri}' Result: \n{JsonSerializer.Serialize(resultDTO)}");
                     return (true, resultDTO, null);
                 }
                 else return (false, null, "Health check result DTO is null.");
@@ -77,7 +75,6 @@ namespace Admin.Blazor.HttpServices
 
                 await foreach (var product in products)
                 {
-                    Console.WriteLine(product?.Name);
                     yield return product!;
                 }
             }
@@ -100,7 +97,6 @@ namespace Admin.Blazor.HttpServices
                 {
                     string result = await response.Content.ReadAsStringAsync();
                     IEnumerable<ProductDTO>? products = JsonSerializer.Deserialize<IEnumerable<ProductDTO>>(result, _jsonSerializerOptions);
-                    Console.WriteLine(products);
                     return (true, products, null);
                 }
                 else
@@ -129,10 +125,6 @@ namespace Admin.Blazor.HttpServices
                     Console.WriteLine($"SUCCESS GETTING PRODUCT SUMMARIES.");
                     string result = await response.Content.ReadAsStringAsync();
                     IEnumerable<ProductSummaryDTO>? productSummaries = JsonSerializer.Deserialize<IEnumerable<ProductSummaryDTO>>(result, _jsonSerializerOptions);
-                    foreach (var summary in productSummaries!)
-                    {
-                        Console.WriteLine(summary.Name);
-                    }
                     return (true, productSummaries, null);
                 }
                 else
@@ -161,7 +153,6 @@ namespace Admin.Blazor.HttpServices
                 {
                     string result = await response.Content.ReadAsStringAsync();
                     PagedProductsDTO? pagedProducts = JsonSerializer.Deserialize<PagedProductsDTO>(result, _jsonSerializerOptions);
-                    Console.WriteLine(pagedProducts);
                     return (true, pagedProducts?.Products, pagedProducts?.PagingData, pagedProducts?.FetchTime, null);
                 }
                 else
@@ -190,7 +181,6 @@ namespace Admin.Blazor.HttpServices
                 {
                     string result = await response.Content.ReadAsStringAsync();
                     PagedProductSummariesDTO? pagedProductSummaries = JsonSerializer.Deserialize<PagedProductSummariesDTO>(result, _jsonSerializerOptions);
-                    Console.WriteLine(pagedProductSummaries);
                     return (true, pagedProductSummaries?.ProductSummaries, pagedProductSummaries?.PagingData, pagedProductSummaries?.FetchTime, null);
                 }
                 else
@@ -217,9 +207,6 @@ namespace Admin.Blazor.HttpServices
                 if (response.IsSuccessStatusCode)
                 {
                     ProductDTO? product = await response.Content.ReadFromJsonAsync<ProductDTO>();
-                    //string result = await response.Content.ReadAsStringAsync();
-                    //ProductDTO? product = JsonSerializer.Deserialize<ProductDTO>(result, _jsonOptions);
-                    //Console.WriteLine(product);
                     return (true, product, null);
                 }
                 else
@@ -247,7 +234,6 @@ namespace Admin.Blazor.HttpServices
                 {
                     string result = await response.Content.ReadAsStringAsync();
                     ProductSummaryDTO? productSummary = JsonSerializer.Deserialize<ProductSummaryDTO>(result, _jsonSerializerOptions);
-                    Console.WriteLine(productSummary);
                     return (true, productSummary, null);
                 }
                 else
@@ -286,53 +272,6 @@ namespace Admin.Blazor.HttpServices
                 }
             }
         }
-
-        //public async Task<(bool IsSuccess, string? Value, string? ErrorMessage)> GetCloudAmqpSettingsTestingDummyValueAsync(CancellationToken cancellationToken)
-        //{
-        //    string uri = $"{StaticData.ProductsReadHttpClient_ProductsPath}/getCloudAmqpSettingsTestingDummyValue";
-        //    var client = _httpClientFactory.CreateClient(StaticData.ProductsReadHttpClient_ClientName);
-
-        //    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
-
-        //    // Generate a new Correlation ID and add to headers
-        //    string correlationId = Guid.NewGuid().ToString();
-        //    request.Headers.Add("X-Correlation-ID", correlationId);
-
-        //    using (HttpResponseMessage response = await client.SendAsync(request))
-        //    {
-        //        if (response.IsSuccessStatusCode)
-        //        {
-        //            string value = await response.Content.ReadAsStringAsync();
-        //            return (true, value, null);
-        //        }
-        //        else
-        //        {
-        //            string errorMessage = await GetErrorMessageAsync(response);
-        //            return (false, null, errorMessage);
-        //        }
-        //    }
-        //}
-
-        //// This method requires a bearer token attached to the request, so need to add '.AddUserAccessTokenHandler() ' in HttpClient configuration in Program.cs
-        //public async Task<(bool IsSuccess, ApiUserInfoDTO? ApiUserInfo, string? ErrorMessage)> GetProductsReadApiUserInfoAsync()
-        //{
-        //    string uri = $"{StaticData.ProductsReadHttpClient_ProductsPath}{StaticData.ProductsReadHttpClient_GetApiUserInfoSubpath}";
-        //    var client = _httpClientFactory.CreateClient(StaticData.ProductsReadHttpClient_ClientName);
-
-        //    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
-        //    HttpResponseMessage response = await client.SendAsync(request);
-
-        //    if (response.IsSuccessStatusCode)
-        //    {
-        //        ApiUserInfoDTO? apiUserInfoDTO = await response.Content.ReadFromJsonAsync<ApiUserInfoDTO>();
-        //        return (true, apiUserInfoDTO, null);
-        //    }
-        //    else
-        //    {
-        //        string errorMessage = await GetErrorMessageAsync(response);
-        //        return (false, new ApiUserInfoDTO() { ErrorMessage = errorMessage }, errorMessage);
-        //    }
-        //}
 
         private async Task<string> GetErrorMessageAsync(HttpResponseMessage response)
         {

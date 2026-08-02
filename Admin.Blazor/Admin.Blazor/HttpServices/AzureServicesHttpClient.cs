@@ -238,14 +238,12 @@ namespace Admin.Blazor.HttpServices
                 {
                     if (cancellationToken is not null && cancellationToken.Value.IsCancellationRequested) break;
                     count++;
-                    Console.WriteLine($"AzureServicesHttpClient.CheckProductsReadSqlAsync(): querying Products Read SQL database, attempt {count} ...");
 
                     using (var response = await client.GetAsync($"{productCountUrl}"))
                     {
                         if (response.IsSuccessStatusCode)
                         {
                             string countResult = await response.Content.ReadAsStringAsync();
-                            Console.WriteLine($"... Products Read SQL database connection success on attempt {count}.");
                             return (true, $"Product Read Side SQL database is running. Product Count: {countResult}", null);
                         }
                     }
@@ -253,12 +251,10 @@ namespace Admin.Blazor.HttpServices
                 }
                 while (count < 4);
 
-                Console.WriteLine($"AzureServicesHttpClient.CheckProductsReadSqlAsync(): Failed to reach Products Read SQL database in {count} attemps.");
                 return (false, null, $"Failed to reach Products Read SQL database after {count} attempts.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Exception: {ex.Message}");
                 return (false, null, $"Products Read SQL Error: {ex.Message}");
             }
         }
@@ -275,21 +271,18 @@ namespace Admin.Blazor.HttpServices
                 {
                     if (cancellationToken is not null && cancellationToken.Value.IsCancellationRequested) break;
                     count++;
-                    Console.WriteLine($"AzureServicesHttpClient.CheckProductsWriteSqlAsync(): querying Products Write SQL database, attempt {count} ...");
 
                     using (var response = await client.GetAsync($"{eventCountUrl}"))
                     {
                         if (response.IsSuccessStatusCode)
                         {
                             string countResult = await response.Content.ReadAsStringAsync();
-                            Console.WriteLine($"... Products Write SQL database connection success on attempt {count}.");
                             return (true, $"Product Write Side SQL database is running. Event Count: {countResult}", null);
                         }
                     }
                 }
                 while (count < 4);
 
-                Console.WriteLine($"Failed to reach Products Write SQL database after {count} attempts.");
                 return (false, null, $"Failed to reach Products Write SQL database after {count} attempts.");
             }
             catch (Exception ex)

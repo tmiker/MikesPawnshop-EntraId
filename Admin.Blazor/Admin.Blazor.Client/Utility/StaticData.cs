@@ -3,7 +3,6 @@
     public class StaticData
     {
         // NOTE: This client accesses API Resources through the YARP Reverse Proxy.
-
         /// WASM API Base Address
         public const string WasmClient_LocalApiBaseAddress = "https://localhost:7088";
         public const string WasmClient_AzureApiBaseAddress = "https://pawnshopadmin-cfd2asdcc2eceeac.centralus-01.azurewebsites.net";

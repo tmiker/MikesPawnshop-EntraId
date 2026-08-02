@@ -5,7 +5,6 @@ namespace Consumer.Blazor.Client.DTOs.Orders
 {
     public class ReviewOrderResultDTO
     {
-        // public OrderDTO? OrderToReview { get; set; }
         public AccountDTO? Account { get; set; }
         public ShoppingCartDTO? ShoppingCart { get; set; }
 

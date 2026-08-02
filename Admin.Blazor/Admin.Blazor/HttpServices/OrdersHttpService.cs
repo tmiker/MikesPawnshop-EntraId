@@ -23,8 +23,6 @@ namespace Admin.Blazor.HttpServices
 
         public async Task<(bool IsSuccess, HealthCheckResultDTO? HealthCheckResultDTO, string? ErrorMessage)> CheckHealthAsync()
         {
-            //string uri = $"{StaticData.AccountsHttpClient_AccountsPath}/health";
-            //var client = _httpClientFactory.CreateClient(StaticData.AccountsHttpClient_ClientName);
             string uri = $"{StaticData.OrdersHttpClient_OrdersPath}/healthClient";
             var client = _httpClientFactory.CreateClient(StaticData.OrdersHttpClient_ClientName);
 

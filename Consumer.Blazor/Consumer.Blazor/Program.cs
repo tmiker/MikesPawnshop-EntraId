@@ -31,9 +31,6 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingAuthenticationStateProvider>();
 
 /// MS ENTRA ID AUTH CONFIG START
-// Configure authentication to use Microsoft Entra ID
-// JsonWebTokenHandler.DefaultInboundClaimTypeMap.Clear();
-
 string yarpProxyBaseUrl = builder.Environment.IsDevelopment() ?
     StaticData.ProductsApiServices_LocalYarpProxyBaseURL :
     builder.Configuration["AZURE_YARP_PROXY_BASE_URL"] ??
@@ -43,7 +40,6 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApp(msIdentityOptions =>
     {
         /// see: http s://learn.microsoft.com/en-us/entra/identity-platform/msal-client-application-configuration#:~:text=The%20authority%20is%20a%20U
-
         /// NOTE: If configure 'Authority' when using Microsoft.Identity.Web, the 'Instance', 'TenantId', and 'Domain' options are ignored. 
         /// So, to use those options, do not configure 'Authority' and instead configure 'Instance', 'TenantId', and 'Domain' as shown below.
         
@@ -53,10 +49,8 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
         msIdentityOptions.Domain = builder.Configuration["AZURE_CREDENTIALS_DOMAIN"]; 
 
         msIdentityOptions.CallbackPath = "/signin-oidc";
-        // msIdentityOptions.CallbackPath = "/.auth/login/aad/callback";        // azure default
 
         msIdentityOptions.SignedOutCallbackPath = "/signout-callback-oidc";
-        // msIdentityOptions.SignedOutCallbackPath = "/.auth/logout/aad/callback";      // azure default
 
         msIdentityOptions.ClientId = builder.Configuration["AZURE_CREDENTIALS_CLIENT_ID"];                
         msIdentityOptions.ClientSecret = builder.Configuration["AZURE_CREDENTIALS_CLIENT_SECRET"];        
@@ -70,7 +64,7 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
         msIdentityOptions.AccessDeniedPath = new PathString("/AccessDenied");
     })
     .EnableTokenAcquisitionToCallDownstreamApi()
-    .AddDownstreamApi(StaticData.AccountsApiService_ServiceName, configOptions =>              // api name
+    .AddDownstreamApi(StaticData.AccountsApiService_ServiceName, configOptions =>            
     {
         configOptions.BaseUrl = yarpProxyBaseUrl;
         configOptions.Scopes = [builder.Configuration["ACCOUNTS_API_SCOPE"]!];                 
@@ -207,8 +201,6 @@ app.MapPost("/logout", async ([FromForm] string? returnUrl, HttpContext httpCont
         { RedirectUri = returnUrl },
             [CookieAuthenticationDefaults.AuthenticationScheme, OpenIdConnectDefaults.AuthenticationScheme]);
 });
-
-//  app.MapControllers();
 
 app.Run();
 

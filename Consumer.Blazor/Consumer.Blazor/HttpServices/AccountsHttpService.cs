@@ -1,8 +1,6 @@
 ﻿using Consumer.Blazor.Client.Abstractions;
 using Consumer.Blazor.Client.DTOs.Accounts;
 using Consumer.Blazor.Client.Utility;
-using Microsoft.AspNetCore.Mvc;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 
@@ -51,7 +49,6 @@ namespace Consumer.Blazor.HttpServices
                 if (accountDTO is not null)
                 {
                     string jsonAccount = JsonSerializer.Serialize(accountDTO);
-                    Console.WriteLine($"\n************\nAccountsHttpService GetAccountAsync() result: \n{jsonAccount}\n************\n");
                 }
                 return (true, accountDTO, null);
             }

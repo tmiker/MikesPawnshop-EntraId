@@ -58,7 +58,6 @@ namespace Consumer.Blazor.DownstreamApiServices
                 if (accountDTO is not null)
                 {
                     string jsonAccount = JsonSerializer.Serialize(accountDTO);
-                    Console.WriteLine($"\n************\nAccountsHttpService GetAccountAsync() result: \n{jsonAccount}\n************\n");
                 }
                 return (true, accountDTO, null);
             }

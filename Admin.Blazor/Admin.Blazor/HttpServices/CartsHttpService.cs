@@ -2,7 +2,6 @@
 using Admin.Blazor.Client.DTOs.Carts;
 using Admin.Blazor.Client.DTOs.Health;
 using Admin.Blazor.Client.Utility;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 
@@ -67,8 +66,6 @@ namespace Admin.Blazor.HttpServices
             }
         }
 
-        // [HttpPut("items")]
-        // public async Task<IActionResult> UpdateProductQuantity(string productId, int amount)
         public async Task<(bool IsSuccess, string? ErrorMessage)> UpdateProductQuantityAsync(string aggregateId, int amount)
         {
             string uri = $"{StaticData.CartsHttpClient_CartsPath}/items?aggregateId={aggregateId}&amount={amount}";
@@ -88,8 +85,6 @@ namespace Admin.Blazor.HttpServices
             }
         }
 
-        // [HttpDelete("items")]
-        // public async Task<IActionResult> RemoveCartItem(string productId)
         public async Task<(bool IsSuccess, string? ErrorMessage)> RemoveCartItemAsync(string aggregateId)
         {
             string uri = $"{StaticData.CartsHttpClient_CartsPath}/items?aggregateId={aggregateId}";
@@ -109,8 +104,6 @@ namespace Admin.Blazor.HttpServices
             }
         }
 
-        // [HttpGet]
-        // public async Task<ActionResult<ShoppingCartDTO?>> GetShoppingCart()
         public async Task<(bool IsSuccess, ShoppingCartDTO? ShoppingCart, string? ErrorMessage)> GetShoppingCartAsync()
         {
             string uri = $"{StaticData.CartsHttpClient_CartsPath}";
@@ -131,8 +124,6 @@ namespace Admin.Blazor.HttpServices
             }
         }
 
-        // [HttpDelete]
-        //public async Task<IActionResult> RemoveShoppingCart()
         public async Task<(bool IsSuccess, string? ErrorMessage)> RemoveShoppingCartAsync()
         {
             string uri = $"{StaticData.CartsHttpClient_CartsPath}";

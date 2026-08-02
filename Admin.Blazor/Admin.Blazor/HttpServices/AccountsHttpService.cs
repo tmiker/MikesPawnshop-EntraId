@@ -2,7 +2,6 @@
 using Admin.Blazor.Client.DTOs.Accounts;
 using Admin.Blazor.Client.DTOs.Health;
 using Admin.Blazor.Client.Utility;
-using Microsoft.Identity.Abstractions;
 using System.Text;
 using System.Text.Json;
 
@@ -78,7 +77,6 @@ namespace Admin.Blazor.HttpServices
                 if (accountDTO is not null)
                 {
                     string jsonAccount = JsonSerializer.Serialize(accountDTO);
-                    Console.WriteLine($"\n************\nAccountsHttpService GetAccountAsync() result: \n{jsonAccount}\n************\n");
                 }
                 return (true, accountDTO, null);
             }
@@ -173,7 +171,6 @@ namespace Admin.Blazor.HttpServices
                 if (accountDTO is not null)
                 {
                     string jsonAccount = JsonSerializer.Serialize(accountDTO);
-                    Console.WriteLine($"\n************\nAccountsHttpService GetTestAccountAsync() result: \n{jsonAccount}\n************\n");
                 }
                 return (true, accountDTO, null);
             }

@@ -239,7 +239,6 @@ namespace Admin.Blazor.DownstreamApiServices
             }
         }
 
-        // UPDATED METHODS FOR IMAGES AND DOCUMENTS
         public async Task<(bool IsSuccess, string? ErrorMessage)> AddProductImageAsync(AddImageDTO addImageDTO, CancellationToken cancellationToken)
         {
             string uri = $"{StaticData.ProductsWriteApiService_ProductsPath}/image";
@@ -251,7 +250,6 @@ namespace Admin.Blazor.DownstreamApiServices
                 if (!string.IsNullOrWhiteSpace(addImageDTO.ProductId)) mfdContent.Add(new StringContent(addImageDTO.ProductId!), nameof(addImageDTO.ProductId));
                 if (!string.IsNullOrWhiteSpace(addImageDTO.Name)) mfdContent.Add(new StringContent(addImageDTO.Name!), nameof(addImageDTO.Name));
                 if (!string.IsNullOrWhiteSpace(addImageDTO.Caption)) mfdContent.Add(new StringContent(addImageDTO.Caption!), nameof(addImageDTO.Caption));
-                // mfdContent.Add(new StringContent(addImageDTO.SequenceNumber.ToString()), nameof(addImageDTO.SequenceNumber));
                 if (!string.IsNullOrWhiteSpace(addImageDTO.BlobFileName)) mfdContent.Add(new StringContent(addImageDTO.BlobFileName!), nameof(addImageDTO.BlobFileName));
                 if (addImageDTO.ImageBlob is not null)
                 {
@@ -300,7 +298,6 @@ namespace Admin.Blazor.DownstreamApiServices
                 if (!string.IsNullOrWhiteSpace(addDocumentDTO.ProductId)) mfdContent.Add(new StringContent(addDocumentDTO.ProductId!), nameof(addDocumentDTO.ProductId));
                 if (!string.IsNullOrWhiteSpace(addDocumentDTO.Name)) mfdContent.Add(new StringContent(addDocumentDTO.Name!), nameof(addDocumentDTO.Name));
                 if (!string.IsNullOrWhiteSpace(addDocumentDTO.Title)) mfdContent.Add(new StringContent(addDocumentDTO.Title!), nameof(addDocumentDTO.Title));
-                // mfdContent.Add(new StringContent(addDocumentDTO.SequenceNumber.ToString()), nameof(addDocumentDTO.SequenceNumber));
                 if (!string.IsNullOrWhiteSpace(addDocumentDTO.BlobFileName)) mfdContent.Add(new StringContent(addDocumentDTO.BlobFileName!), nameof(addDocumentDTO.BlobFileName));
                 if (addDocumentDTO.DocumentBlob is not null)
                 {

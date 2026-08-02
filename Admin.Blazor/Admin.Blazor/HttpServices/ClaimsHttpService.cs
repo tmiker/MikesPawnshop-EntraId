@@ -59,11 +59,9 @@ namespace Admin.Blazor.HttpServices
         public async Task<(bool IsSuccess, ApiUserInfoDTO? ApiUserInfo, string? ErrorMessage)> GetOrdersApiUserInfoAsync()
         {
             string uri = $"{StaticData.OrdersHttpClient_DevTestsPath}{StaticData.OrdersHttpClient_GetApiUserInfoSubpath}";
-            Debug.WriteLine($"GET API USER INFO URI: {uri}");
             var client = _httpClientFactory.CreateClient(StaticData.OrdersHttpClient_ClientName);
 
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
-            Debug.WriteLine($"GET API USER INFO REQUEST URI: {request.RequestUri}");
             HttpResponseMessage response = await client.SendAsync(request);
 
             if (response.IsSuccessStatusCode)

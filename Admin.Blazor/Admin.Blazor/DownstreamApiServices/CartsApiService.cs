@@ -123,8 +123,6 @@ namespace Admin.Blazor.DownstreamApiServices
             }
         }
 
-        // [HttpGet]
-        // public async Task<ActionResult<ShoppingCartDTO?>> GetShoppingCart()
         public async Task<(bool IsSuccess, ShoppingCartDTO? ShoppingCart, string? ErrorMessage)> GetShoppingCartAsync()
         {
             string uri = $"{StaticData.CartsApiService_CartsPath}";

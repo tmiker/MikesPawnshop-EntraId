@@ -10,7 +10,6 @@ namespace Consumer.Blazor.Client.Mappers
         {
             return new AddOrderDTO
             {
-                 // OrderId = shoppingCartDTO.ShoppingCartId,    // This is set by the Orders.API microservice
                 Items = shoppingCartDTO.Items.Select(item => new AddOrderItemDTO
                 {
                     ProductId = item.ProductId,
@@ -22,7 +21,6 @@ namespace Consumer.Blazor.Client.Mappers
                     UOM = item.UOM,
                     Quantity = item.Quantity,
                 }).ToList(),
-                // Assuming ShippingAddress and BillingAddress are set elsewhere or are null
                 ShippingAddress = null,
                 BillingAddress = null
             };
@@ -36,8 +34,6 @@ namespace Consumer.Blazor.Client.Mappers
             {
                 AddOrderItemDTO orderItemDTO = new AddOrderItemDTO()
                 {
-                    //OrderId = null, // populated by Orders.API
-                    //LineNumber = item.LineNumber,
                     ProductId = item.ProductId,
                     Category = item.Category,
                     Name = item.Name,

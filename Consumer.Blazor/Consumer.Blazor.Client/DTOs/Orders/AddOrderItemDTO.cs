@@ -4,8 +4,6 @@ namespace Consumer.Blazor.Client.DTOs.Orders
 {
     public class AddOrderItemDTO
     {
-        //public string? OrderId { get; set; }
-        //public int LineNumber { get; set; }
         public int ProductId { get; set; }
         public string? AggregateId { get; set; }
         public string? Category { get; set; }

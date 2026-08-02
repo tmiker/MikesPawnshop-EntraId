@@ -16,9 +16,6 @@ namespace Admin.Blazor.Client.DTOs.Products.Write
         [Required]
         public string? Status { get; set; } = default!;
         public int QuantityOnHand { get; set; }
-
-        // public int QuantityAllocated { get; set; }
-
         [Required]
         public string? UOM { get; set; } = default!;
         public int LowStockThreshold { get; set; }

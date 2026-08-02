@@ -42,7 +42,6 @@ namespace Consumer.Blazor.HttpServices
 
                 await foreach (var product in products)
                 {
-                    Console.WriteLine(product?.Name);
                     yield return product!;
                 }
             }
@@ -64,7 +63,6 @@ namespace Consumer.Blazor.HttpServices
                 {
                     string result = await response.Content.ReadAsStringAsync();
                     IEnumerable<ProductDTO>? products = JsonSerializer.Deserialize<IEnumerable<ProductDTO>>(result, _jsonOptions);
-                    Console.WriteLine(products);
                     return (true, products, null);
                 }
                 else
@@ -92,10 +90,6 @@ namespace Consumer.Blazor.HttpServices
                     Console.WriteLine($"SUCCESS GETTING PRODUCT SUMMARIES.");
                     string result = await response.Content.ReadAsStringAsync();
                     IEnumerable<ProductSummaryDTO>? productSummaries = JsonSerializer.Deserialize<IEnumerable<ProductSummaryDTO>>(result, _jsonOptions);
-                    foreach (var summary in productSummaries!)
-                    {
-                        Console.WriteLine(summary.Name);
-                    }
                     return (true, productSummaries, null);
                 }
                 else
@@ -123,7 +117,6 @@ namespace Consumer.Blazor.HttpServices
                 {
                     string result = await response.Content.ReadAsStringAsync();
                     PagedProductsDTO? pagedProducts = JsonSerializer.Deserialize<PagedProductsDTO>(result, _jsonOptions);
-                    // Console.WriteLine(pagedProducts);
                     return (true, pagedProducts?.Products, pagedProducts?.PagingData, pagedProducts?.FetchTime, null);
                 }
                 else
@@ -151,7 +144,6 @@ namespace Consumer.Blazor.HttpServices
                 {
                     string result = await response.Content.ReadAsStringAsync();
                     PagedProductSummariesDTO? pagedProductSummaries = JsonSerializer.Deserialize<PagedProductSummariesDTO>(result, _jsonOptions);
-                    // Console.WriteLine(pagedProductSummaries);
                     return (true, pagedProductSummaries?.ProductSummaries, pagedProductSummaries?.PagingData, pagedProductSummaries?.FetchTime, null);
                 }
                 else
@@ -177,9 +169,6 @@ namespace Consumer.Blazor.HttpServices
                 if (response.IsSuccessStatusCode)
                 {
                     ProductDTO? product = await response.Content.ReadFromJsonAsync<ProductDTO>();
-                    //string result = await response.Content.ReadAsStringAsync();
-                    //ProductDTO? product = JsonSerializer.Deserialize<ProductDTO>(result, _jsonOptions);
-                    //Console.WriteLine(product);
                     return (true, product, null);
                 }
                 else
@@ -206,7 +195,6 @@ namespace Consumer.Blazor.HttpServices
                 {
                     string result = await response.Content.ReadAsStringAsync();
                     ProductSummaryDTO? productSummary = JsonSerializer.Deserialize<ProductSummaryDTO>(result, _jsonOptions);
-                    Console.WriteLine(productSummary);
                     return (true, productSummary, null);
                 }
                 else

@@ -210,7 +210,6 @@ namespace Admin.Blazor.HttpServices
             }
         }
 
-        // UPDATED METHODS FOR IMAGES AND DOCUMENTS
         public async Task<(bool IsSuccess, string? ErrorMessage)> AddProductImageAsync(AddImageDTO addImageDTO, CancellationToken cancellationToken)
         {
             string uri = $"{StaticData.ProductsWriteHttpClient_ProductsPath}/image";
@@ -223,11 +222,10 @@ namespace Admin.Blazor.HttpServices
             // build form file to submit to api endpoint
             using (var content = new MultipartFormDataContent())
             {
-                //no Id for add
+                // no Id for add
                 if (!string.IsNullOrWhiteSpace(addImageDTO.ProductId)) content.Add(new StringContent(addImageDTO.ProductId!), nameof(addImageDTO.ProductId));
                 if (!string.IsNullOrWhiteSpace(addImageDTO.Name)) content.Add(new StringContent(addImageDTO.Name!), nameof(addImageDTO.Name));
                 if (!string.IsNullOrWhiteSpace(addImageDTO.Caption)) content.Add(new StringContent(addImageDTO.Caption!), nameof(addImageDTO.Caption));
-                // content.Add(new StringContent(addImageDTO.SequenceNumber.ToString()), nameof(addImageDTO.SequenceNumber));
                 if (!string.IsNullOrWhiteSpace(addImageDTO.BlobFileName)) content.Add(new StringContent(addImageDTO.BlobFileName!), nameof(addImageDTO.BlobFileName));
                 if (addImageDTO.ImageBlob is not null)
                 {
@@ -266,11 +264,10 @@ namespace Admin.Blazor.HttpServices
             // build form file to submit to api endpoint
             using (var content = new MultipartFormDataContent())
             {
-                //no Id for add
+                // no Id for add
                 if (!string.IsNullOrWhiteSpace(addDocumentDTO.ProductId)) content.Add(new StringContent(addDocumentDTO.ProductId!), nameof(addDocumentDTO.ProductId));
                 if (!string.IsNullOrWhiteSpace(addDocumentDTO.Name)) content.Add(new StringContent(addDocumentDTO.Name!), nameof(addDocumentDTO.Name));
                 if (!string.IsNullOrWhiteSpace(addDocumentDTO.Title)) content.Add(new StringContent(addDocumentDTO.Title!), nameof(addDocumentDTO.Title));
-                // content.Add(new StringContent(addDocumentDTO.SequenceNumber.ToString()), nameof(addDocumentDTO.SequenceNumber));
                 if (!string.IsNullOrWhiteSpace(addDocumentDTO.BlobFileName)) content.Add(new StringContent(addDocumentDTO.BlobFileName!), nameof(addDocumentDTO.BlobFileName));
                 if (addDocumentDTO.DocumentBlob is not null)
                 {
@@ -363,8 +360,6 @@ namespace Admin.Blazor.HttpServices
             string uri = $"{StaticData.ProductsWriteHttpClient_DevTestsPath}/pagedAndFilteredProductSnapshots?aggregateId={aggregateId}&category={category}&sortColumn={sortColumn}&pageNumber={pageNumber}&pageSize={pageSize}";
             var client = _httpClientFactory.CreateClient(StaticData.ProductsWriteHttpClient_ClientName);
 
-            Console.WriteLine($"BLAZOR DEV CLIENT HTTP CLIENT CALL URI: {uri}");
-
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
 
             string correlationId = Guid.NewGuid().ToString();
@@ -446,7 +441,7 @@ namespace Admin.Blazor.HttpServices
             int pageSize = 10)
         {
             string uri = $"{StaticData.ProductsWriteHttpClient_DevTestsPath}/eventRecords?aggregateId={aggregateId}&correlationId={correlationId}&minVersion={minVersion}&maxVersion={maxVersion}&pageNumber={pageNumber}&pageSize={pageSize}";
-            _logger.LogInformation("GET EVENT RECORDS URI: {uri}", uri);
+            // _logger.LogInformation("GET EVENT RECORDS URI: {uri}", uri);
             var client = _httpClientFactory.CreateClient(StaticData.ProductsWriteHttpClient_ClientName);
 
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
