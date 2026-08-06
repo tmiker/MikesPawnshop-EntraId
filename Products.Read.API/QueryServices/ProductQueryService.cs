@@ -315,6 +315,43 @@ namespace Products.Read.API.QueryServices
             return new GetProductSummaryByIdResult(true, dto, null);
         }
 
+        public async Task<CarouselResult> GetCarouselProductImagesAsync()
+        {
+            try
+            {
+                var result = await (from p in _db.Products
+                             join i in _db.ImageData on p.Id equals i.ProductId into productImages
+                             //from pi in productImages.DefaultIfEmpty()
+                             //group pi by new { p.Id, p.Name, p.Category } into g
+                             select new CarouselProductDTO
+                             {
+                                 Name = g.Key.Name,
+                                 Category = g.Key.Category,
+                                 Description = p.Description,
+                                 Price = p.Price,
+                                 Currency = p.Currency,
+                                 QuantityOnHand = p.QuantityOnHand,
+                                 ImageData = p.Images != null && p.Images.Any() ? p.Images.First().ToDTO() : null
+                             }).ToListAsync();
+
+                return new CarouselResult(true, result, null);
+
+                //var products = await _db.Products.Include(p => p.Images).AsSplitQuery().ToListAsync();
+                //var carouselProducts = products.Select(p => new CarouselProductDTO
+                //{
+                //    Name = p.Name,
+                //    Category = p.Category,
+                //    ImageData = p.Images != null && p.Images.Any() ? p.Images.First().ToDTO() : null
+                //}).ToList();
+                //return new CarouselResult(true, carouselProducts, null);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while retrieving carousel product images.");
+                return new CarouselResult(false, null, "An error occurred connecting with the Products Read-Side Database. Please try again later.");
+            }
+        }
+
         public async Task<(bool IsSuccess, int ProductCount, string? ErrorMessage)> GetProductCountAsync()
         {
             try

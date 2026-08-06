@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Products.Read.API.DTOs;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Products.Read.API.Domain.Models
@@ -33,6 +34,18 @@ namespace Products.Read.API.Domain.Models
         private void SetSequenceNumber(int sequenceNumber)
         {
             SequenceNumber = sequenceNumber;
+        }
+
+        public ImageDataDTO ToDTO()
+        {
+            return new ImageDataDTO
+            {
+                Name = this.Name,
+                Caption = this.Caption,
+                SequenceNumber = this.SequenceNumber,
+                ImageUrl = this.ImageUrl,
+                ThumbnailUrl = this.ThumbnailUrl
+            };
         }
     }
 }

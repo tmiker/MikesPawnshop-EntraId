@@ -128,6 +128,17 @@ namespace Products.Read.API.Controllers
             return BadRequest(result.ErrorMessage);
         }
 
+        [HttpGet("carousel")]
+        [AllowAnonymous]
+        // [ResponseCache(Duration = 180, Location = ResponseCacheLocation.Any)]
+        [OutputCache(PolicyName = "StorefrontProductsCachePolicy")]
+        public async Task<ActionResult<IEnumerable<CarouselProductDTO>>> GetCarouselProducts()
+        {
+            CarouselResult result = await _productQueryService.GetCarouselProductImagesAsync();
+            if (result.IsSuccess) return Ok(result.CarouselProducts);
+            return BadRequest(result.ErrorMessage);
+        }
+
         [HttpGet("throwExceptionForTesting")]
         [AllowAnonymous]
         public IActionResult ThrowExceptionForTesting([FromBody] ThrowExceptionDTO throwExceptionDTO, CancellationToken cancellationToken)
