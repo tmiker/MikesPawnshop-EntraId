@@ -325,8 +325,8 @@ namespace Products.Read.API.QueryServices
                              //group pi by new { p.Id, p.Name, p.Category } into g
                              select new CarouselProductDTO
                              {
-                                 Name = g.Key.Name,
-                                 Category = g.Key.Category,
+                                 Name = p.Name, // g.Key.Name,
+                                 Category = p.Category, // g.Key.Category,
                                  Description = p.Description,
                                  Price = p.Price,
                                  Currency = p.Currency,

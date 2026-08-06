@@ -87,7 +87,6 @@ namespace Consumer.Blazor.HttpServices
             {
                 if (response.IsSuccessStatusCode)
                 {
-                    Console.WriteLine($"SUCCESS GETTING PRODUCT SUMMARIES.");
                     string result = await response.Content.ReadAsStringAsync();
                     IEnumerable<ProductSummaryDTO>? productSummaries = JsonSerializer.Deserialize<IEnumerable<ProductSummaryDTO>>(result, _jsonOptions);
                     return (true, productSummaries, null);
@@ -196,6 +195,32 @@ namespace Consumer.Blazor.HttpServices
                     string result = await response.Content.ReadAsStringAsync();
                     ProductSummaryDTO? productSummary = JsonSerializer.Deserialize<ProductSummaryDTO>(result, _jsonOptions);
                     return (true, productSummary, null);
+                }
+                else
+                {
+                    string errorMessage = await GetErrorMessageAsync(response);
+                    return (false, null, errorMessage);
+                }
+            }
+        }
+
+        public async Task<(bool IsSuccess, IEnumerable<CarouselProductDTO>? CarouselProducts, string? ErrorMessage)> GetCarouselProductsAsync()
+        {
+            string uri = $"{StaticData.ProductsReadHttpClient_ProductsPath}/carousel";
+            var client = _httpClientFactory.CreateClient(StaticData.ProductsReadHttpClient_ClientName);
+
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
+
+            string correlationId = Guid.NewGuid().ToString();
+            request.Headers.Add("X-Correlation-ID", correlationId);
+
+            using (HttpResponseMessage response = await client.SendAsync(request))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    string result = await response.Content.ReadAsStringAsync();
+                    IEnumerable<CarouselProductDTO>? products = JsonSerializer.Deserialize<IEnumerable<CarouselProductDTO>>(result, _jsonOptions);
+                    return (true, products, null);
                 }
                 else
                 {
