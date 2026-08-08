@@ -490,10 +490,10 @@
     private async Task SubmitUpdateProductStatus()
     {
         if (_updateStatusDTO is null) return;
-        // var result = await _writeSideHttpClient.UpdateStatusAsync(_updateStatusDTO!, _cancellationTokenSource!.Token);
-        // if (!result.IsSuccess) _errorMessage = result.ErrorMessage;
+        var result = await _writeSideHttpClient.UpdateStatusAsync(_updateStatusDTO!, _cancellationTokenSource!.Token);
+        if (!result.IsSuccess) _errorMessage = result.ErrorMessage;
 
-        await Toastr.ShowToastrInfo($"Simulated updating product status in the database.");
+        // await Toastr.ShowToastrInfo($"Simulated updating product status in the database.");
 
         _originalStatus = _product!.Status;
         _updateStatusDTO = null;
