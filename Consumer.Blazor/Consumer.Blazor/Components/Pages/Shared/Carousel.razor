@@ -1,0 +1,124 @@
+﻿@page "/carousel"
+@rendermode InteractiveServer
+@inject IPublicProductsReadHttpService _productReadSideHttpClient
+@implements IDisposable
+
+<div class="row">
+    <div class="col-12 text-center">
+        <h4>Click on Storefront to shop our unique products!</h4>
+    </div>
+</div>
+
+@if (_imageUrls is not null && _imageUrls.Any())
+{
+    <div class="carousel-container mt-4">
+
+        <div class="carousel">
+            <div class="carousel-track">
+                <div class="carousel-slide-3fer"><img src=@_imageUrls[_imageIndex1] alt="Slide 1"></div>
+                <div class="carousel-slide-3fer"><img src=@_imageUrls[_imageIndex2] alt="Slide 2"></div>
+                <div class="carousel-slide-3fer"><img src=@_imageUrls[_imageIndex3] alt="Slide 3"></div>
+            </div>
+            <button class="carousel-btn prev" @onclick="Previous">&#10094;</button>
+            <button class="carousel-btn next" @onclick="Next">&#10095;</button>
+        </div>
+
+    </div>
+}
+else
+{
+    <p>Loading carousel products...</p>
+}
+
+<AuthorizeView>
+    <NotAuthorized>
+        <div class="row mt-4">
+            <div class="col-12 text-center">
+                <h4>Don't forget to login to add products to your cart!</h4>
+            </div>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    private List<string>? _imageUrls;
+    private int _imageIndex1 = 0;
+    private int _imageIndex2 = 1;
+    private int _imageIndex3 = 2;
+    private int _imageCount = 0;
+    private readonly PeriodicTimer _periodicTimer = new(TimeSpan.FromSeconds(3));
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await GetImageDataAsync(false);
+            _imageCount = _imageUrls?.Count ?? 0;
+            RunCarousel();
+            StateHasChanged();
+        }
+    }
+
+    private async Task GetImageDataAsync(bool useActiveData)
+    {
+        if (useActiveData) await GetActiveImageDataAsync();
+        else GetStaticImageDataAsync();
+    }
+
+    private async Task GetActiveImageDataAsync()
+    {
+        var urlResult = await _productReadSideHttpClient.GetCarouselImageUrlsAsync();
+        if (urlResult.IsSuccess) _imageUrls = urlResult.CarouselImageUrls?.ToList() ?? new List<string>();
+        else GetStaticImageDataAsync();
+    }
+
+    private void GetStaticImageDataAsync()
+    {
+        _imageUrls = new List<string>()
+        {
+            "https://pawnshopimages.blob.core.windows.net/product-005ed9db-48ce-45e1-b808-0d87215cd83d/imgs/whisperer_bored.jpeg",
+            "https://pawnshopimages.blob.core.windows.net/product-9625d457-46b5-46a6-8492-5b53d834acd0/imgs/nova_astrograph.jpeg",
+            "https://pawnshopimages.blob.core.windows.net/product-032bcb11-342b-4ded-a4bb-b229ac014517/imgs/smart_fan_2.jpeg",
+            "https://pawnshopimages.blob.core.windows.net/product-f207e162-1b7e-49d1-b152-7499b990e938/imgs/canikon_d32s_2.jpeg",
+            "https://pawnshopimages.blob.core.windows.net/product-53d16c34-7bea-40fe-b295-39bad1edd904/imgs/electronic_umbrella.jpeg",
+            "https://pawnshopimages.blob.core.windows.net/product-8471429f-39dd-4e3b-bf4f-7242edfb2536/imgs/tennis_racquet.jpeg",
+            "https://pawnshopimages.blob.core.windows.net/product-65ddf51b-39cd-4c4a-b2ed-8d2bac6b1495/imgs/stellar_sm_3d.jpeg",
+            "https://pawnshopimages.blob.core.windows.net/product-9625d457-46b5-46a6-8492-5b53d834acd0/imgs/astrograph_3.jpeg",
+            "https://pawnshopimages.blob.core.windows.net/product-005ed9db-48ce-45e1-b808-0d87215cd83d/imgs/whisperer_headband.jpeg",
+            "https://pawnshopimages.blob.core.windows.net/product-53d16c34-7bea-40fe-b295-39bad1edd904/imgs/umbrella_2.jpeg",
+            "https://pawnshopimages.blob.core.windows.net/product-9625d457-46b5-46a6-8492-5b53d834acd0/imgs/astrograph_2.jpeg",
+            "https://pawnshopimages.blob.core.windows.net/product-65ddf51b-39cd-4c4a-b2ed-8d2bac6b1495/imgs/stellar_sm_3d_2.jpeg",
+            "https://pawnshopimages.blob.core.windows.net/product-8471429f-39dd-4e3b-bf4f-7242edfb2536/imgs/tennis_racquet_2.jpeg",
+            "https://pawnshopimages.blob.core.windows.net/product-f207e162-1b7e-49d1-b152-7499b990e938/imgs/canikon_d32s.jpeg"
+        };
+    }
+
+    private async void RunCarousel()
+    {
+        while (await _periodicTimer.WaitForNextTickAsync())
+        {
+            Next();
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private void Next()
+    {
+        _imageIndex1 = _imageIndex1 == _imageCount - 1 ? 0 : _imageIndex1 + 1;
+        _imageIndex2 = _imageIndex2 == _imageCount - 1 ? 0 : _imageIndex2 + 1;
+        _imageIndex3 = _imageIndex3 == _imageCount - 1 ? 0 : _imageIndex3 + 1;
+    }
+    private void Previous()
+    {
+        _imageIndex1 = _imageIndex1 == 0 ? _imageCount - 1 : _imageIndex1 - 1;
+        _imageIndex2 = _imageIndex2 == 0 ? _imageCount - 1 : _imageIndex2 - 1;
+        _imageIndex3 = _imageIndex3 == 0 ? _imageCount - 1 : _imageIndex3 - 1;
+    }
+
+    public void Dispose()
+    {
+        _periodicTimer?.Dispose();
+    }
+}
+

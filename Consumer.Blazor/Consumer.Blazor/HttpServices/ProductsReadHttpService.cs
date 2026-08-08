@@ -206,7 +206,7 @@ namespace Consumer.Blazor.HttpServices
 
         public async Task<(bool IsSuccess, IEnumerable<CarouselProductDTO>? CarouselProducts, string? ErrorMessage)> GetCarouselProductsAsync()
         {
-            string uri = $"{StaticData.ProductsReadHttpClient_ProductsPath}/carousel";
+            string uri = $"{StaticData.ProductsReadHttpClient_ProductsPath}/carouselProducts";
             var client = _httpClientFactory.CreateClient(StaticData.ProductsReadHttpClient_ClientName);
 
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
@@ -221,6 +221,31 @@ namespace Consumer.Blazor.HttpServices
                     string result = await response.Content.ReadAsStringAsync();
                     IEnumerable<CarouselProductDTO>? products = JsonSerializer.Deserialize<IEnumerable<CarouselProductDTO>>(result, _jsonOptions);
                     return (true, products, null);
+                }
+                else
+                {
+                    string errorMessage = await GetErrorMessageAsync(response);
+                    return (false, null, errorMessage);
+                }
+            }
+        }
+
+        public async Task<(bool IsSuccess, IEnumerable<string>? CarouselImageUrls, string? ErrorMessage)> GetCarouselImageUrlsAsync()
+        {
+            string uri = $"{StaticData.ProductsReadHttpClient_ProductsPath}/carouselImageUrls";
+            var client = _httpClientFactory.CreateClient(StaticData.ProductsReadHttpClient_ClientName);
+
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);
+
+            string correlationId = Guid.NewGuid().ToString();
+            request.Headers.Add("X-Correlation-ID", correlationId);
+
+            using (HttpResponseMessage response = await client.SendAsync(request))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    var imageUrls = await response.Content.ReadFromJsonAsync<IEnumerable<string>>();
+                    return (true, imageUrls, null);
                 }
                 else
                 {

@@ -21,7 +21,8 @@ namespace Products.Read.API.Abstractions
 
         Task<GetProductSummaryByIdResult> GetProductSummaryByIdAsync(int id);
 
-        Task<CarouselResult> GetCarouselProductImagesAsync();
+        Task<CarouselProductResult> GetCarouselProductsAsync();
+        Task<CarouselImageUrlResult> GetCarouselImageUrlsAsync();
 
         Task<(bool IsSuccess, int ProductCount, string? ErrorMessage)> GetProductCountAsync();
     }

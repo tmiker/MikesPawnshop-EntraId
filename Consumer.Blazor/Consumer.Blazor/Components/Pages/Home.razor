@@ -1,50 +1,16 @@
 ﻿@page "/"
+@using Consumer.Blazor.Components.Pages.Shared
 @rendermode InteractiveServer
-@inject IPublicProductsReadHttpService _productReadSideHttpClient
 
 <PageTitle>Consumer Client Home</PageTitle>
 
-<h2 class="mt-4">Welcome to Mike's Pawnshop</h2>
+<h2 class="mt-4">Welcome to Mike's Pawnshop!</h2>
 
 <br />
 
-@if (_currentProduct is not null && _currentProduct.ImageData is not null)
-{
-    <h4>Product Count: @_carouselProducts?.Count()</h4>
-
-    <div class="row mt-4">
-        <div class="col-12 text-center">
-            <img src="@_currentProduct.ImageData.ImageUrl" alt="@_currentProduct.Name" />
-            <div class="row">
-                <div class="col-12 text-center">
-                    <h5>@_currentProduct.Name</h5>
-                    <p>@_currentProduct.Category</p>
-                </div>
-            </div>
-        </div>
-    </div>
-}
-else
-{
-    <p>Loading carousel products...</p>
-}
+<Carousel />
 
 @code {
-    private List<CarouselProductDTO>? _carouselProducts;
-    private CarouselProductDTO? _currentProduct;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            var productResult = await _productReadSideHttpClient.GetCarouselProductsAsync();
-            if (productResult.IsSuccess)
-            {
-                _carouselProducts = productResult.CarouselProducts?.ToList();
-                _currentProduct = _carouselProducts?.Where(c => c.ImageData is not null).FirstOrDefault();
-                StateHasChanged();
-            }
-        }
-    }
 }
 

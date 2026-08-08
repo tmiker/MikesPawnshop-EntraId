@@ -2,13 +2,13 @@
 
 namespace Products.Read.API.QueryResponses
 {
-    public class CarouselResult
+    public class CarouselProductResult
     {
         public bool IsSuccess { get; set; }
         public IEnumerable<CarouselProductDTO>? CarouselProducts { get; set; }
         public string? ErrorMessage { get; set; }
 
-        public CarouselResult(
+        public CarouselProductResult(
             bool isSuccess,
             IEnumerable<CarouselProductDTO>? carouselProducts,
             string? errorMessage)

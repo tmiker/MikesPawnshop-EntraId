@@ -315,18 +315,16 @@ namespace Products.Read.API.QueryServices
             return new GetProductSummaryByIdResult(true, dto, null);
         }
 
-        public async Task<CarouselResult> GetCarouselProductImagesAsync()
+        public async Task<CarouselProductResult> GetCarouselProductsAsync()
         {
             try
             {
                 var result = await (from p in _db.Products
                              join i in _db.ImageData on p.Id equals i.ProductId into productImages
-                             //from pi in productImages.DefaultIfEmpty()
-                             //group pi by new { p.Id, p.Name, p.Category } into g
                              select new CarouselProductDTO
                              {
-                                 Name = p.Name, // g.Key.Name,
-                                 Category = p.Category, // g.Key.Category,
+                                 Name = p.Name, 
+                                 Category = p.Category, 
                                  Description = p.Description,
                                  Price = p.Price,
                                  Currency = p.Currency,
@@ -334,21 +332,32 @@ namespace Products.Read.API.QueryServices
                                  ImageData = p.Images != null && p.Images.Any() ? p.Images.First().ToDTO() : null
                              }).ToListAsync();
 
-                return new CarouselResult(true, result, null);
-
-                //var products = await _db.Products.Include(p => p.Images).AsSplitQuery().ToListAsync();
-                //var carouselProducts = products.Select(p => new CarouselProductDTO
-                //{
-                //    Name = p.Name,
-                //    Category = p.Category,
-                //    ImageData = p.Images != null && p.Images.Any() ? p.Images.First().ToDTO() : null
-                //}).ToList();
-                //return new CarouselResult(true, carouselProducts, null);
+                return new CarouselProductResult(true, result, null);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while retrieving carousel product images.");
-                return new CarouselResult(false, null, "An error occurred connecting with the Products Read-Side Database. Please try again later.");
+                return new CarouselProductResult(false, null, "An error occurred connecting with the Products Read-Side Database. Please try again later.");
+            }
+        }
+
+        public async Task<CarouselImageUrlResult> GetCarouselImageUrlsAsync()
+        {
+            try
+            {
+                var result = await (from p in _db.Products
+                                    join i in _db.ImageData on p.Id equals i.ProductId into productImages
+                                    select p.Images != null && p.Images.Any() ? p.Images.First().ImageUrl : string.Empty
+                                    ).ToListAsync();
+
+                List<string> urls = result.Where(url => !string.IsNullOrEmpty(url)).ToList();
+
+                return new CarouselImageUrlResult(true, urls, null);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while retrieving carousel product image urls.");
+                return new CarouselImageUrlResult(false, null, "An error occurred connecting with the Products Read-Side Database. Please try again later.");
             }
         }
 

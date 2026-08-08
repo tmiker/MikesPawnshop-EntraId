@@ -14,6 +14,7 @@ namespace Consumer.Blazor.Client.Abstractions
         Task<(bool IsSuccess, ProductDTO? Product, string? ErrorMessage)> GetProductByIdAsync(int id);
         Task<(bool IsSuccess, ProductSummaryDTO? ProductSummary, string? ErrorMessage)> GetProductSummaryByIdAsync(int id);
         Task<(bool IsSuccess, IEnumerable<CarouselProductDTO>? CarouselProducts, string? ErrorMessage)> GetCarouselProductsAsync();
+        Task<(bool IsSuccess, IEnumerable<string>? CarouselImageUrls, string? ErrorMessage)> GetCarouselImageUrlsAsync();
         Task<(bool IsSuccess, string? ErrorMessage)> ThrowExceptionForTestingAsync(ThrowExceptionDTO throwExceptionDTO, CancellationToken cancellationToken);
     }
 }
