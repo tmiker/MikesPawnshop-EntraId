@@ -187,7 +187,7 @@ app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(Admin.Blazor.Client._Imports).Assembly);
 
-app.MapGet("/ping", () => "Blazor Admin Client is up and running!  Last Build: 7 Aug 2026 @ 23:00 CST").AllowAnonymous();
+app.MapGet("/ping", () => "Blazor Admin Client is up and running!  Last Build: 8 Aug 2026 @ 13:00 CST").AllowAnonymous();
 
 app.MapGet("/login", (string? returnUrl, HttpContext httpContext) =>
 {
