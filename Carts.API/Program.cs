@@ -116,7 +116,7 @@ try
 
     app.MapControllers();
 
-    app.MapGet("/", () => "Carts API is up and running. Last Build: 18 Jul 2026 @ 18:20 CST");
+    app.MapGet("/", () => "Carts API is up and running. Last Build: 7 Aug 2026 @ 23:00 CST");
 
     //// YARP healthcheck endpoint - uncomment if configure YARP HealthChecks for Carts - use this URL in YARP
     //app.MapHealthChecks("/api/carts/healthYarp", new HealthCheckOptions

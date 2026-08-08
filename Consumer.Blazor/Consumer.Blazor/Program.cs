@@ -39,7 +39,7 @@ string yarpProxyBaseUrl = builder.Environment.IsDevelopment() ?
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApp(msIdentityOptions =>
     {
-        /// see: http s://learn.microsoft.com/en-us/entra/identity-platform/msal-client-application-configuration#:~:text=The%20authority%20is%20a%20U
+        /// see: learn.microsoft.com/en-us/entra/identity-platform/msal-client-application-configuration#:~:text=The%20authority%20is%20a%20U
         /// NOTE: If configure 'Authority' when using Microsoft.Identity.Web, the 'Instance', 'TenantId', and 'Domain' options are ignored. 
         /// So, to use those options, do not configure 'Authority' and instead configure 'Instance', 'TenantId', and 'Domain' as shown below.
         
@@ -168,7 +168,7 @@ app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(Consumer.Blazor.Client._Imports).Assembly);
 
-app.MapGet("/ping", () => "Blazor Consumer Client is up and running!  Last Build: 28 Jul 2026 @ 1840 CST").AllowAnonymous();
+app.MapGet("/ping", () => "Blazor Consumer Client is up and running!  Last Build: 7 Aug 2026 @ 23:00 CST").AllowAnonymous();
 
 app.MapGet("/login", (string? returnUrl, HttpContext httpContext) =>
 {
