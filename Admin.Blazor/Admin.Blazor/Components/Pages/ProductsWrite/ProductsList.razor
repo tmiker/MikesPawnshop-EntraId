@@ -213,6 +213,11 @@
     <AddProductModal ModalTitle="Add Product" SubmitButtonTitle="Add Product" AddNewProductDTO="@_addProductDTO" Submit="SubmitAddProduct" CancelAddProduct="CancelAddProduct" />
 }
 
+@* @if (_updateStatusDTO is not null)
+{
+    <UpdateStatusModal ModalTitle="Update Product Status" SubmitButtonTitle="Update" StatusUpdateDTO="@_updateStatusDTO" Submit="SubmitUpdateProductStatus" Cancel="CancelUpdateProductStatus" />
+}) *@
+
 @if (_purgeDataDTO is not null)
 {
     <PurgeDataConfirmationModal ModalTitle="Confirm Purge Data" SubmitButtonTitle="Purge Data" PurgeDataDTO="@_purgeDataDTO" Submit="SubmitPurgeData" CancelPurgeData="CancelPurgeData" />
@@ -278,6 +283,28 @@
         _addProductDTO = null;
         await RefreshData();
     }
+
+    // //// ****************** UPDATE PRODUCT STATUS *****************
+    // private UpdateStatusDTO? _updateStatusDTO = null;
+    // private void UpdateProductStatus(Guid productId) 
+    // {
+    //     ProductSnapshotDTO? product = _products?.FirstOrDefault(p => p.Id == productId);
+    //     if (product is null) { _errorMessage = $"The product with Id {productId} was not found."; return; }
+    //     _updateStatusDTO = new UpdateStatusDTO(productId.ToString(), product.Status ?? "Active");
+    // }
+    // private void CancelUpdateProductStatus() => _updateStatusDTO = null;
+    // private async Task SubmitUpdateProductStatus()
+    // {
+    //     if (_updateStatusDTO is null) return;
+    //     var result = await _writeSideHttpClient.UpdateStatusAsync(_updateStatusDTO!, _cancellationTokenSource!.Token);
+    //     if (!result.IsSuccess) _errorMessage = result.ErrorMessage;
+    //     // _updateStatusDTO = null;
+    //     // await RefreshData();
+    //     ProductSnapshotDTO? product = _products?.FirstOrDefault(p => p.Id == Guid.Parse(_updateStatusDTO.ProductId));
+    //     if (product is not null) { product.Status = _updateStatusDTO.Status; }
+    //     _updateStatusDTO = null;
+    //     this.StateHasChanged();
+    // }
 
     //// ****************** PURGE DATA *****************
     private PurgeDataDTO? _purgeDataDTO = null;

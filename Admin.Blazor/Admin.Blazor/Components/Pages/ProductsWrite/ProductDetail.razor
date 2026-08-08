@@ -86,6 +86,19 @@
                             <InputText class="bg-dark text-light form-control" id="status" @bind-Value="@_product.Status" />
                         </div>
                     </div>
+                    <div class="form-group row">
+                        <div class="col-3">
+                            <label for="statusSelect">Status:</label>
+                        </div>
+                        <div class="col-8">
+                            <InputSelect class="bg-dark text-light form-select" id="statusSelect" @bind-Value="@_product.Status" @bind-Value:after="UpdateProductStatus">
+                                <option value="Active">Active</option>
+                                <option value="InActive">InActive</option>
+                                <option value="Obsolete">Obsolete</option>
+                            </InputSelect>
+                            @* <InputText class="bg-dark text-light form-control" id="statusSelect" @bind-Value="@_product.Status" /> *@
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-3">
                             <label for="qoh">On Hand:</label>
@@ -322,6 +335,10 @@
 {
     <DeleteDocumentModal ModalTitle="Confirm Delete Document" SubmitButtonTitle="Delete" DocumentToDelete="@_deleteDocumentDTO" Submit="SubmitDeleteDocument" Cancel="CancelDeleteDocument" />
 }
+@if (_updateStatusDTO is not null)
+{
+    <UpdateStatusModal ModalTitle="Update Product Status" SubmitButtonTitle="Update" StatusUpdateDTO="@_updateStatusDTO" Submit="SubmitUpdateProductStatus" Cancel="CancelUpdateProductStatus" />
+}
 
 @code {
 
@@ -340,7 +357,7 @@
     private string? _successMessage;
     private void ClearErrorMessage() => _errorMessage = null;
     private void ClearSuccessMessage() => _successMessage = null;
-    
+
     private ImageDataSnapshotDTO? _primaryImage { get; set; }
 
     private bool _showDocuments = false;
@@ -452,6 +469,37 @@
         }
     }
 
+    // //// ****************** UPDATE PRODUCT STATUS *****************
+    // private UpdateStatusDTO? _updateStatusDTO = null;
+    // private async Task UpdateProductStatus()
+    // {
+    //     _updateStatusDTO = new UpdateStatusDTO(_product!.Id.ToString(), _product.Status ?? "Active");
+    //     var result = await _writeSideHttpClient.UpdateStatusAsync(_updateStatusDTO!, _cancellationTokenSource!.Token);
+    //     if (!result.IsSuccess) _errorMessage = result.ErrorMessage;
+    //     _updateStatusDTO = null;
+    // }
+
+    //// ****************** UPDATE PRODUCT STATUS *****************
+    private UpdateStatusDTO? _updateStatusDTO = null;
+    private string? _originalStatus;
+    private void UpdateProductStatus()
+    {
+        _updateStatusDTO = new UpdateStatusDTO(_product!.Id.ToString(), _product.Status ?? "Active");
+    }
+    private void CancelUpdateProductStatus() { _updateStatusDTO = null; _product!.Status = _originalStatus; }
+    private async Task SubmitUpdateProductStatus()
+    {
+        if (_updateStatusDTO is null) return;
+        // var result = await _writeSideHttpClient.UpdateStatusAsync(_updateStatusDTO!, _cancellationTokenSource!.Token);
+        // if (!result.IsSuccess) _errorMessage = result.ErrorMessage;
+
+        await Toastr.ShowToastrInfo($"Simulated updating product status in the database.");
+
+        _originalStatus = _product!.Status;
+        _updateStatusDTO = null;
+        this.StateHasChanged();
+    }
+
     private async Task ReloadAsync()
     {
         var result = await _writeSideHttpClient.GetProductSnapshotByIdAsync(aggregateId);
@@ -461,6 +509,7 @@
             if (_product is not null)
             {
                 _productAggregateId = _product.Id.ToString();
+                _originalStatus = _product.Status;
                 if (_product.Images is not null && _product.Images.Any())
                 {
                     _primaryImage = _product.Images[0];
@@ -489,26 +538,28 @@
     {
         if (isFirstRender)
         {
-            var result = await _writeSideHttpClient.GetProductSnapshotByIdAsync(aggregateId);
-            if (result.IsSuccess)
-            {
-                _product = result.ProductSnapshot;
-                if (_product is not null)
-                {
-                    _productAggregateId = _product.Id.ToString();
-                    if (_product.Images is not null && _product.Images.Any())
-                    {
-                        _primaryImage = _product.Images[0];
-                        _imageCount = _product.Images.Count;
-                    }
-                    if (_product.Documents is not null)
-                    {
-                        _documentCount = _product.Documents.Count;
-                    }
-                }
-                // await CheckAzureStorageStatus();
-            }
-            else _errorMessage = result.ErrorMessage;
+            // var result = await _writeSideHttpClient.GetProductSnapshotByIdAsync(aggregateId);
+            // if (result.IsSuccess)
+            // {
+            //     _product = result.ProductSnapshot;
+            //     if (_product is not null)
+            //     {
+            //         _productAggregateId = _product.Id.ToString();
+            //         if (_product.Images is not null && _product.Images.Any())
+            //         {
+            //             _primaryImage = _product.Images[0];
+            //             _imageCount = _product.Images.Count;
+            //         }
+            //         if (_product.Documents is not null)
+            //         {
+            //             _documentCount = _product.Documents.Count;
+            //         }
+            //     }
+            //     // await CheckAzureStorageStatus();
+            // }
+            // else _errorMessage = result.ErrorMessage;
+
+            await ReloadAsync();
             this.StateHasChanged();
         }
     }
