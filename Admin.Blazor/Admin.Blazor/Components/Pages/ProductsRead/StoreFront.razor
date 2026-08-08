@@ -306,7 +306,6 @@
         if (result.IsSuccess)
         {
             await CartItemCountChanged(result.CartItemCount);
-            // _cartButtonText = MyCartData is null || MyCartData.ItemCount < 0 ? "Cart" : $"Cart ({MyCartData.ItemCount})"; moved to CartItemCountChanged
             ShoppingCart = null; // will refresh when select cart view
         }
         else
@@ -336,7 +335,6 @@
         if (result.IsSuccess)
         {
             await CartItemCountChanged(result.CartItemCount);
-            // _cartButtonText = MyCartData is null || MyCartData.ItemCount < 0 ? "Cart" : $"Cart ({MyCartData.ItemCount})"; 
             ShoppingCart = null; // will refresh when select cart view
         }
         else

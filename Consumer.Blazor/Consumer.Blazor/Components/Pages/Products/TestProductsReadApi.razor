@@ -67,17 +67,12 @@
 @code {
     private List<string> _exceptionTypeList { get; } = new()
     {
-        // "ProductEventStoreException",
         "ValidationException",
         "NotFoundException",
-        // "RequestFailedException",            // Read Side API won't get this Azure Blob Storage exception
         "ArgumentException",
-        // "UnauthorizedAccessException",       // not configured to throw an exception - handled by .net core middleware
-        // "ForbiddenException",                // not configured to throw an exception - handled by .net core middleware
         "ConflictException",
         "ArgumentNullException",
         "InvalidOperationException"
-        // "TaskCanceledException"
     };
     private string? _exceptionType;
     private ThrowExceptionDTO? _throwExceptionDTO;

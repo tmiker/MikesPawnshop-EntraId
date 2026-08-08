@@ -7,13 +7,12 @@
     @if (ProductSummaries != null && ProductSummaries.Any())
     {
 
-            @foreach (var product in ProductSummaries)
-            {
-                <div class="col-3">
-                    <ProductCard Product="product" AddToCartCallback="() => AddToCart(product.AggregateId)" ProductDetailCallback="() => Detail(product.Id)" />
-                </div>
-
-            }
+        @foreach (var product in ProductSummaries)
+        {
+            <div class="col-3">
+                <ProductCard Product="product" AddToCartCallback="() => AddToCart(product.AggregateId)" ProductDetailCallback="() => Detail(product.Id)" />
+            </div>
+        }
     }
 </div>
 

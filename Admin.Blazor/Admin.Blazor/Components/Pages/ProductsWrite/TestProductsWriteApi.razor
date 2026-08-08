@@ -38,17 +38,12 @@
 
     private List<string> _exceptionTypeList { get; } = new()
     {
-        // "ProductEventStoreException",
         "ValidationException",
         "NotFoundException",
         "RequestFailedException",
         "ArgumentException",
-        // "UnauthorizedAccessException",       // not configured to throw an exception - handled by .net core middleware
-        // "ForbiddenException",                // not configured to throw an exception - handled by .net core middleware
         "ConflictException",
-        // "ArgumentNullException",
-        "InvalidOperationException",
-        // "TaskCanceledException"
+        "InvalidOperationException"
     };
     private string? _exceptionType;
     private ThrowExceptionDTO? _throwExceptionDTO;

@@ -15,6 +15,5 @@
             Message = null;
             Progress = null;
         }
-
     }
 }

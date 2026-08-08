@@ -2,7 +2,6 @@
 <div class="modal fade show d-block" tabindex="-1" role="dialog">
     <div class="modal-backdrop fade show" @onclick="Cancel"></div>
     <div class="modal-dialog" style="z-index: 1050">
-        <!-- Pop it above the backdrop -->
         <div class="modal-content">
             @if (AccountToAdd != null)
             {
@@ -50,25 +49,6 @@
                                 <ValidationMessage For="@(() => AccountToAdd.PhoneNumber)" />
                             </div>
                         </div>
-                        @* <div hidden class="form-group row">
-                            <div class="col-3 text-center">
-                                <label for="status">Status:</label>
-                            </div>
-                            <div class="col-9">
-                                <InputText inert class="form-control " id="status" @bind-Value="@AccountToAdd.AccountStatus" />
-                                <ValidationMessage For="@(() => AccountToAdd.AccountStatus)" />
-                            </div>
-                        </div>
-                        <div hidden class="form-group row">
-                            <div class="col-3 text-center">
-                                <label for="credit">Credit Limit:</label>
-                            </div>
-                            <div class="col-9">
-                                <InputNumber inert class="form-control " id="credit" @bind-Value="@AccountToAdd.CreditLimit" />
-                                <ValidationMessage For="@(() => AccountToAdd.CreditLimit)" />
-                            </div>
-                        </div> *@
-
                         <br />
                         <div class="row">
                             <div class="col-5 offset-1">

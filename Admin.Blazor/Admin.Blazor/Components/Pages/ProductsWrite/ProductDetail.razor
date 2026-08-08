@@ -68,7 +68,6 @@
                 </div>
             </div>
 
-
             <div class="row m-0 p-0">
                 <div class="col-6">
                     <div class="form-group row">
@@ -111,8 +110,6 @@
                             <InputNumber class="bg-dark text-light form-control" id="imageCount" @bind-Value="@_imageCount" />
                         </div>
                     </div>
-
-
 
                 </div>
                 <div class="col-6">
@@ -157,14 +154,11 @@
                         </div>
                     </div>
 
-
-
                 </div>
             </div>
 
             <br />
             <!-- COLUMN 1 END -->
-            
             <br />
             <div class="row">
                 <div class="col-4 offset-5">
@@ -273,9 +267,6 @@
                             <div class="col-6 offset-2 text-center">
                                 <span><i>@_primaryImage.Name</i></span>
                             </div>
-                            @* <div class="col-1 offset-2 text-center">
-                                <a class="btn btn-sm btn-danger " @onclick="(() => DeleteImage(_primaryImage.Name!))">&#128465;</a>
-                            </div> *@
                             <div class="col-1 offset-2 text-center">
                                 <a class="btn button-custom-toolbar-char-danger" title="Delete image" role="button" @onclick="(() => DeleteImage(_primaryImage.Name!))">
                                     <i class="bi-trash2"></i>
@@ -283,18 +274,6 @@
                             </div>
                         }
                     </div>
-                   @*  <hr/>
-                    <div class="row">
-                            <div class="row">
-                            @foreach (var thumb in _product.Images)
-                            {
-                                <div class="col-3 text-center">
-                                    <img src="@thumb.ThumbnailUrl" width="100" />
-                                    <label class="text-primary"><i>@thumb.Caption</i></label>
-                                </div>
-                            }
-                            </div>
-                    </div> *@
                 }
                 else
                 {
@@ -322,7 +301,6 @@
                     }
                 </div>
             }
-
             <!-- COLUMN 2 END -->
         </div>
     </div>
@@ -355,7 +333,6 @@
     private int _imageCount;
     private int _documentCount;
 
-    // private bool _azureStorageStatus;
     private bool _azureStorageWasChecked = false;
     private bool _azureStorageConnected = false;
 
@@ -364,7 +341,6 @@
     private void ClearErrorMessage() => _errorMessage = null;
     private void ClearSuccessMessage() => _successMessage = null;
     
-    // private bool _showAddImageView { get; set; }
     private ImageDataSnapshotDTO? _primaryImage { get; set; }
 
     private bool _showDocuments = false;

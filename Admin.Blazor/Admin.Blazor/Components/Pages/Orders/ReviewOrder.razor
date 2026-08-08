@@ -44,11 +44,6 @@
     {
         <br />
         <h4>Order Items</h4>
-        @* <div class="row">
-        <div class="col-12 text-center text-info">
-        <textarea class="form-control" rows="10">@_jsonCart</textarea>
-        </div>
-        </div> *@
         @foreach (var item in _shoppingCart.Items!)
         {
             <div class="row mt-4">
@@ -64,9 +59,6 @@
                 <div class="col-3">
                     <h5><b>Line Total: $ @item.TotalItemPrice</b></h5>
                 </div>
-                @* <div class="col-2">
-            <img src="@item.ThumbnailUrl" width="80" />
-            </div> *@
             </div>
         }
         <div class="row mt-4">
@@ -89,9 +81,6 @@
         <br />
         <div class="card-body bg-dark text-light mt-4">
             <div class="row">
-                @* <div class="col-2 text-center text-info">
-                    <p><b>Account Owner Id: @_accountInfo.AccountOwnerId</b></p>
-                </div> *@
                 <div class="col-4 text-center text-info">
                     <p><b>Account Id: @_accountInfo.AccountId</b></p>
                 </div>
@@ -259,8 +248,6 @@
 
     @if (_reviewOrderResult != null)
     {
-        @* <EditForm Model="@_reviewOrderResult" OnValidSubmit="SubmitOrderAsync" FormName="submitOrderForm"> *@
-
         <div class="row">
             <div class="col-3 offset-2">
                 <a class="btn btn-outline-warning form-control" @onclick="BackToCart">Cancel</a>
@@ -269,7 +256,6 @@
                 <a class="btn btn-outline-success form-control" @onclick="SubmitOrderAsync">Submit Order</a>
             </div>
         </div>
-        @* </EditForm> *@
     }
 
 }
@@ -299,12 +285,6 @@ else
     private bool _showSelectShipping { get; set; } = false;
     private bool _showSelectBilling { get; set; } = false;
 
-    // // Dev Helpers
-    // private string? _jsonAccount { get; set; }
-    // private string? _jsonCart { get; set; }
-    // private string? _jsonShipping { get; set; }
-    // private string? _jsonBilling { get; set; }
-
     private async Task ReviewCustomerOrder()
     {
         var result = await _ordersService.ReviewOrderAsync();
@@ -317,21 +297,14 @@ else
             _reviewOrderResult = result.ReviewOrderResult;
             _accountInfo = result.ReviewOrderResult.Account;
             _shoppingCart = result.ReviewOrderResult.ShoppingCart;
-            // _jsonAccount = JsonSerializer.Serialize(_accountDetail);
-            // _jsonCart = JsonSerializer.Serialize(_shoppingCart);
 
             _shippingAddress = _accountInfo?.Addresses.FirstOrDefault(a => a.IsPrimaryShipping == true);
             _billingAddress = _accountInfo?.Addresses.FirstOrDefault(a => a.IsPrimaryBilling == true);
-            // _jsonShipping = JsonSerializer.Serialize(_shippingAddress);
-            // _jsonBilling = JsonSerializer.Serialize(_billingAddress);
-
         }
         if (!string.IsNullOrWhiteSpace(result.ErrorMessage))
         {
             _errorMessage = result.ErrorMessage;
-            // await _toastr.ShowToastrError(result.ErrorMessage!);
         }
-
     }
 
     private void ToggleSelectShipping() => _showSelectShipping = !_showSelectShipping;
@@ -358,19 +331,16 @@ else
         if (_accountInfo is null)
         {
             _errorMessage = $"No account found.  Please go to My Account and create an account.";
-            // await _toastr.ShowToastrError($"No account found.  Please go to My Account and create an account.");
             return;
         }
         if (_shippingAddress is null || _billingAddress is null)
         {
             _errorMessage = $"Missing address details.  Please go to My Account and add address information.";
-            // await _toastr.ShowToastrError($"Missing address details.  Please go to My Account and add address information.");
             return;
         }
         if (_shoppingCart?.Items is null || !_shoppingCart.Items.Any())
         {
             _errorMessage = $"No shopping cart or no shopping cart items.";
-            // await _toastr.ShowToastrError($"No shopping cart or no shopping cart items.");
             return;
         }
 
@@ -385,19 +355,14 @@ else
         var submitOrderResult = await _ordersService.SubmitOrderAsync(addOrderDTO);
         if (submitOrderResult.IsSuccess)
         {
-            //await _toastr.ShowToastrSuccess($"Order submitted. Reference OrderId: {submitOrderResult.OrderId}.");
-            // _nav.NavigateTo("myOrders");
-            // _nav.NavigateTo($"orderDetail/{submitOrderResult.OrderId}");
             _nav.NavigateTo($"orderSummary/{submitOrderResult.OrderId}");
         }
         else 
         {
             _errorMessage = submitOrderResult.ErrorMessage;
-            // await _toastr.ShowToastrError($"{submitOrderResult.ErrorMessage}");
         }
 
         _errorMessage = $"API KEY AUTH AND PII ENCRYPTION REQUIRED FOR CART INTERNAL SERVICES!!!";
-        // await _toastr.ShowToastrInfo($"API KEY AUTH AND PII ENCRYPTION REQUIRED FOR CART INTERNAL SERVICES!!!");
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -411,10 +376,5 @@ else
             if (accountResult.IsSuccess) _accountEstablished = true;
             this.StateHasChanged();
         }
-    }
-
-    protected override void OnInitialized()
-    {
-        // _shoppingCart = MyCart?.ToDTO();
     }
 }

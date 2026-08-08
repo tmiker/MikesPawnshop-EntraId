@@ -42,7 +42,6 @@ namespace Admin.Blazor.HttpServices
                 var resultDTO = await response.Content.ReadFromJsonAsync<HealthCheckResultDTO>(_jsonSerializerOptions);
                 if (resultDTO is not null)
                 {
-                    // _logger.LogInformation($"ProductsReadHttpService CheckHealthAsync() at path '{request.RequestUri}' Result: \n{JsonSerializer.Serialize(resultDTO)}");
                     return (true, resultDTO, null);
                 }
                 else return (false, null, "Health check result DTO is null.");

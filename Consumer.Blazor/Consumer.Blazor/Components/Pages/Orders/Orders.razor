@@ -198,18 +198,7 @@ else
     {
         if (isFirstRender)
         {
-            // var result = await _orderHttpService.GetAllUserOrdersAsync(_filter, _sortColumn, _sortOrder, _pageNumber, _pageSize);
-            // if (result.IsSuccess)
-            // {
-            //     _orders = result.OrderDTOs?.ToList();
-            //     _pagingData = result.PagingData;
-            // }
-            // else _errorMessage = result.ErrorMessage;
-
-            // _thinking = false;
-
             await RefreshData();
-
             this.StateHasChanged();
         }
     }

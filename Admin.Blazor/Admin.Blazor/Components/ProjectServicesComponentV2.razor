@@ -7,12 +7,6 @@
 
 
 <div class="row mt-4">
-    @* <div class="col-4">
-        <h6 class="mt-2">Check Pawnshop API Resources and Reverse Proxy Status</h6>
-    </div>
-    <div class="col-2">
-        <a class="btn button-custom-success-med form-control" @onclick="PingAllPawnshopEndpoints">Ping All</a>
-    </div> *@
     <div class="col-4">
         <h5>Check Mike's Pawnshop Status</h5>
     </div>
@@ -72,9 +66,6 @@
                     </td>
                     <td>@resource.Message</td>
                     <td>@resource.Progress</td>
-                    @* <td>
-                        <a class="btn button-custom-table-primary" @onclick="(() => PingResource(resource.ResourceName))">Ping</a>
-                    </td> *@
                     <td>
                         @if (resource.Progress is not null && resource.Progress.Contains("Database"))
                         {
@@ -121,7 +112,6 @@
     private ResourceStatusDTO _ordersApiResourceDTO = new ResourceStatusDTO { ResourceName = "Orders API" };
     private ResourceStatusDTO _productsReadApiResourceDTO = new ResourceStatusDTO { ResourceName = "Products Read API" };
     private ResourceStatusDTO _productsWriteApiResourceDTO = new ResourceStatusDTO { ResourceName = "Products Write API" };
-    // private ResourceStatusDTO _yarpResourceDTO = new ResourceStatusDTO { ResourceName = "Yarp Proxy" };
     private List<ResourceStatusDTO>? _resourceDTOs;
 
     private string? _yarpProxyResponse;
@@ -171,7 +161,7 @@
         if (result.IsSuccess)
         {
             _accountsApiResourceDTO.ServiceAvailable = true;
-            _accountsApiResourceDTO.Message = "API success";   // result.Result;
+            _accountsApiResourceDTO.Message = "API success";   
             // check Mongo Database
             if (_checkMongoDatabases)
             {
@@ -208,7 +198,7 @@
         if (result.IsSuccess)
         {
             _cartsApiResourceDTO.ServiceAvailable = true;
-            _cartsApiResourceDTO.Message = "API success";   // result.Result;
+            _cartsApiResourceDTO.Message = "API success";   
             if (_checkMongoDatabases)
             {
                 // check Mongo Database
@@ -245,7 +235,7 @@
         if (result.IsSuccess)
         {
             _ordersApiResourceDTO.ServiceAvailable = true;
-            _ordersApiResourceDTO.Message = "API success";   // result.Result;
+            _ordersApiResourceDTO.Message = "API success";  
             if (_checkMongoDatabases)
             {
                 // check Mongo Database
@@ -282,7 +272,7 @@
         if (result.IsSuccess)
         {
             _productsReadApiResourceDTO.ServiceAvailable = true;
-            _productsReadApiResourceDTO.Message = "API success";   // result.Result;
+            _productsReadApiResourceDTO.Message = "API success";  
             if (_checkSqlDatabases)
             {
                 // check Sql Database
@@ -321,7 +311,7 @@
         if (result.IsSuccess)
         {
             _productsWriteApiResourceDTO.ServiceAvailable = true;
-            _productsWriteApiResourceDTO.Message = "API success";   // result.Result;
+            _productsWriteApiResourceDTO.Message = "API success";  
             if (_checkSqlDatabases)
             {
                 // check Sql Database

@@ -150,14 +150,6 @@
                 </div>
                 <div class="col-3 text-center">
                     <p class="mt-2"><i>(@_product.QuantityAvailable available)</i></p>
-                    @* <div class="form-group row">
-                        <div class="col-5">
-                            <label for="lowstock">LST:</label>
-                        </div>
-                        <div class="col-7">
-                            <InputNumber inert class="bg-dark text-light form-control " id="lowstock" @bind-Value="_product.LowStockThreshold" />
-                        </div>
-                    </div> *@
                 </div>
             </div>
 
@@ -367,7 +359,6 @@
     {
         if (isFirstRender)
         {
-            Console.WriteLine($"@@@@@@@@@@ **************** StorefrontProductDetail.razor OnAfterRender was called. *************** @@@@@@@@@");
             var result = await _readSideHttpClient.GetProductByIdAsync(SelectedProductId);
             if (result.IsSuccess) 
             {

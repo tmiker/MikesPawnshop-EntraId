@@ -1,7 +1,6 @@
 
 <nav class="navbar navbar-expand-md navbar-dark">
     <div class="container-fluid">
-        @* <a class="navbar-brand" href="">Blazor Template</a> *@
         <a class="px-3" href="">
             <img src="logos/logo10.png" height="44" alt="logo" />
         </a>
@@ -57,16 +56,6 @@
 
                 <AuthorizeView Policy="IsAdminOrManager">
                     <Authorized>
-                        @* <li class="nav-item px-3 dropdown">
-                            <NavLink class="nav-link dropdown-toggle" href="products" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                <i class="bi-tornado"></i> &nbsp; Products
-                            </NavLink>
-                            <div class="dropdown-menu dropdown-menu-dark">
-                                <NavLink class="dropdown-item" href="products/productsRead" Match="NavLinkMatch.All">
-                                    <i class="bi bi-list-nested-nav-menu"></i> &nbsp; Products Read
-                                </NavLink>
-                            </div>
-                        </li> *@
                         <li class="nav-item px-3 dropdown">
                             <NavLink class="nav-link dropdown-toggle" href="claims" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                 <i class="bi-person-fill"></i> &nbsp; Claims
@@ -93,14 +82,6 @@
                                 <div class="dropdown-divider"></div>
                                 <NavLink class="dropdown-item" href="dev/testAccessDeniedRouting" Match="NavLinkMatch.All">
                                     <i class="bi-emoji-astonished-fill"></i> &nbsp; Test Access Denied Routing
-                                </NavLink>
-                                <div class="dropdown-divider"></div>
-                                <NavLink class="dropdown-item" href="dev/toastr-demo-server" Match="NavLinkMatch.All">
-                                    <i class="bi-info-circle"></i> &nbsp; Toastr Server
-                                </NavLink>
-                                <div class="dropdown-divider"></div>
-                                <NavLink class="dropdown-item" href="dev/toastr-demo-client" Match="NavLinkMatch.All">
-                                    <i class="bi-info-circle"></i> &nbsp; Toastr Client
                                 </NavLink>
                             </div>
                         </li>

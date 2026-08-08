@@ -56,7 +56,6 @@
         <a class="btn button-custom-primary-med form-control" @onclick="PingProductsReadAPI">Ping Products Read API</a>
     </div>
     <div class="col-7">
-        @* <input type="text" class="bg-dark text-light form-control" @bind-value="_productsReadApiResponse" /> *@
         <textarea class="bg-dark text-light form-control" rows="2">@_productsReadApiResponse</textarea>
     </div>
     @if (!string.IsNullOrEmpty(_productsReadApiResponse))
@@ -72,7 +71,6 @@
         <a class="btn button-custom-primary-med form-control" @onclick="PingProductsWriteAPI">Ping Products Write API</a>
     </div>
     <div class="col-7">
-        @* <input type="text" class="bg-dark text-light form-control" @bind-value="_productsWriteApiResponse" /> *@
         <textarea class="bg-dark text-light form-control" rows="2">@_productsWriteApiResponse</textarea>
     </div>
 
@@ -265,12 +263,7 @@
             PingYarpProxy()
         };
         await Task.WhenAll(tasks);
-        // var databaseTasks = new List<Task>
-        // {
-        //     PingProductsReadSql(),
-        //     PingProductsWriteSql()
-        // };
-        // await Task.WhenAll(databaseTasks);
+
         _pingAllResult = "Finished pinging all resources.";
         _allThinking = false;
     }

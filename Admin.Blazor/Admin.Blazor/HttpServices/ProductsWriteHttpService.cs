@@ -441,7 +441,6 @@ namespace Admin.Blazor.HttpServices
             int pageSize = 10)
         {
             string uri = $"{StaticData.ProductsWriteHttpClient_DevTestsPath}/eventRecords?aggregateId={aggregateId}&correlationId={correlationId}&minVersion={minVersion}&maxVersion={maxVersion}&pageNumber={pageNumber}&pageSize={pageSize}";
-            // _logger.LogInformation("GET EVENT RECORDS URI: {uri}", uri);
             var client = _httpClientFactory.CreateClient(StaticData.ProductsWriteHttpClient_ClientName);
 
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, uri);

@@ -2,19 +2,13 @@
 ﻿<div class="modal fade show d-block" tabindex="-1" role="dialog">
     <div class="modal-backdrop fade show" @onclick="CancelPurgeData"></div>
     <div class="modal-dialog" style="z-index: 1050">
-        <!-- Pop it above the backdrop -->
-
         <div class="modal-content rounded-3 border">
-
             <div class="modal-header">
                 <h5>@ModalTitle</h5>
             </div>
-
             <div class="modal-body">
-
                 <EditForm Model="PurgeDataDTO" OnValidSubmit="SubmitPurgeData" FormName="PurgeDataModalForm">
                     <DataAnnotationsValidator />
-                    @* EditForm (but not plain forms) automatically adds Antiforgery component and attribute unless manually disabled *@
                     @if (PurgeDataDTO != null)
                     {
                         <div class="row">
@@ -36,9 +30,7 @@
                                 <ValidationMessage For="@(() => PurgeDataDTO.PinNumber)" />
                             </div>
                         </div>
-
                         <br />
-
                         <div class="row mt-2">
                             <div class="col-4 offset-4">
                                 <button class="btn button-modal-primary form-control" @onclick="CancelPurgeData">Cancel</button>
@@ -47,7 +39,6 @@
                                 <button class="btn button-modal-success form-control" type="submit">@SubmitButtonTitle</button>
                             </div>
                         </div>
-
                     }
                     else
                     {
@@ -69,7 +60,6 @@
         </div>
     </div>
 </div>
-
 
 @code {
 

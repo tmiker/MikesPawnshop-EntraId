@@ -74,8 +74,6 @@
     <div class="row mt-2">
         <EditForm Model="_addImageDTO" OnValidSubmit="SubmitAddImage" FormName="AddProductImageForm">
             <DataAnnotationsValidator />
-            @* <ValidationSummary /> or <ValidationSummary Model="ImageToAdd" /> *@
-            @* EditForm (but not plain forms) automatically adds Antiforgery component and attribute unless manually disabled *@
             <div class="col-12 text-center">
                 <div class="form-group row">
                     <div class="col-3">
@@ -154,8 +152,6 @@
                         <th>Name</th>
                         <th>Category</th>
                         <th>Price</th>
-                        @* <th>Currency</th> *@
-                        @* <th>Status</th> *@
                         <th>Images</th>
                         <th>Documents</th>
                         <th>Version</th>
@@ -173,8 +169,6 @@
                             <td>@product.Name</td>
                             <td>@product.Category</td>
                             <td>@product.Price</td>
-                            @* <td>@product.Currency</td> *@
-                            @* <td>@product.Status</td> *@
                             <td>@product.Images?.Count</td>
                             <td>@product.Documents?.Count</td>
                             <td>@product.Version</td>

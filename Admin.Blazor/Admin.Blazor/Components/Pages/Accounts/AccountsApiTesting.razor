@@ -104,7 +104,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var address in _account.Addresses)    // System.NullReferenceException: 'Object reference not set to an instance of an object.'  address was null.
+                        @foreach (var address in _account.Addresses)    
                         {
                             <tr>
                                 <td>@address.Street1</td>
