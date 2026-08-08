@@ -137,7 +137,7 @@
 }
 @if (_addDocumentDTO is not null)
 {
-    <AddDocumentModal ModalTitle="Add Document" AddButtonTitle="Add Doc" DocumentToAdd="@_addDocumentDTO" Submit="SubmitAddDocument" Cancel="CancelAddDocument" />
+    <AddDocumentModal ModalTitle="Add Document" SubmitButtonTitle="Add Doc" DocumentToAdd="@_addDocumentDTO" Submit="SubmitAddDocument" Cancel="CancelAddDocument" />
 }
 
 <div class="row mt-2">
@@ -153,8 +153,8 @@
                         <th>Category</th>
                         <th>Price</th>
                         <th>Images</th>
-                        <th>Documents</th>
-                        <th>Version</th>
+                        <th>Docs</th>
+                        <th>Ver</th>
                         <th></th>
                         <th></th>
                         <th></th>
@@ -165,7 +165,7 @@
                     @foreach (var product in _productSnapshots)
                     {
                         <tr>
-                            <td>@product.Id</td>
+                            <td>@product.Id.ToString()[0..8]-...</td>
                             <td>@product.Name</td>
                             <td>@product.Category</td>
                             <td>@product.Price</td>
@@ -173,16 +173,16 @@
                             <td>@product.Documents?.Count</td>
                             <td>@product.Version</td>
                             <td>
-                                <a class="btn btn-success" @onclick="() => AddImage(product.Id.ToString())">Add Image</a>
+                                <a class="btn button-custom-table-success" @onclick="() => AddImage(product.Id.ToString())">Add Image</a>
                             </td>
                             <td>
-                                <a class="btn btn-danger" @onclick="() => DeleteImage(product.Id.ToString())">Delete Image </a>
+                                <a class="btn button-custom-table-danger" @onclick="() => DeleteImage(product.Id.ToString())">Delete Image </a>
                             </td>
                             <td>
-                                <a class="btn btn-success" @onclick="() => AddDocument(product.Id.ToString())">Add Doc</a>
+                                <a class="btn button-custom-table-success" @onclick="() => AddDocument(product.Id.ToString())">Add Doc</a>
                             </td>
                             <td>
-                                <a class="btn btn-danger" @onclick="() => DeleteDocument(product.Id.ToString())">Delete Doc </a>
+                                <a class="btn button-custom-table-danger" @onclick="() => DeleteDocument(product.Id.ToString())">Delete Doc </a>
                             </td>
                         </tr>
                     }
