@@ -9,8 +9,14 @@
 <PageTitle>Manage Products</PageTitle>
 
 <div class="row mt-2">
-    <div class="col-8">
+    <div class="col-4">
         <h3><b>Manage Products</b></h3>
+    </div>
+    <div class="col-4 text-center">
+        @if (_thinking)
+        {
+            <span class="loader-vertical-bars"></span>
+        }
     </div>
     <div class="col-2">
         @if (_apiHealthCheckResult is null)
@@ -213,11 +219,6 @@
     <AddProductModal ModalTitle="Add Product" SubmitButtonTitle="Add Product" AddNewProductDTO="@_addProductDTO" Submit="SubmitAddProduct" CancelAddProduct="CancelAddProduct" />
 }
 
-@* @if (_updateStatusDTO is not null)
-{
-    <UpdateStatusModal ModalTitle="Update Product Status" SubmitButtonTitle="Update" StatusUpdateDTO="@_updateStatusDTO" Submit="SubmitUpdateProductStatus" Cancel="CancelUpdateProductStatus" />
-}) *@
-
 @if (_purgeDataDTO is not null)
 {
     <PurgeDataConfirmationModal ModalTitle="Confirm Purge Data" SubmitButtonTitle="Purge Data" PurgeDataDTO="@_purgeDataDTO" Submit="SubmitPurgeData" CancelPurgeData="CancelPurgeData" />
@@ -232,6 +233,7 @@
     private string? _sortColumn = null;
     private int _minVersion = 0;
     private int _maxVersion = Int32.MaxValue;
+    private bool _thinking;
 
     private int _pageNumber = 1;
     private int _pageSize = 8;
@@ -266,7 +268,6 @@
     private void Detail(string aggregateId) => Nav.NavigateTo($"products/productDetail/{aggregateId}");
 
     //// ****************** ADD AND REMOVE IMAGES AND DOCUMENTS START *******************
-
     private CancellationTokenSource? _cancellationTokenSource = new CancellationTokenSource();
     private async Task CancelOperationAsync() => await _cancellationTokenSource!.CancelAsync();
 
@@ -284,28 +285,6 @@
         await RefreshData();
     }
 
-    // //// ****************** UPDATE PRODUCT STATUS *****************
-    // private UpdateStatusDTO? _updateStatusDTO = null;
-    // private void UpdateProductStatus(Guid productId) 
-    // {
-    //     ProductSnapshotDTO? product = _products?.FirstOrDefault(p => p.Id == productId);
-    //     if (product is null) { _errorMessage = $"The product with Id {productId} was not found."; return; }
-    //     _updateStatusDTO = new UpdateStatusDTO(productId.ToString(), product.Status ?? "Active");
-    // }
-    // private void CancelUpdateProductStatus() => _updateStatusDTO = null;
-    // private async Task SubmitUpdateProductStatus()
-    // {
-    //     if (_updateStatusDTO is null) return;
-    //     var result = await _writeSideHttpClient.UpdateStatusAsync(_updateStatusDTO!, _cancellationTokenSource!.Token);
-    //     if (!result.IsSuccess) _errorMessage = result.ErrorMessage;
-    //     // _updateStatusDTO = null;
-    //     // await RefreshData();
-    //     ProductSnapshotDTO? product = _products?.FirstOrDefault(p => p.Id == Guid.Parse(_updateStatusDTO.ProductId));
-    //     if (product is not null) { product.Status = _updateStatusDTO.Status; }
-    //     _updateStatusDTO = null;
-    //     this.StateHasChanged();
-    // }
-
     //// ****************** PURGE DATA *****************
     private PurgeDataDTO? _purgeDataDTO = null;
     private void PurgeData() => _purgeDataDTO = new PurgeDataDTO();
@@ -319,34 +298,6 @@
         _purgeDataDTO = null;
         await RefreshData();
     }
-
-    // //// ****************** DELETE PRODUCT *****************
-    // private DeleteProductDTO? _deleteProductDTO = null;
-    // private Guid? _productToDeleteAggregateId;
-    // private void DeleteProduct(Guid aggregateId) 
-    // {
-    //     ProductSnapshotDTO? snapshot = _products?.FirstOrDefault(p => p.Id == aggregateId);
-    //     if (snapshot is not null)
-    //     {
-    //         _deleteProductDTO = new DeleteProductDTO() { AggregateId = aggregateId.ToString(), Name = snapshot.Name };
-    //         _productToDeleteAggregateId = aggregateId;
-    //     }
-    // }
-    // private void CancelDeleteProduct() 
-    // {
-    //     _deleteProductDTO = null;
-    //     _productToDeleteAggregateId = null;
-    // }
-    // private async Task SubmitDeleteProduct()
-    // {
-    //     if (_productToDeleteAggregateId is null) { _errorMessage = $"The Aggregate Id of the product was null."; return; }
-    //     var result = await _writeSideHttpClient.DeleteProductByIdAsync(_productToDeleteAggregateId.Value, _cancellationTokenSource!.Token);
-    //     if (result.IsSuccess) _successMessage = "Product successfully deleted.";
-    //     else _errorMessage = result.ErrorMessage;
-    //     _deleteProductDTO = null;
-    //     _productToDeleteAggregateId = null;
-    //     await RefreshData();
-    // }
 
     private async Task ClearFilters()
     {
@@ -380,6 +331,7 @@
 
     private async Task RefreshData()
     {
+        _thinking = true;
         var result = await _writeSideHttpClient.GetPagedAndFilteredProductSnapshotsAsync(_aggregateIdString, _categoryFilter, _sortColumn, _pageNumber, _pageSize);
         if (result.IsSuccess)
         {
@@ -388,22 +340,21 @@
             _productsCount = _products.Count;
         }
         else Console.WriteLine(result.ErrorMessage);
+        _thinking = false;
     }
 
     protected override async Task OnAfterRenderAsync(bool isFirstRender)
     {
         if (isFirstRender)
         {
-            var result = await _writeSideHttpClient.GetPagedAndFilteredProductSnapshotsAsync(_aggregateIdString, _categoryFilter, _sortColumn, _pageNumber, _pageSize);
-            if (result.IsSuccess)
-            {
-                _products = result.ProductSnapshots is null ? new List<ProductSnapshotDTO>() : result.ProductSnapshots.ToList();
-                _pagingData = result.PagingData;
-                _productsCount = _products.Count;
-            }
-            else _errorMessage = result.ErrorMessage;
+            await RefreshData();
             this.StateHasChanged();
         }
+    }
+
+    protected override void OnInitialized()
+    {
+        _thinking = true;
     }
 
     public void Dispose()
@@ -412,5 +363,4 @@
         _cancellationTokenSource?.Dispose();
         _cancellationTokenSource = null;
     }
-
 }

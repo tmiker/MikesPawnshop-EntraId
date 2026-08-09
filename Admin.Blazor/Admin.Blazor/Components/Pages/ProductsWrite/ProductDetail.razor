@@ -59,7 +59,7 @@
                     <InputText class="bg-dark text-light form-control " id="category" @bind-Value="@_product.Category" />
                 </div>
             </div>
-            <div class="form-group row">
+            <div class="form-group row mb-3">
                 <div class="col-3">
                     <label for="description">Description:</label>
                 </div>
@@ -80,14 +80,6 @@
                     </div>
                     <div class="form-group row">
                         <div class="col-3">
-                            <label for="status">Status:</label>
-                        </div>
-                        <div class="col-8">
-                            <InputText class="bg-dark text-light form-control" id="status" @bind-Value="@_product.Status" />
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <div class="col-3">
                             <label for="statusSelect">Status:</label>
                         </div>
                         <div class="col-8">
@@ -96,7 +88,6 @@
                                 <option value="InActive">InActive</option>
                                 <option value="Obsolete">Obsolete</option>
                             </InputSelect>
-                            @* <InputText class="bg-dark text-light form-control" id="statusSelect" @bind-Value="@_product.Status" /> *@
                         </div>
                     </div>
                     <div class="row">
@@ -117,7 +108,7 @@
                     </div>
                     <div class="form-group row">
                         <div class="col-3">
-                            <label for="imageCount">Image Count:</label>
+                            <label for="imageCount">Images:</label>
                         </div>
                         <div class="col-8">
                             <InputNumber class="bg-dark text-light form-control" id="imageCount" @bind-Value="@_imageCount" />
@@ -152,7 +143,7 @@
                     </div>
                     <div class="row">
                         <div class="col-3">
-                            <label for="lowstock">Low Stock Amount:</label>
+                            <label for="lowstock">Low Amount:</label>
                         </div>
                         <div class="col-8">
                             <InputNumber class="bg-dark text-light form-control " id="lowstock" @bind-Value="_product.LowStockThreshold" />
@@ -160,7 +151,7 @@
                     </div>
                     <div class="form-group row">
                         <div class="col-3">
-                            <label for="docCount">Document Count:</label>
+                            <label for="docCount">Docs:</label>
                         </div>
                         <div class="col-8">
                             <InputNumber class="bg-dark text-light form-control" id="docCount" @bind-Value="@_documentCount" />
@@ -170,7 +161,6 @@
                 </div>
             </div>
 
-            <br />
             <!-- COLUMN 1 END -->
             <br />
             <div class="row">
@@ -469,16 +459,6 @@
         }
     }
 
-    // //// ****************** UPDATE PRODUCT STATUS *****************
-    // private UpdateStatusDTO? _updateStatusDTO = null;
-    // private async Task UpdateProductStatus()
-    // {
-    //     _updateStatusDTO = new UpdateStatusDTO(_product!.Id.ToString(), _product.Status ?? "Active");
-    //     var result = await _writeSideHttpClient.UpdateStatusAsync(_updateStatusDTO!, _cancellationTokenSource!.Token);
-    //     if (!result.IsSuccess) _errorMessage = result.ErrorMessage;
-    //     _updateStatusDTO = null;
-    // }
-
     //// ****************** UPDATE PRODUCT STATUS *****************
     private UpdateStatusDTO? _updateStatusDTO = null;
     private string? _originalStatus;
@@ -492,8 +472,6 @@
         if (_updateStatusDTO is null) return;
         var result = await _writeSideHttpClient.UpdateStatusAsync(_updateStatusDTO!, _cancellationTokenSource!.Token);
         if (!result.IsSuccess) _errorMessage = result.ErrorMessage;
-
-        // await Toastr.ShowToastrInfo($"Simulated updating product status in the database.");
 
         _originalStatus = _product!.Status;
         _updateStatusDTO = null;
@@ -538,27 +516,6 @@
     {
         if (isFirstRender)
         {
-            // var result = await _writeSideHttpClient.GetProductSnapshotByIdAsync(aggregateId);
-            // if (result.IsSuccess)
-            // {
-            //     _product = result.ProductSnapshot;
-            //     if (_product is not null)
-            //     {
-            //         _productAggregateId = _product.Id.ToString();
-            //         if (_product.Images is not null && _product.Images.Any())
-            //         {
-            //             _primaryImage = _product.Images[0];
-            //             _imageCount = _product.Images.Count;
-            //         }
-            //         if (_product.Documents is not null)
-            //         {
-            //             _documentCount = _product.Documents.Count;
-            //         }
-            //     }
-            //     // await CheckAzureStorageStatus();
-            // }
-            // else _errorMessage = result.ErrorMessage;
-
             await ReloadAsync();
             this.StateHasChanged();
         }
