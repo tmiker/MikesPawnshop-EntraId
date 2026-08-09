@@ -230,7 +230,7 @@
 
     private string? _aggregateIdString = null;
     private string? _categoryFilter = null;
-    private string? _sortColumn = null;
+    private string? _sortColumn = "Name";
     private int _minVersion = 0;
     private int _maxVersion = Int32.MaxValue;
     private bool _thinking;
@@ -303,7 +303,7 @@
     {
         _aggregateIdString = null;
         _categoryFilter = null;
-        _sortColumn = null;
+        // _sortColumn = "Name";
 
         await RefreshData();
     }
