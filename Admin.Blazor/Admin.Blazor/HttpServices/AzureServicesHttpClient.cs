@@ -253,6 +253,10 @@ namespace Admin.Blazor.HttpServices
 
                 return (false, null, $"Failed to reach Products Read SQL database after {count} attempts.");
             }
+            catch (OperationCanceledException)
+            {
+                return (false, null, $"Operation Cancelled.");
+            }
             catch (Exception ex)
             {
                 return (false, null, $"Products Read SQL Error: {ex.Message}");
@@ -284,6 +288,10 @@ namespace Admin.Blazor.HttpServices
                 while (count < 4);
 
                 return (false, null, $"Failed to reach Products Write SQL database after {count} attempts.");
+            }
+            catch (OperationCanceledException)
+            {
+                return (false, null, $"Operation Cancelled.");
             }
             catch (Exception ex)
             {

@@ -125,8 +125,27 @@
     private bool _checkMongoDatabases = true;
     private bool _checkSqlDatabases = true;
 
-    private CancellationTokenSource? _cancellationTokenSource = new CancellationTokenSource();
-    private async Task CancelOperationAsync() => await _cancellationTokenSource!.CancelAsync();
+    // Cancellation token handling
+    #region Cancellation Token Handling
+    private CancellationTokenSource? _cancellationTokenSource = new CancellationTokenSource();  
+    private async Task CancelOperationAsync()
+    {
+        if (_cancellationTokenSource is not null)
+        {
+            await _cancellationTokenSource.CancelAsync();
+            _cancellationTokenSource.Dispose();
+            _cancellationTokenSource = new CancellationTokenSource();
+        }
+    }
+    private async Task EnsureCancellationTokenNotCancellationRequested()
+    {
+        if (_cancellationTokenSource is not null && _cancellationTokenSource.IsCancellationRequested)
+        {
+            _cancellationTokenSource.Dispose();
+            _cancellationTokenSource = new CancellationTokenSource();
+        }
+    }
+    #endregion Cancellation Token Handling
 
     private async Task PingResource(string? resourceName)
     {
@@ -287,7 +306,7 @@
                 else
                 {
                     _productsReadApiResourceDTO.DatabaseAvailable = false;
-                    _productsReadApiResourceDTO.Message = $"Database error. Please try again.";
+                    _productsReadApiResourceDTO.Message = databaseResult.ErrorMessage == "Operation Cancelled." ? databaseResult.ErrorMessage : $"Database error. Please try again.";
                 }
             }
         }
@@ -326,7 +345,7 @@
                 else
                 {
                     _productsWriteApiResourceDTO.DatabaseAvailable = false;
-                    _productsWriteApiResourceDTO.Message = $"Database error. Please try again.";
+                    _productsWriteApiResourceDTO.Message = databaseResult.ErrorMessage == "Operation Cancelled." ? databaseResult.ErrorMessage : $"Database error. Please try again.";
                 }
             }
         }
